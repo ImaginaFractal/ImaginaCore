@@ -5,12 +5,12 @@
 #include "Types.h"
 
 namespace Imagina {
-	class IGpuTexture {
+	class im_export IGpuTexture {
 	public:
 		virtual void SetImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 		virtual void UpdateImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 
-		im_export virtual ~IGpuTexture();
+		virtual ~IGpuTexture();
 	};
 
 	class IGpuTextureCreater {
@@ -42,17 +42,17 @@ namespace Imagina {
 
 	class IGpuPixelManager : public IPixelManager, public IGpuTextureManager {};
 
-	class IRasterizingInterface {
+	class im_export IRasterizingInterface {
 	public:
-		im_export virtual ~IRasterizingInterface();
+		virtual ~IRasterizingInterface();
 
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) = 0;
 		virtual void WriteResults(SRReal Value) = 0;
 	};
 
-	class IRasterizer {
+	class im_export IRasterizer {
 	public:
 		virtual IRasterizingInterface &GetRasterizingInterface() = 0;
-		im_export virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
+		virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
 	};
 }

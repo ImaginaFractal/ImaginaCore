@@ -4,7 +4,7 @@
 
 namespace Imagina {
 	class BasicRasterizingInterface;
-	class BasicPixelManager : public IGpuPixelManager, public IRasterizer {
+	class im_export BasicPixelManager : public IGpuPixelManager, public IRasterizer {
 		friend class BasicRasterizingInterface;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
@@ -17,17 +17,17 @@ namespace Imagina {
 		float Pixels[512 * 256];
 
 	public:
-		im_export virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
-		im_export virtual void DeactivateGpu() override;
+		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
+		virtual void DeactivateGpu() override;
 
-		im_export virtual void SetLocation(HRLocation location) override;
-		im_export virtual void SetResolution(GRInt width, GRInt height) override;
+		virtual void SetLocation(HRLocation location) override;
+		virtual void SetResolution(GRInt width, GRInt height) override;
 
-		im_export virtual void Update() override;
+		virtual void Update() override;
 
-		im_export virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
+		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
 
-		im_export virtual IRasterizingInterface &GetRasterizingInterface() override;
+		virtual IRasterizingInterface &GetRasterizingInterface() override;
 	};
 
 	class BasicRasterizingInterface : public IRasterizingInterface {
