@@ -3,6 +3,16 @@
 #include "BasicTypes.h"
 #include "Constants.h"
 
+#ifdef _WIN32
+#ifdef IM_BUILD_CORE
+#define im_decl __declspec(dllexport)
+#else
+#define im_decl __declspec(dllimport)
+#endif
+#else
+#define im_decl
+#endif // FIXME: Move to somewhere else
+
 namespace Imagina {
 	template<intmax_t factor, typename type>
 	type MulInt(type a) {
@@ -12,6 +22,7 @@ namespace Imagina {
 	struct GRRectangle {
 		GRReal MinX, MinY, MaxX, MaxY;
 
+		GRRectangle() = default;
 		GRRectangle(GRReal MinX, GRReal MinY, GRReal MaxX, GRReal MaxY) : MinX(MinX), MinY(MinY), MaxX(MaxX), MaxY(MaxY) {}
 
 		GRReal Width()	{ return MaxX - MinX; }
@@ -57,4 +68,7 @@ namespace Imagina {
         }
 
 	};
+
+	using SRRectangle = Rectangle<SRReal>;
+	using HRRectangle = Rectangle<HRReal>;
 }
