@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 #include "Constants.h"
 
 namespace Imagina {
@@ -7,13 +8,21 @@ namespace Imagina {
 		Real re, im;
 
 		Complex() = default;
-		Complex(Complex &&) = default;
-		Complex(const Complex &) = default;
+		//Complex(Complex &&) = default;
+		//Complex(const Complex &) = default;
 		Complex(Real re) noexcept : re(re), im(Constants::Zero<Real>()) {}
 		Complex(Real re, Real im) noexcept : re(re), im(im) {}
 
-		Complex &operator=(Complex &&) = default;
-		Complex &operator=(const Complex &) = default;
+		template<typename Real2>
+		explicit(!std::is_convertible_v<Real2, Real>)
+		Complex(const Complex<Real2> &complex) : re(complex.re), im(complex.im) {}
+		
+		template<typename Real2>
+		explicit(!std::is_convertible_v<Real2, Real>)
+		Complex(Complex<Real2> &&complex) : re(std::move(complex.re)), im(std::move(complex.im)) {}
+
+		//Complex &operator=(Complex &&) = default;
+		//Complex &operator=(const Complex &) = default;
 
 		Complex &operator+=(const Real &a) { re += a; return *this; }
 		Complex &operator-=(const Real &a) { re -= a; return *this; }
@@ -36,15 +45,12 @@ namespace Imagina {
 		return Complex<Real>(a.re, -a.im);
 	}
 
-	template<typename Real>
-	Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) {
-		return a += b;
-	}
-
-	template<typename Real>
-	Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) {
-		return a -= b;
-	}
+	template<typename Real> Complex<Real> operator+(Complex<Real> a, const Real &b) { return a += b; }
+	template<typename Real> Complex<Real> operator-(Complex<Real> a, const Real &b) { return a -= b; }
+	template<typename Real> Complex<Real> operator*(Complex<Real> a, const Real &b) { return a *= b; }
+	template<typename Real> Complex<Real> operator/(Complex<Real> a, const Real &b) { return a /= b; }
+	template<typename Real> Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) { return a += b; }
+	template<typename Real> Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) { return a -= b; }
 
 	template<typename Real>
 	Complex<Real> operator*(const Complex<Real> &a, const Complex<Real> &b) {
