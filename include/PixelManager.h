@@ -10,7 +10,7 @@ namespace Imagina {
 		virtual void SetImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 		virtual void UpdateImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 
-		im_decl virtual ~IGpuTexture();
+		im_export virtual ~IGpuTexture();
 	};
 
 	class IGpuTextureCreater {
@@ -44,7 +44,7 @@ namespace Imagina {
 
 	class IRasterizingInterface {
 	public:
-		im_decl virtual ~IRasterizingInterface();
+		im_export virtual ~IRasterizingInterface();
 
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) = 0;
 		virtual void WriteResults(SRReal Value) = 0;
@@ -53,6 +53,6 @@ namespace Imagina {
 	class IRasterizer {
 	public:
 		virtual IRasterizingInterface &GetRasterizingInterface() = 0;
-		im_decl virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
+		im_export virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
 	};
 }

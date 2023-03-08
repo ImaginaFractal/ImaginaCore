@@ -17,17 +17,17 @@ namespace Imagina {
 		float Pixels[512 * 256];
 
 	public:
-		im_decl virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
-		im_decl virtual void DeactivateGpu() override;
+		im_export virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
+		im_export virtual void DeactivateGpu() override;
 
-		im_decl virtual void SetLocation(HRLocation location) override;
-		im_decl virtual void SetResolution(GRInt width, GRInt height) override;
+		im_export virtual void SetLocation(HRLocation location) override;
+		im_export virtual void SetResolution(GRInt width, GRInt height) override;
 
-		im_decl virtual void Update() override;
+		im_export virtual void Update() override;
 
-		im_decl virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
+		im_export virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
 
-		im_decl virtual IRasterizingInterface &GetRasterizingInterface() override;
+		im_export virtual IRasterizingInterface &GetRasterizingInterface() override;
 	};
 
 	class BasicRasterizingInterface : public IRasterizingInterface {

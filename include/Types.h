@@ -5,12 +5,12 @@
 
 #ifdef _WIN32
 #ifdef IM_BUILD_CORE
-#define im_decl __declspec(dllexport)
+#define im_export __declspec(dllexport)
 #else
-#define im_decl __declspec(dllimport)
+#define im_export __declspec(dllimport)
 #endif
 #else
-#define im_decl
+#define im_export
 #endif // FIXME: Move to somewhere else
 
 namespace Imagina {
