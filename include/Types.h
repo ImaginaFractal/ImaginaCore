@@ -81,14 +81,14 @@ namespace Imagina {
 		explicit(!std::is_convertible_v<real2, real>)
 		Location(const Location<real2> &rectangle) : X(rectangle.X), Y(rectangle.Y), HalfHeight(rectangle.HalfHeight) {}
 
-		real Height()	const { return MulInt<2>(HalfWidth); }
-		real MinX()		const { return X - HalfWidth; }
+		real Height()	const { return MulInt<2>(HalfHeight); }
 		real MinY()		const { return Y - HalfHeight; }
-		real MaxX()		const { return X + HalfWidth; }
 		real MaxY()		const { return Y + HalfHeight; }
 
 		real HalfWidth(real aspectRatio)	const { return HalfHeight * aspectRatio; }
 		real Width(real aspectRatio)		const { return MulInt<2>(HalfHeight) * aspectRatio; }
+		real MinX(real aspectRatio)			const { return X - HalfWidth(aspectRatio); }
+		real MaxX(real aspectRatio)			const { return X + HalfWidth(aspectRatio); }
 
 		Rectangle<real> ToRectangle(real aspectRatio) {
 			return Rectangle<real>(X, Y, HalfWidth(aspectRatio), HalfHeight);
