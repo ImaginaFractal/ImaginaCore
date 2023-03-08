@@ -39,7 +39,17 @@ namespace Imagina {
 
 	class IGpuPixelManager : public IPixelManager, public IGpuTextureManager {};
 
-	class IRasterizer {
+	class IRasterizingInterface {
+	public:
+		im_decl virtual ~IRasterizingInterface();
 
+		virtual bool GetCoordinate(HRReal &x, HRReal &y) = 0;
+		virtual void WriteResults(SRReal Value) = 0;
+	};
+
+	class IRasterizer {
+	public:
+		virtual IRasterizingInterface &GetRasterizingInterface() = 0;
+		im_decl virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
 	};
 }

@@ -3,14 +3,33 @@
 #include "PixelManager.h"
 
 namespace Imagina {
-	class BasicPixelManager : public IGpuPixelManager {
+	class BasicRasterizingInterface;
+	class BasicPixelManager : public IGpuPixelManager, public IRasterizer {
+		friend class BasicRasterizingInterface;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
+		size_t i = 0;
+		float Pixels[512 * 256];
 
 	public:
 		im_decl virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		im_decl virtual void DeactivateGpu() override;
 
 		im_decl virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
+
+		im_decl virtual IRasterizingInterface &GetRasterizingInterface() override;
+	};
+
+	class BasicRasterizingInterface : public IRasterizingInterface {
+		friend class BasicPixelManager;
+
+		BasicPixelManager *pixelManager;
+		BasicRasterizingInterface(BasicPixelManager *pixelManager) : pixelManager(pixelManager) {}
+
+		int pixelX, pixelY;
+
+	public:
+		virtual bool GetCoordinate(HRReal &x, HRReal &y) override;
+		virtual void WriteResults(SRReal Value) override;
 	};
 }

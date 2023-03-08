@@ -1,4 +1,5 @@
 #include "BasicPixelManager.h"
+#include "Evaluator.h"
 
 namespace Imagina {
 	void BasicPixelManager::ActivateGpu(IGpuTextureCreater *gpuTextureCreater) {
@@ -6,13 +7,11 @@ namespace Imagina {
 
 		gpuTexture = gpuTextureCreater->CreateTexture();
 
-		using complex = Imagina::SRComplex;//std::complex<double>;
-
-		float Pixels[256 * 256];
+		/*using complex = Imagina::SRComplex;//std::complex<double>;
 
 		for (int y = 0; y < 256; y++) {
-			for (int x = 0; x < 256; x++) {
-				double real = (double)(x - 128) / 128;
+			for (int x = 0; x < 512; x++) {
+				double real = (double)(x - 256) / 128;
 				double imag = (double)(y - 128) / 128;
 
 				complex c = { real, imag };
@@ -24,11 +23,14 @@ namespace Imagina {
 					if (norm(z) > 4.0) break;
 				}
 
-				Pixels[x + y * 256] = i;
+				Pixels[x + y * 512] = i;
 			}
-		}
+		}*/
 
-		gpuTexture->SetImage(256, 256, Pixels);
+		Evaluator evaluator;
+		evaluator.Evaluate(*this);
+
+		gpuTexture->SetImage(512, 256, Pixels);
 	}
 
 	void BasicPixelManager::DeactivateGpu() {
@@ -44,5 +46,26 @@ namespace Imagina {
 		TextureMappings[0].Texture = gpuTexture;
 
 		return TextureMappings;
+	}
+	IRasterizingInterface &BasicPixelManager::GetRasterizingInterface() {
+		return *new BasicRasterizingInterface(this);
+	}
+
+	bool BasicRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
+		if (pixelManager->i >= 256 * 512) return false;
+
+		pixelX = pixelManager->i % 512;
+		pixelY = pixelManager->i / 512;
+
+		x = (double)(pixelX - 256) / 128;
+		y = (double)(pixelY - 128) / 128;
+
+		pixelManager->i++;
+
+		return true;
+	}
+
+	void BasicRasterizingInterface::WriteResults(SRReal Value) {
+		pixelManager->Pixels[pixelX + pixelY * 512] = Value;
 	}
 }
