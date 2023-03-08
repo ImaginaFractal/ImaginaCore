@@ -11,4 +11,6 @@ namespace Imagina {
 	using SRComplex = Complex<SRReal>;
 	using HRComplex = Complex<HRReal>;
 	using HPComplex = Complex<HPReal>;
+
+	using GRInt = int32_t;
 }

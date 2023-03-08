@@ -26,7 +26,10 @@ namespace Imagina {
 	};
 
 	class IPixelManager {
+		virtual void SetLocation(HRLocation location) = 0;
+		virtual void SetResolution(GRInt width, GRInt height) = 0;
 
+		virtual void Update() = 0;
 	};
 
 	class IGpuTextureManager {

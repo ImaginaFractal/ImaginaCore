@@ -6,39 +6,36 @@ namespace Imagina {
 		this->gpuTextureCreater = gpuTextureCreater;
 
 		gpuTexture = gpuTextureCreater->CreateTexture();
-
-		/*using complex = Imagina::SRComplex;//std::complex<double>;
-
-		for (int y = 0; y < 256; y++) {
-			for (int x = 0; x < 512; x++) {
-				double real = (double)(x - 256) / 128;
-				double imag = (double)(y - 128) / 128;
-
-				complex c = { real, imag };
-				complex z = 0.0;
-
-				long i;
-				for (i = 0; i < 256; i++) {
-					z = z * z + c;
-					if (norm(z) > 4.0) break;
-				}
-
-				Pixels[x + y * 512] = i;
-			}
-		}*/
-
-		Evaluator evaluator;
-		evaluator.Evaluate(*this);
-
-		gpuTexture->SetImage(512, 256, Pixels);
 	}
 
 	void BasicPixelManager::DeactivateGpu() {
 		// TODO: Implement
 	}
 
+	void BasicPixelManager::SetLocation(HRLocation location) {
+		this->location = location;
+		invalid = true;
+	}
+
+	void BasicPixelManager::SetResolution(GRInt width, GRInt height) {
+		// TODO: Implement
+	}
+
+	void BasicPixelManager::Update() {
+		if (invalid) {
+			i = 0;
+
+			Evaluator evaluator;
+			evaluator.Evaluate(*this);
+
+			gpuTexture->SetImage(512, 256, Pixels);
+
+			invalid = false;
+		}
+	}
+
 	std::vector<TextureMapping> BasicPixelManager::GetTextureMappings(const HRRectangle &location) {
-		if (!gpuTexture) return std::vector<TextureMapping>();
+		if (!gpuTexture || invalid) return std::vector<TextureMapping>();
 
 		std::vector<TextureMapping> TextureMappings;
 		TextureMappings.resize(1);
@@ -57,8 +54,14 @@ namespace Imagina {
 		pixelX = pixelManager->i % 512;
 		pixelY = pixelManager->i / 512;
 
-		x = (double)(pixelX - 256) / 128;
-		y = (double)(pixelY - 128) / 128;
+		SRReal xsr = (SRReal)(pixelX * 2 + 1 - 512) / 256; // Map to (-AspectRatio, AspectRatio)
+		SRReal ysr = (SRReal)(pixelY * 2 + 1 - 256) / 256; // Map to (-1, 1)
+
+		x = xsr * pixelManager->location.HalfHeight + pixelManager->location.X;
+		y = ysr * pixelManager->location.HalfHeight + pixelManager->location.Y;
+
+		//x = (double)(pixelX - 256) / 128;
+		//y = (double)(pixelY - 128) / 128;
 
 		pixelManager->i++;
 

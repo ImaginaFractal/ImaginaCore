@@ -8,12 +8,22 @@ namespace Imagina {
 		friend class BasicRasterizingInterface;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
+
+		HRLocation location;
+
+		bool invalid = true;
+
 		size_t i = 0;
 		float Pixels[512 * 256];
 
 	public:
 		im_decl virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		im_decl virtual void DeactivateGpu() override;
+
+		im_decl virtual void SetLocation(HRLocation location) override;
+		im_decl virtual void SetResolution(GRInt width, GRInt height) override;
+
+		im_decl virtual void Update() override;
 
 		im_decl virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
 
