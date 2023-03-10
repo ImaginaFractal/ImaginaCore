@@ -4,7 +4,7 @@ FILE(GLOB SourceFiles "*.cpp")
 
 add_library (ImaginaCore SHARED ${SourceFiles})
 
-target_include_directories(ImaginaCore PRIVATE "include")
+target_include_directories(ImaginaCore PRIVATE "include/Imagina")
 
 target_compile_definitions(ImaginaCore PRIVATE IM_BUILD_CORE)
 
