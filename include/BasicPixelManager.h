@@ -6,15 +6,16 @@ namespace Imagina {
 	class BasicRasterizingInterface;
 	class im_export BasicPixelManager : public IGpuPixelManager, public IRasterizer {
 		friend class BasicRasterizingInterface;
+		GRInt width = 0, height = 0;
+		size_t pixelCount, i = 0;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
 
 		HRLocation location;
 
-		bool invalid = true;
+		bool initialized = false, valid = false;
 
-		size_t i = 0;
-		float Pixels[512 * 256];
+		float *pixels = nullptr;
 
 	public:
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;

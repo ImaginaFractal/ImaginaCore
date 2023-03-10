@@ -14,28 +14,40 @@ namespace Imagina {
 
 	void BasicPixelManager::SetLocation(HRLocation location) {
 		this->location = location;
-		invalid = true;
+		valid = false;
 	}
 
 	void BasicPixelManager::SetResolution(GRInt width, GRInt height) {
-		// TODO: Implement
+		this->width = width;
+		this->height = height;
+		valid = false;
+		initialized = false;
 	}
 
 	void BasicPixelManager::Update() {
-		if (invalid) {
+		if (!initialized) {
+			if (pixels) {
+				delete[] pixels;
+				pixels = nullptr;
+			}
+			pixelCount = size_t(width) * size_t(height);
+			pixels = new float[pixelCount];
+			initialized = true;
+		}
+		if (!valid) {
 			i = 0;
 
 			Evaluator evaluator;
 			evaluator.Evaluate(*this);
 
-			gpuTexture->SetImage(512, 256, Pixels);
+			gpuTexture->SetImage(width, height, pixels);
 
-			invalid = false;
+			valid = true;
 		}
 	}
 
 	std::vector<TextureMapping> BasicPixelManager::GetTextureMappings(const HRRectangle &location) {
-		if (!gpuTexture || invalid) return std::vector<TextureMapping>();
+		if (!gpuTexture || !valid) return std::vector<TextureMapping>();
 
 		std::vector<TextureMapping> TextureMappings;
 		TextureMappings.resize(1);
@@ -49,13 +61,13 @@ namespace Imagina {
 	}
 
 	bool BasicRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
-		if (pixelManager->i >= 256 * 512) return false;
+		if (pixelManager->i >= pixelManager->pixelCount) return false;
 
-		pixelX = pixelManager->i % 512;
-		pixelY = pixelManager->i / 512;
+		pixelX = pixelManager->i % pixelManager->width;
+		pixelY = pixelManager->i / pixelManager->width;
 
-		SRReal xsr = (SRReal)(pixelX * 2 + 1 - 512) / 256; // Map to (-AspectRatio, AspectRatio)
-		SRReal ysr = (SRReal)(pixelY * 2 + 1 - 256) / 256; // Map to (-1, 1)
+		SRReal xsr = (SRReal)(pixelX * 2 + 1 - pixelManager->width) / pixelManager->height; // Map to (-AspectRatio, AspectRatio)
+		SRReal ysr = (SRReal)(pixelY * 2 + 1 - pixelManager->height) / pixelManager->height; // Map to (-1, 1)
 
 		x = xsr * pixelManager->location.HalfHeight + pixelManager->location.X;
 		y = ysr * pixelManager->location.HalfHeight + pixelManager->location.Y;
@@ -69,6 +81,6 @@ namespace Imagina {
 	}
 
 	void BasicRasterizingInterface::WriteResults(SRReal Value) {
-		pixelManager->Pixels[pixelX + pixelY * 512] = Value;
+		pixelManager->pixels[pixelX + pixelY * pixelManager->width] = Value;
 	}
 }
