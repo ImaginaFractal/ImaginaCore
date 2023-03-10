@@ -27,6 +27,7 @@ namespace Imagina {
 	};
 
 	class IPixelManager {
+	public:
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
 
 		virtual void SetLocation(HRLocation location) = 0;
