@@ -1,4 +1,5 @@
 #include "Evaluator.h"
+#include "PixelManager.h"
 
 namespace Imagina {
 	void Evaluator::Evaluate(IRasterizer &rasterizer) {

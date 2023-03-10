@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Declarations.h"
 #include "PixelManager.h"
 
 namespace Imagina {

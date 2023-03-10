@@ -3,16 +3,6 @@
 #include "BasicTypes.h"
 #include "Constants.h"
 
-#ifdef _WIN32
-#ifdef IM_BUILD_CORE
-#define im_export __declspec(dllexport)
-#else
-#define im_export __declspec(dllimport)
-#endif
-#else
-#define im_export
-#endif // FIXME: Move to somewhere else
-
 namespace Imagina {
 	template<intmax_t factor, typename type>
 	type MulInt(type a) {

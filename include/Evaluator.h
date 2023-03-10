@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Types.h"
-#include "BasicPixelManager.h"
+#include "Declarations.h"
 
 namespace Imagina {
 	class IEvaluator {
