@@ -4,9 +4,14 @@
 #include "BasicPixelManager.h"
 
 namespace Imagina {
-	// TEMPORARY
-	class Evaluator {
+	class IEvaluator {
 	public:
-		void Evaluate(IRasterizer &rasterizer);
+		virtual void Evaluate(IRasterizer &rasterizer) = 0;
+	};
+
+	// TEMPORARY
+	class im_export Evaluator : public IEvaluator {
+	public:
+		virtual void Evaluate(IRasterizer &rasterizer) override;
 	};
 }

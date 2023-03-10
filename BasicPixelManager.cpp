@@ -12,6 +12,11 @@ namespace Imagina {
 		// TODO: Implement
 	}
 
+	void BasicPixelManager::SetEvaluator(IEvaluator *evaluator) {
+		this->evaluator = evaluator;
+		valid = false;
+	}
+
 	void BasicPixelManager::SetLocation(HRLocation location) {
 		this->location = location;
 		valid = false;
@@ -34,11 +39,11 @@ namespace Imagina {
 			pixels = new float[pixelCount];
 			initialized = true;
 		}
-		if (!valid) {
+		if (!valid && evaluator) {
 			i = 0;
 
-			Evaluator evaluator;
-			evaluator.Evaluate(*this);
+			//Evaluator evaluator;
+			evaluator->Evaluate(*this);
 
 			gpuTexture->SetImage(width, height, pixels);
 

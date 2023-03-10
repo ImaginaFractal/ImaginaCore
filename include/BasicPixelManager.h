@@ -10,6 +10,7 @@ namespace Imagina {
 		size_t pixelCount, i = 0;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
+		IEvaluator *evaluator = nullptr;
 
 		HRLocation location;
 
@@ -21,6 +22,7 @@ namespace Imagina {
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		virtual void DeactivateGpu() override;
 
+		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetLocation(HRLocation location) override;
 		virtual void SetResolution(GRInt width, GRInt height) override;
 

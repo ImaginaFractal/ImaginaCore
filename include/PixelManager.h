@@ -5,6 +5,8 @@
 #include "Types.h"
 
 namespace Imagina {
+	class IEvaluator;
+
 	class im_export IGpuTexture {
 	public:
 		virtual void SetImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
@@ -26,6 +28,8 @@ namespace Imagina {
 	};
 
 	class IPixelManager {
+		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
+
 		virtual void SetLocation(HRLocation location) = 0;
 		virtual void SetResolution(GRInt width, GRInt height) = 0;
 
