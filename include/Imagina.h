@@ -5,3 +5,5 @@
 #include "BasicPixelManager.h"
 
 #include "Evaluator.h"
+
+#include "FractalContext.h"
