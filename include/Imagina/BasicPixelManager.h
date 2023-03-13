@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "Declarations.h"
 #include "PixelManager.h"
 
@@ -8,7 +10,8 @@ namespace Imagina {
 	class im_export BasicPixelManager : public IGpuPixelManager, public IRasterizer {
 		friend class BasicRasterizingInterface;
 		GRInt width = 0, height = 0;
-		size_t pixelCount, i = 0;
+		size_t pixelCount;
+		std::atomic_size_t i = 0;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
 		IEvaluator *evaluator = nullptr;

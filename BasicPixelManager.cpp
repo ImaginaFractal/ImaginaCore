@@ -74,10 +74,11 @@ namespace Imagina {
 	}
 
 	bool BasicRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
-		if (pixelManager->i >= pixelManager->pixelCount) return false;
+		size_t i = pixelManager->i++;
+		if (i >= pixelManager->pixelCount) return false;
 
-		pixelX = pixelManager->i % pixelManager->width;
-		pixelY = pixelManager->i / pixelManager->width;
+		pixelX = i % pixelManager->width;
+		pixelY = i / pixelManager->width;
 
 		SRReal xsr = (SRReal)(pixelX * 2 + 1 - pixelManager->width) / pixelManager->height; // Map to (-AspectRatio, AspectRatio)
 		SRReal ysr = (SRReal)(pixelY * 2 + 1 - pixelManager->height) / pixelManager->height; // Map to (-1, 1)
@@ -88,7 +89,7 @@ namespace Imagina {
 		//x = (double)(pixelX - 256) / 128;
 		//y = (double)(pixelY - 128) / 128;
 
-		pixelManager->i++;
+		
 
 		return true;
 	}

@@ -24,7 +24,7 @@ namespace Imagina {
 		}
 		rasterizer.FreeRasterizingInterface(ri);
 	}
-	class Evaluator::EvaluationTask : public Task/*, public ProgressTrackable*/ {
+	class Evaluator::EvaluationTask : public ParallelTask/*, public ProgressTrackable*/ {
 		Evaluator *evaluator;
 		IRasterizer *rasterizer;
 	public:
