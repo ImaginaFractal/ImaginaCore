@@ -14,10 +14,15 @@ namespace Imagina {
 
 	class im_export FractalContext : public IFractalContext {
 	public:
-		IPixelManager *PixelManager;
-		IEvaluator *Evaluator;
-		IGpuTextureManager *GpuTextureManager;
-		ILocationManager *LocationManager;
+		IPixelManager *PixelManager = nullptr;
+		IGpuTextureManager *GpuTextureManager = nullptr;
+		IEvaluator *Evaluator = nullptr;
+		ILocationManager *LocationManager = nullptr;
+
+		void UsePixelManager(IPixelManager *pixelManager);
+		void UsePixelManager(IGpuPixelManager *pixelManager);
+		void UseEvaluator(IEvaluator *evaluator);
+		void UseLocationManager(ILocationManager *locationManager);
 
 		virtual void SetTargetLocation(const HRLocation &location) override;
 
