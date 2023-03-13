@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.h"
+#include "Declarations.h"
 
 #include <thread>
 #include <deque>
@@ -108,7 +109,7 @@ namespace Imagina {
 		static void WorkerFunction();
 
 	public:
-		static void Init();
+		im_export static void Init();
 
 		static ExecutionContext *AddTask(Task *task);
 		static ExecutionContext *AddTask(const std::function<void()> &function);

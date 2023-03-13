@@ -50,7 +50,8 @@ namespace Imagina {
 			i = 0;
 
 			//Evaluator evaluator;
-			evaluator->Evaluate(*this);
+			//evaluator->Evaluate(*this);
+			evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
 
 			gpuTexture->SetImage(width, height, pixels);
 
