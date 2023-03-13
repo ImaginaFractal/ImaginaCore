@@ -2,6 +2,7 @@
 
 #include "BasicTypes.h"
 #include "Constants.h"
+#include <exception>
 
 namespace Imagina {
 	template<intmax_t factor, typename type>
@@ -105,4 +106,9 @@ namespace Imagina {
 
 	using SRLocation = Location<SRReal>;
 	using HRLocation = Location<HRReal>;
+
+	class not_implemented : public std::exception {
+	public:
+		virtual const char *what() const noexcept override { return "Not implemented"; } // FIXME: Move to a cpp file.
+	};
 }
