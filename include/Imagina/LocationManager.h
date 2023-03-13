@@ -7,7 +7,7 @@ namespace Imagina {
 	class ILocationManager {
 	public:
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
-		virtual void SetFractalContext(IFractalContext *fractalContext) = 0;
+		virtual void SetFractalContext(IFractalContext *fractalContext) = 0; // TODO: Use callback function instead?
 		virtual void LocationChanged(const HRLocation &location) = 0;
 	};
 
