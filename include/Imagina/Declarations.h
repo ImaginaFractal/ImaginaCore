@@ -19,4 +19,7 @@ namespace Imagina {
 	class IRasterizer;
 	class IEvaluator;
 
+	class ILocationManager;
+
+	class IFractalContext;
 }

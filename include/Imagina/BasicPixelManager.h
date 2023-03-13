@@ -24,9 +24,10 @@ namespace Imagina {
 		virtual void DeactivateGpu() override;
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
-		virtual void SetLocation(HRLocation location) override;
+		virtual void SetTargetLocation(const HRLocation &location) override;
 		virtual void SetResolution(GRInt width, GRInt height) override;
 
+		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) override;
 		virtual void Update() override;
 
 		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;

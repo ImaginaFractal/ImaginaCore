@@ -17,7 +17,7 @@ namespace Imagina {
 		valid = false;
 	}
 
-	void BasicPixelManager::SetLocation(HRLocation location) {
+	void BasicPixelManager::SetTargetLocation(const HRLocation &location) {
 		this->location = location;
 		valid = false;
 	}
@@ -27,6 +27,13 @@ namespace Imagina {
 		this->height = height;
 		valid = false;
 		initialized = false;
+	}
+
+	void BasicPixelManager::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
+		// TODO: Cancel computation;
+
+		location.X += differenceX;
+		location.Y += differenceY;
 	}
 
 	void BasicPixelManager::Update() {

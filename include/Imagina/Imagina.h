@@ -7,3 +7,5 @@
 #include "Evaluator.h"
 
 #include "FractalContext.h"
+
+#include "LocationManager.h"

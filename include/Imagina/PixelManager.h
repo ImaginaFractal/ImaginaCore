@@ -30,9 +30,10 @@ namespace Imagina {
 	public:
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
 
-		virtual void SetLocation(HRLocation location) = 0;
+		virtual void SetTargetLocation(const HRLocation &location) = 0;
 		virtual void SetResolution(GRInt width, GRInt height) = 0;
 
+		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) = 0;
 		virtual void Update() = 0;
 	};
 
