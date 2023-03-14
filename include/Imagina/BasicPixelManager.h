@@ -4,6 +4,7 @@
 
 #include "Declarations.h"
 #include "PixelManager.h"
+#include "Computation.h" // TODO: Replace with Declarations.h
 
 namespace Imagina {
 	class BasicRasterizingInterface;
@@ -17,6 +18,8 @@ namespace Imagina {
 		IEvaluator *evaluator = nullptr;
 
 		HRLocation location;
+
+		ExecutionContext *executionContext = nullptr;
 
 		bool initialized = false, valid = false;
 
@@ -35,6 +38,8 @@ namespace Imagina {
 
 		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
 
+		virtual void Cancel() override;
+		void CancelAndWait();
 		virtual IRasterizingInterface &GetRasterizingInterface() override;
 	};
 

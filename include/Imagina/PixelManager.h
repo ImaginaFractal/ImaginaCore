@@ -57,6 +57,8 @@ namespace Imagina {
 
 	class im_export IRasterizer {
 	public:
+		virtual void Cancel();
+
 		virtual IRasterizingInterface &GetRasterizingInterface() = 0;
 		virtual void FreeRasterizingInterface(IRasterizingInterface &Interface);
 	};

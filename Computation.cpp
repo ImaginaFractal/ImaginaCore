@@ -32,6 +32,7 @@ namespace Imagina {
 	}
 
 	void ExecutionContext::Cancel() {
+		if (Cancelled) return;
 		Task::Cancellable *Cancellable = dynamic_cast<Task::Cancellable *>(task);
 		std::unique_lock<std::mutex> lock(Mutex);
 		AcceptNewThreads = false;

@@ -30,7 +30,7 @@ namespace Imagina {
 	}
 
 	void BasicPixelManager::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
-		// TODO: Cancel computation;
+		CancelAndWait();
 
 		location.X += differenceX;
 		location.Y += differenceY;
@@ -47,15 +47,18 @@ namespace Imagina {
 			initialized = true;
 		}
 		if (!valid && evaluator) {
-			i = 0;
-
 			//Evaluator evaluator;
 			//evaluator->Evaluate(*this);
-			evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
+			if (executionContext) CancelAndWait();
 
-			gpuTexture->SetImage(width, height, pixels);
+			i = 0;
+			//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
+			executionContext = evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this);
 
 			valid = true;
+		}
+		if (gpuTexture) {
+			gpuTexture->SetImage(width, height, pixels);
 		}
 	}
 
@@ -68,6 +71,20 @@ namespace Imagina {
 		TextureMappings[0].Texture = gpuTexture;
 
 		return TextureMappings;
+	}
+	void BasicPixelManager::Cancel() {
+		i = pixelCount;
+		if (executionContext) {
+			if (!executionContext->Terminated()) executionContext->Cancel();
+		}
+	}
+	void BasicPixelManager::CancelAndWait() {
+		i = pixelCount;
+		if (executionContext) {
+			if (!executionContext->Terminated()) executionContext->Cancel();
+			executionContext->WaitAndRelease();
+			executionContext = nullptr;
+		}
 	}
 	IRasterizingInterface &BasicPixelManager::GetRasterizingInterface() {
 		return *new BasicRasterizingInterface(this);

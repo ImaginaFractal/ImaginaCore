@@ -24,11 +24,14 @@ namespace Imagina {
 		rasterizingInterface.WriteResults(Value);
 	}
 
+
 	class LowPrecisionEvaluator::EvaluationTask : public ParallelTask/*, public ProgressTrackable*/ {
 		LowPrecisionEvaluator *evaluator;
 		IRasterizer *rasterizer;
+		SRReal referenceX, referenceY;
 	public:
-		EvaluationTask(LowPrecisionEvaluator *evaluator, IRasterizer *rasterizer) : evaluator(evaluator), rasterizer(rasterizer) {}
+		EvaluationTask(LowPrecisionEvaluator *evaluator, IRasterizer *rasterizer, SRReal referenceX, SRReal referenceY)
+			: evaluator(evaluator), rasterizer(rasterizer), referenceX(referenceX), referenceY(referenceY) {}
 		//virtual std::string_view GetDescription() const override;
 		virtual void Execute() override;
 		//virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const override;
@@ -36,14 +39,15 @@ namespace Imagina {
 
 	void LowPrecisionEvaluator::EvaluationTask::Execute() {
 		IRasterizingInterface &rasterizingInterface = rasterizer->GetRasterizingInterface();
-		LPRasterizingInterface lpRasterizingInterface(rasterizingInterface, evaluator->referenceX, evaluator->referenceY);
+		LPRasterizingInterface lpRasterizingInterface(rasterizingInterface, referenceX, referenceY);
 		evaluator->Evaluate(lpRasterizingInterface);
 		rasterizer->FreeRasterizingInterface(rasterizingInterface);
 	}
 
+
 	ExecutionContext *LowPrecisionEvaluator::RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) {
 		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
-		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
+		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer, referenceX, referenceY));
 		currentExecutionContext->AddReference();
 		return currentExecutionContext;
 	}
@@ -52,6 +56,7 @@ namespace Imagina {
 		referenceX = x;
 		referenceY = y;
 	}
+
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
