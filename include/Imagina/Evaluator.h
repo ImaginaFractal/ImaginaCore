@@ -31,7 +31,7 @@ namespace Imagina {
 	};
 
 	// TEMPORARY
-	class im_export Evaluator : public LowPrecisionEvaluator {
+	class im_export TestEvaluator : public LowPrecisionEvaluator {
 	public:
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};

@@ -53,7 +53,7 @@ namespace Imagina {
 		referenceY = y;
 	}
 
-	void Evaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
+	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetCoordinate(x, y)) {
 			SRComplex c = { x, y };
