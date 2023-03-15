@@ -23,9 +23,15 @@ namespace Imagina {
 
 		bool initialized = false, valid = false;
 
-		float *pixels = nullptr;
+		size_t preprocessedDataSize = 0;
+		size_t finalDataSize = 0;
+
+		char *preprocessedPixels = nullptr;
+		float *pixels = nullptr; // Equal to preprocessedPixels when no preprocessing is needed
 
 		PixelPipeline *pixelPipeline;
+
+		void Initialize();
 
 	public:
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;

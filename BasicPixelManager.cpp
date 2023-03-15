@@ -1,7 +1,43 @@
 #include "BasicPixelManager.h"
 #include "Evaluator.h"
+#include <assert.h> // TEMPORARY
 
 namespace Imagina {
+	void BasicPixelManager::Initialize() {
+		assert(pixelPipeline);
+		assert(evaluator);
+
+		IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
+		IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
+
+		const PixelDataDescriptor *preprocessedData = preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
+		const PixelDataDescriptor *finalData = postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
+
+		assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == DataType::Float32);
+
+		preprocessedDataSize = preprocessedData->Size;
+		finalDataSize = finalData->Size;
+
+		if (preprocessedPixels) {
+			delete[] preprocessedPixels;
+			if ((char *)pixels == preprocessedPixels) pixels = nullptr;
+			preprocessedPixels = nullptr;
+		}
+		if (pixels) {
+			delete[] pixels;
+			pixels = nullptr;
+		}
+		pixelCount = size_t(width) * size_t(height);
+
+		preprocessedPixels = new char[pixelCount * preprocessedDataSize];
+		if (preprocessedData == finalData) {
+			pixels = (float *)preprocessedPixels;
+		} else {
+			pixels = new float[pixelCount];
+		}
+		initialized = true;
+	}
+
 	void BasicPixelManager::ActivateGpu(IGpuTextureCreater *gpuTextureCreater) {
 		this->gpuTextureCreater = gpuTextureCreater;
 
@@ -44,13 +80,7 @@ namespace Imagina {
 
 	void BasicPixelManager::Update() {
 		if (!initialized) {
-			if (pixels) {
-				delete[] pixels;
-				pixels = nullptr;
-			}
-			pixelCount = size_t(width) * size_t(height);
-			pixels = new float[pixelCount];
-			initialized = true;
+			Initialize();
 		}
 		if (!valid && evaluator) {
 			//Evaluator evaluator;
@@ -118,8 +148,20 @@ namespace Imagina {
 	}
 
 	void BasicRasterizingInterface::WriteResults(void *value) {
-		float output; // TEMPORARY
-		pixelManager->pixelPipeline->Preprocess(value, &output);
-		pixelManager->pixels[pixelX + pixelY * pixelManager->width] = output;
+		const IPixelProcessor *preprocessor = pixelManager->pixelPipeline->GetPreprocessor();
+		const IPixelProcessor *postprocessor = pixelManager->pixelPipeline->GetPostprocessor();
+
+		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
+		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelManager->preprocessedDataSize];
+
+		if (preprocessor) {
+			preprocessor->Process(value, preprocessedOutput);
+		} else {
+			memcpy(preprocessedOutput, value, pixelManager->preprocessedDataSize);
+		}
+
+		if (postprocessor) {
+			postprocessor->Process(preprocessedOutput, &pixelManager->pixels[pixelIndex]);
+		}
 	}
 }

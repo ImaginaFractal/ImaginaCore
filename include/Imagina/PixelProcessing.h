@@ -62,8 +62,13 @@ namespace Imagina {
 		void UsePreprocessor(IPixelProcessor *processor);
 		void UsePostprocessor(IPixelProcessor *processor);
 
-		inline void Preprocess(void *input, void *output) { preprocessor->Process(input, output); } // FIXME: Doesn't work if preprocessor == nullptr
-		inline void Postprocess(void *input, void *output) { postprocessor->Process(input, output); } // FIXME: Doesn't work if postprocessor == nullptr
+		void Connect();
+
+		inline IPixelProcessor *GetPreprocessor() { return preprocessor; }
+		inline IPixelProcessor *GetPostprocessor() { return postprocessor; }
+
+		inline void Preprocess(void *input, void *output) const { preprocessor->Process(input, output); } // FIXME: Doesn't work if preprocessor == nullptr
+		inline void Postprocess(void *input, void *output) const { postprocessor->Process(input, output); } // FIXME: Doesn't work if postprocessor == nullptr
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32

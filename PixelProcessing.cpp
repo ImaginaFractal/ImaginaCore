@@ -14,19 +14,24 @@ namespace Imagina {
 	}
 	void PixelPipeline::ConnectEvaluator(IEvaluator *evaluator) {
 		evaluatorOutput = evaluator->GetOutputDescriptor();
-
-		if (preprocessor) preprocessor->SetInput(evaluatorOutput);
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
 		preprocessor = processor;
-
-		if (evaluatorOutput) preprocessor->SetInput(evaluatorOutput);
-		if (postprocessor) postprocessor->SetInput(preprocessor->GetOutputDescriptor());
 	}
 	void PixelPipeline::UsePostprocessor(IPixelProcessor *processor) {
 		postprocessor = processor;
+	}
 
-		if (preprocessor) postprocessor->SetInput(preprocessor->GetOutputDescriptor());
+	void PixelPipeline::Connect() {
+		const PixelDataDescriptor *pixelData = evaluatorOutput;
+
+		if (preprocessor) {
+			preprocessor->SetInput(pixelData);
+			pixelData = preprocessor->GetOutputDescriptor();
+		}
+		if (postprocessor) {
+			postprocessor->SetInput(pixelData);
+		}
 	}
 
 	using namespace std;
