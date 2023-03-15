@@ -57,6 +57,18 @@ namespace Imagina {
 		referenceY = y;
 	}
 
+	using namespace std;
+	const PixelDataDescriptor TestEvaluator::OutputDescriptor{
+		8, 1, TestEvaluator::OutputFields
+	};
+
+	const FieldDescriptor TestEvaluator::OutputFields[1]{
+		{ DataType::Float32, 0, "Iterations"sv }
+	};
+
+	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
+		return &OutputDescriptor;
+	}
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;

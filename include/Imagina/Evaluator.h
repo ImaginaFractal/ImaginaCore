@@ -3,10 +3,13 @@
 #include "Types.h"
 #include "Declarations.h"
 #include "Computation.h" // TODO: Use Declarations.h instead
+#include "PixelProcessing.h"
 
 namespace Imagina {
 	class IEvaluator {
 	public:
+		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
+
 		//virtual void Evaluate(IRasterizer &rasterizer) = 0;
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) = 0;
 	};
@@ -32,7 +35,12 @@ namespace Imagina {
 
 	// TEMPORARY
 	class im_export TestEvaluator : public LowPrecisionEvaluator {
+		static const PixelDataDescriptor OutputDescriptor;
+		static const FieldDescriptor OutputFields[1];
+
 	public:
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 }
