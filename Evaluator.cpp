@@ -11,7 +11,7 @@ namespace Imagina {
 			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
 
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) override;
-		virtual void WriteResults(SRReal Value) override;
+		virtual void WriteResults(void *value) override;
 	};
 
 	bool LowPrecisionEvaluator::LPRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
@@ -20,8 +20,8 @@ namespace Imagina {
 		y += referenceY;
 		return result;
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::WriteResults(SRReal Value) {
-		rasterizingInterface.WriteResults(Value);
+	void LowPrecisionEvaluator::LPRasterizingInterface::WriteResults(void *value) {
+		rasterizingInterface.WriteResults(value);
 	}
 
 
@@ -63,7 +63,7 @@ namespace Imagina {
 	};
 
 	const FieldDescriptor TestEvaluator::OutputFields[1]{
-		{ DataType::Float32, 0, "Iterations"sv }
+		{ DataType::Float64, 0, "Iterations"sv }
 	};
 
 	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
@@ -81,8 +81,10 @@ namespace Imagina {
 				z = z * z + c;
 				if (norm(z) > 4.0) break;
 			}
-	
-			rasterizingInterface.WriteResults(i);
+			
+			double result = i;
+
+			rasterizingInterface.WriteResults(&result);
 		}
 	}
 }

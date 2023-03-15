@@ -29,6 +29,7 @@ namespace Imagina {
 	class IPixelManager {
 	public:
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
+		virtual void UsePixelPipeline(PixelPipeline *pipeline) = 0;
 
 		virtual void SetTargetLocation(const HRLocation &location) = 0;
 		virtual void SetResolution(GRInt width, GRInt height) = 0;
@@ -52,7 +53,7 @@ namespace Imagina {
 		virtual ~IRasterizingInterface();
 
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) = 0;
-		virtual void WriteResults(SRReal Value) = 0;
+		virtual void WriteResults(void *value) = 0;
 	};
 
 	class im_export IRasterizer {

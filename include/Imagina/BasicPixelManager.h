@@ -25,9 +25,13 @@ namespace Imagina {
 
 		float *pixels = nullptr;
 
+		PixelPipeline *pixelPipeline;
+
 	public:
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		virtual void DeactivateGpu() override;
+
+		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetTargetLocation(const HRLocation &location) override;
@@ -53,6 +57,6 @@ namespace Imagina {
 
 	public:
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) override;
-		virtual void WriteResults(SRReal Value) override;
+		virtual void WriteResults(void *value) override;
 	};
 }

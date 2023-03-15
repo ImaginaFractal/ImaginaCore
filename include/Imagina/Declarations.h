@@ -22,4 +22,6 @@ namespace Imagina {
 	class ILocationManager;
 
 	class IFractalContext;
+
+	class PixelPipeline;
 }

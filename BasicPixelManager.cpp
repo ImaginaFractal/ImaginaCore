@@ -12,6 +12,12 @@ namespace Imagina {
 		// TODO: Implement
 	}
 
+	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) {
+		pixelPipeline = pipeline;
+		valid = false;
+		initialized = false;
+	}
+
 	void BasicPixelManager::SetEvaluator(IEvaluator *evaluator) {
 		this->evaluator = evaluator;
 		valid = false;
@@ -111,7 +117,9 @@ namespace Imagina {
 		return true;
 	}
 
-	void BasicRasterizingInterface::WriteResults(SRReal Value) {
-		pixelManager->pixels[pixelX + pixelY * pixelManager->width] = Value;
+	void BasicRasterizingInterface::WriteResults(void *value) {
+		float output; // TEMPORARY
+		pixelManager->pixelPipeline->Preprocess(value, &output);
+		pixelManager->pixels[pixelX + pixelY * pixelManager->width] = output;
 	}
 }
