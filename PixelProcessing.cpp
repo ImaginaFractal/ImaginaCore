@@ -1,4 +1,6 @@
 #include "PixelProcessing.h"
+#include "Evaluator.h"
+#include <assert.h> // TEMPORARY
 
 namespace Imagina {
 	im_export const FieldDescriptor *PixelDataDescriptor::FindField(std::string_view name) const {
@@ -9,5 +11,44 @@ namespace Imagina {
 		}
 
 		return nullptr;
+	}
+	void PixelPipeline::ConnectEvaluator(IEvaluator *evaluator) {
+		evaluatorOutput = evaluator->GetOutputDescriptor();
+
+		if (preprocessor) preprocessor->SetInput(evaluatorOutput);
+	}
+	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
+		preprocessor = processor;
+
+		if (evaluatorOutput) preprocessor->SetInput(evaluatorOutput);
+		if (postprocessor) postprocessor->SetInput(preprocessor->GetOutputDescriptor());
+	}
+	void PixelPipeline::UsePostprocessor(IPixelProcessor *processor) {
+		postprocessor = processor;
+
+		if (preprocessor) postprocessor->SetInput(preprocessor->GetOutputDescriptor());
+	}
+
+	using namespace std;
+	const PixelDataDescriptor TestProcessor::OutputDescriptor{
+		4, 1, TestProcessor::OutputFields
+	};
+
+	const FieldDescriptor TestProcessor::OutputFields[1]{
+		{ DataType::Float32, 0, "Iterations"sv }
+	};
+
+	void TestProcessor::SetInput(const PixelDataDescriptor *descriptor) {
+		const FieldDescriptor *sourceField = descriptor->FindField("Iterations"sv);
+
+		assert(sourceField->Type == DataType::Float64);
+
+		sourceOffset = sourceField->Offset;
+	}
+	const PixelDataDescriptor *TestProcessor::GetOutputDescriptor() {
+		return &OutputDescriptor;
+	}
+	void TestProcessor::Process(void *input, void *output) const {
+		*(float *)output = (float)*(double *)((char *)input + sourceOffset);
 	}
 }

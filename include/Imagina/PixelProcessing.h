@@ -24,19 +24,57 @@ namespace Imagina {
 		Float32,
 		Float64,
 		Float128, // Reserved
+
+		Rgba8,
 	};
 
 	struct FieldDescriptor {
 		DataType Type; // In current version, only Float32 and Float64 are supported.
-		size_t Offset;
+		ptrdiff_t Offset;
 		std::string_view Name;
 	};
 
-	struct PixelDataDescriptor {
+	struct im_export PixelDataDescriptor {
 		size_t Size;
 		size_t FieldCount;
 		const FieldDescriptor *Fields;
 
-		im_export const FieldDescriptor *FindField(std::string_view name) const;
+		const FieldDescriptor *FindField(std::string_view name) const;
+	};
+
+	class IPixelProcessor {
+	public:
+		virtual void SetInput(const PixelDataDescriptor *descriptor) = 0;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
+
+		virtual void Process(void *input, void *output) const = 0;
+	};
+
+	class im_export PixelPipeline {
+		const PixelDataDescriptor *evaluatorOutput = nullptr;
+		IPixelProcessor *preprocessor = nullptr;
+		IPixelProcessor *postprocessor = nullptr;
+
+	public:
+
+		void ConnectEvaluator(IEvaluator *evaluator);
+
+		void UsePreprocessor(IPixelProcessor *processor);
+		void UsePostprocessor(IPixelProcessor *processor);
+
+		virtual void Preprocess(void *input, void *output) { preprocessor->Process(input, output); } // FIXME: Doesn't work if preprocessor == nullptr
+		virtual void Postprocess(void *input, void *output) { postprocessor->Process(input, output); } // FIXME: Doesn't work if postprocessor == nullptr
+	};
+
+	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32
+		static const PixelDataDescriptor OutputDescriptor;
+		static const FieldDescriptor OutputFields[1];
+
+		ptrdiff_t sourceOffset;
+
+	public:
+		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void Process(void *input, void *output) const override;
 	};
 }
