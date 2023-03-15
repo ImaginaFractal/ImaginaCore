@@ -53,7 +53,7 @@ namespace Imagina {
 	const PixelDataDescriptor *TestProcessor::GetOutputDescriptor() {
 		return &OutputDescriptor;
 	}
-	void TestProcessor::Process(void *input, void *output) const {
+	void TestProcessor::Process(void *output, void *input) const {
 		*(float *)output = (float)*(double *)((char *)input + sourceOffset);
 	}
 }

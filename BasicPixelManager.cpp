@@ -155,13 +155,13 @@ namespace Imagina {
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelManager->preprocessedDataSize];
 
 		if (preprocessor) {
-			preprocessor->Process(value, preprocessedOutput);
+			preprocessor->Process(preprocessedOutput, value);
 		} else {
 			memcpy(preprocessedOutput, value, pixelManager->preprocessedDataSize);
 		}
 
 		if (postprocessor) {
-			postprocessor->Process(preprocessedOutput, &pixelManager->pixels[pixelIndex]);
+			postprocessor->Process(&pixelManager->pixels[pixelIndex], preprocessedOutput);
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace Imagina {
 		virtual void SetInput(const PixelDataDescriptor *descriptor) = 0;
 		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
 
-		virtual void Process(void *input, void *output) const = 0;
+		virtual void Process(void *output, void *input) const = 0;
 	};
 
 	class im_export PixelPipeline {
@@ -67,8 +67,8 @@ namespace Imagina {
 		inline IPixelProcessor *GetPreprocessor() { return preprocessor; }
 		inline IPixelProcessor *GetPostprocessor() { return postprocessor; }
 
-		inline void Preprocess(void *input, void *output) const { preprocessor->Process(input, output); } // FIXME: Doesn't work if preprocessor == nullptr
-		inline void Postprocess(void *input, void *output) const { postprocessor->Process(input, output); } // FIXME: Doesn't work if postprocessor == nullptr
+		inline void Preprocess(void *output, void *input) const { preprocessor->Process(output, input); } // FIXME: Doesn't work if preprocessor == nullptr
+		inline void Postprocess(void *output, void *input) const { postprocessor->Process(output, input); } // FIXME: Doesn't work if postprocessor == nullptr
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32
@@ -80,6 +80,6 @@ namespace Imagina {
 	public:
 		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
 		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
-		virtual void Process(void *input, void *output) const override;
+		virtual void Process(void *output, void *input) const override;
 	};
 }
