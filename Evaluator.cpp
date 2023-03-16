@@ -76,7 +76,7 @@ namespace Imagina {
 		};
 
 		return &OutputDescriptor;*/
-		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Dummy, Iterations);
+		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Iterations, FinalZ);
 	}
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
@@ -88,12 +88,13 @@ namespace Imagina {
 			long i;
 			for (i = 0; i < 256; i++) {
 				z = z * z + c;
-				if (norm(z) > 4.0) break;
+				if (norm(z) > 4096.0) break;
 			}
 			
 			//double result = i;
 			Output output;
 			output.Iterations = i;
+			output.FinalZ = z;
 
 			rasterizingInterface.WriteResults(&output);
 		}

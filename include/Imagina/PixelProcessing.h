@@ -109,4 +109,14 @@ namespace Imagina {
 		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
 		virtual void Process(void *output, void *input) const override;
 	};
+
+	class im_export TestProcessor2 : public IPixelProcessor { // Converts Float64 to Float32
+		ptrdiff_t iterationsOffset;
+		ptrdiff_t finalZOffset;
+
+	public:
+		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void Process(void *output, void *input) const override;
+	};
 }

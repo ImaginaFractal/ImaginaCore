@@ -36,8 +36,8 @@ namespace Imagina {
 	// TEMPORARY
 	class im_export TestEvaluator : public LowPrecisionEvaluator {
 		struct Output {
-			double Dummy;
-			double Iterations;
+			uint64_t Iterations;
+			SRComplex FinalZ;
 		};
 
 	public:
