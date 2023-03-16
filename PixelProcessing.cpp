@@ -40,7 +40,7 @@ namespace Imagina {
 	};
 
 	const FieldDescriptor TestProcessor::OutputFields[1]{
-		{ PixelDataType::Float32, 0, "Iterations"sv }
+		{ "Iterations"sv, PixelDataType::Float32, 0 }
 	};
 
 	void TestProcessor::SetInput(const PixelDataDescriptor *descriptor) {

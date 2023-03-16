@@ -56,9 +56,9 @@ namespace Imagina {
 	};
 
 	struct FieldDescriptor {
-		PixelDataType Type; // In current version, only Float32 and Float64 are supported.
-		ptrdiff_t Offset;
 		std::string_view Name;
+		PixelDataType Type;
+		ptrdiff_t Offset;
 	};
 
 	struct im_export PixelDataDescriptor {
