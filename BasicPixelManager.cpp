@@ -13,7 +13,7 @@ namespace Imagina {
 		const PixelDataDescriptor *preprocessedData = preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
 		const PixelDataDescriptor *finalData = postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
 
-		assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == DataType::Float32);
+		assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
 
 		preprocessedDataSize = preprocessedData->Size;
 		finalDataSize = finalData->Size;

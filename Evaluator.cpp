@@ -68,7 +68,7 @@ namespace Imagina {
 		//return &OutputDescriptor;
 		/*using namespace std;
 		static const FieldDescriptor OutputFields[1]{
-			{ DataType::Float64, 0, "Iterations"sv }
+			{ PixelDataType::Float64, 0, "Iterations"sv }
 		};
 
 		static const PixelDataDescriptor OutputDescriptor{

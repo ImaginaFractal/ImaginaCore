@@ -40,13 +40,13 @@ namespace Imagina {
 	};
 
 	const FieldDescriptor TestProcessor::OutputFields[1]{
-		{ DataType::Float32, 0, "Iterations"sv }
+		{ PixelDataType::Float32, 0, "Iterations"sv }
 	};
 
 	void TestProcessor::SetInput(const PixelDataDescriptor *descriptor) {
 		const FieldDescriptor *sourceField = descriptor->FindField("Iterations"sv);
 
-		assert(sourceField->Type == DataType::Float64);
+		assert(sourceField->Type == PixelDataType::Float64);
 
 		sourceOffset = sourceField->Offset;
 	}

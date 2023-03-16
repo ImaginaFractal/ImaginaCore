@@ -4,7 +4,7 @@
 #include <string_view>
 
 namespace Imagina {
-	enum class DataType {
+	enum class PixelDataType {
 		Invalid = 0x0,
 
 		// Integer
@@ -56,7 +56,7 @@ namespace Imagina {
 	};
 
 	struct FieldDescriptor {
-		DataType Type; // In current version, only Float32 and Float64 are supported.
+		PixelDataType Type; // In current version, only Float32 and Float64 are supported.
 		ptrdiff_t Offset;
 		std::string_view Name;
 	};
