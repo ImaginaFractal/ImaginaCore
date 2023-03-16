@@ -35,9 +35,6 @@ namespace Imagina {
 
 	// TEMPORARY
 	class im_export TestEvaluator : public LowPrecisionEvaluator {
-		static const PixelDataDescriptor OutputDescriptor;
-		static const FieldDescriptor OutputFields[1];
-
 	public:
 		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
 

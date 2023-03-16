@@ -57,16 +57,16 @@ namespace Imagina {
 		referenceY = y;
 	}
 
-	using namespace std;
-	const PixelDataDescriptor TestEvaluator::OutputDescriptor{
-		8, 1, TestEvaluator::OutputFields
-	};
-
-	const FieldDescriptor TestEvaluator::OutputFields[1]{
-		{ DataType::Float64, 0, "Iterations"sv }
-	};
-
 	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
+		using namespace std;
+		static const FieldDescriptor OutputFields[1]{
+			{ DataType::Float64, 0, "Iterations"sv }
+		};
+
+		static const PixelDataDescriptor OutputDescriptor{
+			8, 1, OutputFields
+		};
+
 		return &OutputDescriptor;
 	}
 
