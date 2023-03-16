@@ -1,8 +1,10 @@
 #pragma once
 
 #include <stdint.h>
+#include "Types.h"
 #include "PixelProcessing.h"
 
+//https://www.scs.stanford.edu/~dm/blog/va-opt.html
 #define PARENS ()
 
 #define EXPAND(...) EXPAND4(EXPAND4(EXPAND4(EXPAND4(__VA_ARGS__))))
