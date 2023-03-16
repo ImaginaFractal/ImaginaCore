@@ -5,27 +5,54 @@
 
 namespace Imagina {
 	enum class DataType {
-		Int8,
+		Invalid = 0x0,
+
+		// Integer
+		Int8 = 0x10000,
 		Int16,
 		Int32,
 		Int64,
 
-		Uint8,
+		Uint8 = 0x10010,
 		Uint16,
 		Uint32,
 		Uint64,
 
-		Fract8, // Same as Uint, but binary point is before MSB
+		// Fixed point
+		Fract8 = 0x20000, // Same as Uint, but binary point is before MSB
 		Fract16,
 		Fract32,
 		Fract64,
 
-		Float16, // Reserved
+		// Floating point
+		Float16 = 0x30000, // Reserved
 		Float32,
 		Float64,
-		Float128, // Reserved
+		FloatHR,
 
-		Rgba8,
+		// Complex
+		SRComplex = 0x40000,
+		HRComplex,
+
+		// Color
+		Monochrome8 = 0x80000,
+		Monochrome16 = 0x80000,
+
+		RGB8 = 0x80010,
+		RGB16 = 0x80010,
+
+		RGB16F = 0x80018,
+		RGB32F = 0x80019,
+
+		RGBA8 = 0x80020,
+		RGBA16 = 0x80020,
+
+		RGBA16F = 0x80028,
+		RGBA32F = 0x80029,
+
+
+		SRReal = Float64,
+		HRReal = FloatHR,
 	};
 
 	struct FieldDescriptor {

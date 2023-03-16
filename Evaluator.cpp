@@ -1,5 +1,6 @@
 #include "Evaluator.h"
 #include "PixelManager.h"
+#include "OutputDescriptorHelper.h"
 
 namespace Imagina {
 	class LowPrecisionEvaluator::LPRasterizingInterface : public IRasterizingInterface {
@@ -58,7 +59,14 @@ namespace Imagina {
 	}
 
 	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
-		using namespace std;
+		//struct output {
+		//	double Iterations;
+		//	double Iterations2;
+		//};
+		//IM_OUTPUT_FIELD(a, b);
+		//IM_OUTPUT_DESCRIPTOR(output, Iterations, Iterations2);
+		//return &OutputDescriptor;
+		/*using namespace std;
 		static const FieldDescriptor OutputFields[1]{
 			{ DataType::Float64, 0, "Iterations"sv }
 		};
@@ -67,7 +75,8 @@ namespace Imagina {
 			8, 1, OutputFields
 		};
 
-		return &OutputDescriptor;
+		return &OutputDescriptor;*/
+		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Dummy, Iterations);
 	}
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
@@ -82,9 +91,11 @@ namespace Imagina {
 				if (norm(z) > 4.0) break;
 			}
 			
-			double result = i;
+			//double result = i;
+			Output output;
+			output.Iterations = i;
 
-			rasterizingInterface.WriteResults(&result);
+			rasterizingInterface.WriteResults(&output);
 		}
 	}
 }
