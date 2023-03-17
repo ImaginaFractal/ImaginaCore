@@ -27,8 +27,8 @@ namespace Imagina {
 		ExecutionContext *currentExecutionContext = nullptr;
 
 	public:
-		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override;
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override;
+		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
+		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override final;
 
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
