@@ -19,6 +19,19 @@ namespace Imagina {
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) = 0;
 	};
 
+	class im_export SimpleEvaluator : public StandardEvaluator {
+		class EvaluationTask;
+
+		ExecutionContext *currentExecutionContext = nullptr;
+
+	public:
+		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
+		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override final;
+
+		virtual void Precompute(const HPReal &x, const HPReal &y) = 0;
+		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
+	};
+
 	class im_export LowPrecisionEvaluator : public StandardEvaluator {
 		class LPRasterizingInterface;
 		class EvaluationTask;
@@ -31,6 +44,22 @@ namespace Imagina {
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override final;
 
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
+	};
+
+	class im_export TestSimpleEvaluator : public SimpleEvaluator {
+		struct Output {
+			double Value;
+		};
+
+		uint64_t referenceLength;
+		SRComplex reference[257];
+		SRComplex referenceC;
+
+	public:
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+
+		virtual void Precompute(const HPReal &x, const HPReal &y) override;
+		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 
 	// TEMPORARY

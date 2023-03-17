@@ -3,6 +3,44 @@
 #include "OutputDescriptorHelper.h"
 
 namespace Imagina {
+	class SimpleEvaluator::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {
+		SimpleEvaluator *evaluator;
+		IRasterizer *rasterizer;
+	public:
+		EvaluationTask(SimpleEvaluator *evaluator, IRasterizer *rasterizer)
+			: evaluator(evaluator), rasterizer(rasterizer) {}
+		//virtual std::string_view GetDescription() const override;
+		virtual void Execute() override;
+		//virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const override;
+		virtual void Cancel() override;
+	};
+
+	void SimpleEvaluator::EvaluationTask::Execute() {
+		IRasterizingInterface &rasterizingInterface = rasterizer->GetRasterizingInterface();
+		evaluator->Evaluate(rasterizingInterface);
+		rasterizer->FreeRasterizingInterface(rasterizingInterface);
+	}
+
+	void SimpleEvaluator::EvaluationTask::Cancel() {
+		rasterizer->Cancel();
+	}
+
+
+	ExecutionContext *SimpleEvaluator::RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) {
+		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
+		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
+		currentExecutionContext->AddReference();
+		return currentExecutionContext;
+	}
+
+	void SimpleEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y) {
+		if (currentExecutionContext) {
+			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
+			currentExecutionContext->WaitAndRelease();
+		}
+		Precompute(x, y);
+	}
+
 	class LowPrecisionEvaluator::LPRasterizingInterface : public IRasterizingInterface {
 		IRasterizingInterface &rasterizingInterface;
 		SRReal referenceX, referenceY;
@@ -57,6 +95,65 @@ namespace Imagina {
 		referenceX = x;
 		referenceY = y;
 	}
+
+
+	const PixelDataDescriptor *TestSimpleEvaluator::GetOutputDescriptor() {
+		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
+	}
+
+	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y) {
+		referenceC = SRComplex(x, y);
+
+		reference[0] = 0.0;
+		reference[1] = referenceC;
+
+		SRComplex Z = referenceC;
+
+		size_t i;
+		for (i = 2; i <= 256; i++) {
+			Z = Z * Z + referenceC;
+			reference[i] = Z;
+
+			if (norm(Z) > 16.0) {
+				i++;
+				break;
+			}
+		}
+
+		referenceLength = i - 1;
+	}
+
+	void TestSimpleEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
+		HRReal x, y;
+		while (rasterizingInterface.GetCoordinate(x, y)) {
+			SRComplex dc = { x, y };
+			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
+
+			long i = 0, j = 0;
+			while (i < 256) {
+				dz = dz * (Z + z) + dc;
+				i++; j++;
+
+				Z = reference[j];
+				z = Z + dz;
+
+				if (norm(z) > 4096.0) break;
+
+				if (j == referenceLength || norm(z) < norm(dz)) {
+					Z = 0.0;
+					dz = z;
+					j = 0;
+				}
+			}
+
+			//double result = i;
+			Output output;
+			output.Value = i;
+
+			rasterizingInterface.WriteResults(&output);
+		}
+	}
+
 
 	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
 		//struct output {
