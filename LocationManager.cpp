@@ -12,7 +12,7 @@ namespace Imagina {
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {
 		referenceX += location.X;
 		referenceY += location.Y;
-		static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY); // TEMPORARY
+		static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
 		fractalContext->UpdateRelativeCoordinate(-location.X, -location.Y);
 	}
 }

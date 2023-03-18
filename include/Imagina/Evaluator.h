@@ -16,7 +16,7 @@ namespace Imagina {
 
 	class StandardEvaluator : public IEvaluator {
 	public:
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) = 0;
+		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) = 0; // TEMPORARY
 	};
 
 	class im_export SimpleEvaluator : public StandardEvaluator {
@@ -26,9 +26,9 @@ namespace Imagina {
 
 	public:
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override final;
+		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 
-		virtual void Precompute(const HPReal &x, const HPReal &y) = 0;
+		virtual void Precompute(const HPReal &x, const HPReal &y, HRReal radius) = 0;
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
 
@@ -41,7 +41,7 @@ namespace Imagina {
 
 	public:
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y) override final;
+		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
@@ -52,13 +52,13 @@ namespace Imagina {
 		};
 
 		uint64_t referenceLength;
-		SRComplex reference[257];
+		SRComplex reference[1025];
 		SRComplex referenceC;
 
 	public:
 		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
 
-		virtual void Precompute(const HPReal &x, const HPReal &y) override;
+		virtual void Precompute(const HPReal &x, const HPReal &y, HRReal radius) override;
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 

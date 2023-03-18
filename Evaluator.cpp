@@ -33,12 +33,12 @@ namespace Imagina {
 		return currentExecutionContext;
 	}
 
-	void SimpleEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y) {
+	void SimpleEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
 		if (currentExecutionContext) {
 			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
 			currentExecutionContext->WaitAndRelease();
 		}
-		Precompute(x, y);
+		Precompute(x, y, radius);
 	}
 
 	class LowPrecisionEvaluator::LPRasterizingInterface : public IRasterizingInterface {
@@ -91,7 +91,7 @@ namespace Imagina {
 		return currentExecutionContext;
 	}
 
-	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y) {
+	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
 		referenceX = x;
 		referenceY = y;
 	}
@@ -101,7 +101,7 @@ namespace Imagina {
 		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 
-	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y) {
+	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal radius) {
 		HPComplex C = HPComplex(x, y);
 		referenceC = HRComplex(x, y);
 
@@ -111,7 +111,7 @@ namespace Imagina {
 		HPComplex Z = C;
 
 		size_t i;
-		for (i = 2; i <= 256; i++) {
+		for (i = 2; i <= 1024; i++) {
 			Z = Z * Z + C;
 			reference[i] = Z;
 
@@ -131,7 +131,7 @@ namespace Imagina {
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
 			long i = 0, j = 0;
-			while (i < 256) {
+			while (i < 1024) {
 				dz = dz * (Z + z) + dc;
 				i++; j++;
 

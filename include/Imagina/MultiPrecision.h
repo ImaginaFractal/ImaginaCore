@@ -12,6 +12,7 @@ namespace Imagina {
 		size_t Size = DefaultSize;
 
 		FixedGeneric32() : Value(new uint32_t[DefaultSize]) {}
+		~FixedGeneric32() { delete[] Value; }
 
 		FixedGeneric32(double x);
 		FixedGeneric32(const FixedGeneric32 &x);
