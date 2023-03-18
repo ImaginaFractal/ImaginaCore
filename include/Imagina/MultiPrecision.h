@@ -76,10 +76,11 @@ namespace Imagina {
 		void Init(MPReal *x) const;
 		void InitWithPrecision(MPReal *x, size_t precision) const;
 
-		void (*InitContent)(MPReal *); // Do not use this directly, use Init instead.
-		void (*InitContentWithPrecision)(MPReal *, size_t); // Do not use this directly, use InitWithPrecision instead.
+		void (*InitContent)(MPReal *); // Do not use directly, use Init instead.
+		void (*InitContentWithPrecision)(MPReal *, size_t); // Do not use directly, use InitWithPrecision instead.
 
-		void (*Clear)(MPReal *);
+		void Clear(MPReal *x) const;
+		void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
 
 		void (*SetPrecision)(MPReal *, size_t);
 
@@ -103,7 +104,7 @@ namespace Imagina {
 		MPReal(MultiPrecision *mp) : MP(mp) { mp->InitContent(this); }
 		MPReal(MultiPrecision *mp, double x) : MP(mp) { mp->InitContent(this); mp->SetDouble(this, x); }
 		MPReal(const MPReal &x) : MPReal(x.MP) { MP->Set(this, x); }
-		~MPReal() { if (MP) MP->Clear(this); }
+		~MPReal() { if (MP) MP->ClearContent(this); }
 
 		operator MPReal *() { return this; }
 		operator const MPReal *() const { return this; }
@@ -129,6 +130,11 @@ namespace Imagina {
 	inline void _MultiPrecision::InitWithPrecision(MPReal *x, size_t precision) const {
 		InitContentWithPrecision(x, precision);
 		const_cast<MultiPrecision *&>(x->MP) = this;
+	}
+
+	inline void _MultiPrecision::Clear(MPReal *x) const {
+		ClearContent(x);
+		const_cast<MultiPrecision *&>(x->MP) = nullptr;
 	}
 
 	inline MPReal operator+(MPReal x, const MPReal &y) { return x += y; }
