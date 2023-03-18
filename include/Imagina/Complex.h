@@ -36,29 +36,29 @@ namespace Imagina {
 	};
 
 	template<typename Real>
-	Real norm(const Complex<Real> &a) {
+	inline Real norm(const Complex<Real> &a) {
 		return a.re * a.re + a.im * a.im;
 	}
 
 	template<typename Real>
-	Complex<Real> conj(const Complex<Real> &a) {
+	inline Complex<Real> conj(const Complex<Real> &a) {
 		return Complex<Real>(a.re, -a.im);
 	}
 
-	template<typename Real> Complex<Real> operator+(Complex<Real> a, const Real &b) { return a += b; }
-	template<typename Real> Complex<Real> operator-(Complex<Real> a, const Real &b) { return a -= b; }
-	template<typename Real> Complex<Real> operator*(Complex<Real> a, const Real &b) { return a *= b; }
-	template<typename Real> Complex<Real> operator/(Complex<Real> a, const Real &b) { return a /= b; }
-	template<typename Real> Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) { return a += b; }
-	template<typename Real> Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) { return a -= b; }
+	template<typename Real> inline Complex<Real> operator+(Complex<Real> a, const Real &b) { return a += b; }
+	template<typename Real> inline Complex<Real> operator-(Complex<Real> a, const Real &b) { return a -= b; }
+	template<typename Real> inline Complex<Real> operator*(Complex<Real> a, const Real &b) { return a *= b; }
+	template<typename Real> inline Complex<Real> operator/(Complex<Real> a, const Real &b) { return a /= b; }
+	template<typename Real> inline Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) { return a += b; }
+	template<typename Real> inline Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) { return a -= b; }
 
 	template<typename Real>
-	Complex<Real> operator*(const Complex<Real> &a, const Complex<Real> &b) {
+	inline Complex<Real> operator*(const Complex<Real> &a, const Complex<Real> &b) {
 		return Complex<Real>(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
 	}
 
 	template<typename Real>
-	Complex<Real> operator/(const Complex<Real> &a, const Complex<Real> &b) {
+	inline Complex<Real> operator/(const Complex<Real> &a, const Complex<Real> &b) {
 		return a * conj(b) / norm(b);
 	}
 }
