@@ -102,16 +102,17 @@ namespace Imagina {
 	}
 
 	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y) {
-		referenceC = SRComplex(x, y);
+		HPComplex C = HPComplex(x, y);
+		referenceC = HRComplex(x, y);
 
 		reference[0] = 0.0;
 		reference[1] = referenceC;
 
-		SRComplex Z = referenceC;
+		HPComplex Z = C;
 
 		size_t i;
 		for (i = 2; i <= 256; i++) {
-			Z = Z * Z + referenceC;
+			Z = Z * Z + C;
 			reference[i] = Z;
 
 			if (norm(Z) > 16.0) {
