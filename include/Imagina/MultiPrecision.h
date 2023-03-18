@@ -84,6 +84,7 @@ namespace Imagina {
 		void Clear(MPReal *x) const;
 		void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
 
+		MPBitCount (*GetPrecision)(const MPReal *);
 		void (*SetPrecision)(MPReal *, MPBitCount);
 
 		void (*Set)(MPReal *, const MPReal *);
@@ -115,6 +116,9 @@ namespace Imagina {
 		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
 
 		explicit operator double() const { return MP->ToDouble(this); }
+
+		MPBitCount GetPrecision() const { return MP->GetPrecision(this); }
+		void SetPrecision(MPBitCount precision) { MP->SetPrecision(this, precision); }
 
 		MPReal &operator+=(const MPReal &x) { MP->Add(this, this, x); return *this; }
 		MPReal &operator-=(const MPReal &x) { MP->Sub(this, this, x); return *this; }
