@@ -13,10 +13,13 @@ namespace Imagina {
 
 	class im_export StandardLocationManager : public ILocationManager {
 		IEvaluator *evaluator = nullptr;
-		HPReal referenceX = 0.0, referenceY = 0.0;
+		HPReal referenceX, referenceY;
 		IFractalContext *fractalContext = nullptr;
+		MultiPrecision &mp;
 
 	public:
+		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(mp, 0.0), referenceY(mp, 0.0) {}
+
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetFractalContext(IFractalContext *fractalContext) override;
 		virtual void LocationChanged(const HRLocation &location) override;

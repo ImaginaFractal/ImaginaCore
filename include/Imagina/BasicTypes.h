@@ -7,7 +7,7 @@ namespace Imagina {
 	using GRReal = float; // Real type for graphics
 	using SRReal = double; // Real type for fractal with standard precision and standard range
 	using HRReal = double; // Real type for fractal with standard precision and highest range
-	using HPReal = FixedGeneric32;//double; // Real type for fractal with high precision
+	using HPReal = MPReal;//FixedGeneric32;//double; // Real type for fractal with high precision
 
 	using SRComplex = Complex<SRReal>;
 	using HRComplex = Complex<HRReal>;

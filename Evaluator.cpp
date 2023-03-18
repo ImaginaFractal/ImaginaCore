@@ -92,8 +92,8 @@ namespace Imagina {
 	}
 
 	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
-		referenceX = x;
-		referenceY = y;
+		referenceX = SRReal(x);
+		referenceY = SRReal(y);
 	}
 
 
@@ -103,7 +103,7 @@ namespace Imagina {
 
 	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal radius) {
 		HPComplex C = HPComplex(x, y);
-		referenceC = HRComplex(x, y);
+		referenceC = HRComplex(HRReal(x), HRReal(y));
 
 		reference[0] = 0.0;
 		reference[1] = referenceC;
@@ -113,9 +113,10 @@ namespace Imagina {
 		size_t i;
 		for (i = 2; i <= 1024; i++) {
 			Z = Z * Z + C;
-			reference[i] = Z;
+			SRComplex z = SRComplex(Z);
+			reference[i] = z;
 
-			if (norm(Z) > 16.0) {
+			if (norm(z) > 16.0) {
 				i++;
 				break;
 			}
