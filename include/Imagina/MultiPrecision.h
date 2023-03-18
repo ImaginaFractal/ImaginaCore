@@ -66,23 +66,25 @@ namespace Imagina {
 		//virtual MPReal &operator<<=(const ??? x)
 	};*/
 
+	using MPBitCount = size_t;
+	using MPExponent = ptrdiff_t;
+
 	struct MPReal;
-	struct _MultiPrecision;
 
 	struct _MultiPrecision {
 		operator _MultiPrecision *() { return this; }
 		operator const _MultiPrecision *() const { return this; }
 
 		void Init(MPReal *x) const;
-		void InitWithPrecision(MPReal *x, size_t precision) const;
+		void InitWithPrecision(MPReal *x, MPBitCount precision) const;
 
 		void (*InitContent)(MPReal *); // Do not use directly, use Init instead.
-		void (*InitContentWithPrecision)(MPReal *, size_t); // Do not use directly, use InitWithPrecision instead.
+		void (*InitContentWithPrecision)(MPReal *, MPBitCount); // Do not use directly, use InitWithPrecision instead.
 
 		void Clear(MPReal *x) const;
 		void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
 
-		void (*SetPrecision)(MPReal *, size_t);
+		void (*SetPrecision)(MPReal *, MPBitCount);
 
 		void (*Set)(MPReal *, const MPReal *);
 		void (*SetDouble)(MPReal *, double);
@@ -127,7 +129,7 @@ namespace Imagina {
 		InitContent(x);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}
-	inline void _MultiPrecision::InitWithPrecision(MPReal *x, size_t precision) const {
+	inline void _MultiPrecision::InitWithPrecision(MPReal *x, MPBitCount precision) const {
 		InitContentWithPrecision(x, precision);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}
