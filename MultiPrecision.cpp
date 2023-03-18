@@ -42,7 +42,7 @@ namespace Imagina {
 			+ 52   //Fraction size
 			+ LSBOffset;
 
-		for (size_t i = 0, j = std::min(Exponent / 32, NumberOfWords); i < j; i++) {
+		for (int64_t i = 0, j = std::min(Exponent / 32, NumberOfWords); i < j; i++) {
 			Value[i] = 0;
 		}
 		if (Exponent >= 0 && Exponent < 32 * NumberOfWords) {
@@ -57,7 +57,7 @@ namespace Imagina {
 		if (Exponent >= 0 && Exponent < 32 * NumberOfWords) {
 			Value[Exponent / 32] = Fraction >> (31 - Exponent % 32);
 		}
-		for (size_t i = std::max(Exponent / 32 + 1, 0ll); i < NumberOfWords; i++) {
+		for (int64_t i = std::max(Exponent / 32 + 1, 0ll); i < NumberOfWords; i++) {
 			Value[i] = Sign ? ~0l : 0l;
 		}
 	}
