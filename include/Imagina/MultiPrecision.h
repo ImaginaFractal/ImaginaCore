@@ -75,6 +75,8 @@ namespace Imagina {
 		operator _MultiPrecision *() { return this; }
 		operator const _MultiPrecision *() const { return this; }
 
+		const char *Name;
+
 		void Init(MPReal *x) const;
 		void InitWithPrecision(MPReal *x, MPBitCount precision) const;
 
@@ -158,4 +160,6 @@ namespace Imagina {
 	inline MPReal operator-(MPReal x, const MPReal &y) { return x -= y; }
 	inline MPReal operator*(MPReal x, const MPReal &y) { return x *= y; }
 	inline MPReal operator/(MPReal x, const MPReal &y) { return x /= y; }
+
+	extern im_export MultiPrecision MPDouble;
 }
