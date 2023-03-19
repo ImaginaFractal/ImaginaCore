@@ -14,9 +14,16 @@ namespace Imagina {
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) = 0;
 	};
 
+	struct StandardEvaluationParameters {
+		ITUint Iterations = 1024;
+		HRReal DivergentEscapeRadius = 0x1.0p8;
+		HRReal ConvergentEscapeRadius = 0x1.0p-16;
+	};
+
 	class StandardEvaluator : public IEvaluator {
 	public:
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) = 0; // TEMPORARY
+		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) = 0; // TEMPORARY
 	};
 
 	class im_export SimpleEvaluator : public StandardEvaluator {
@@ -24,9 +31,15 @@ namespace Imagina {
 
 		ExecutionContext *currentExecutionContext = nullptr;
 
+	protected:
+		HPReal x, y;
+		HRReal radius;
+		StandardEvaluationParameters parameters;
+
 	public:
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
+		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
 
 		virtual void Precompute(const HPReal &x, const HPReal &y, HRReal radius) = 0;
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
@@ -52,7 +65,8 @@ namespace Imagina {
 		};
 
 		uint64_t referenceLength;
-		SRComplex reference[1025];
+		//SRComplex reference[1025];
+		SRComplex *reference = nullptr;
 		SRComplex referenceC;
 
 	public:

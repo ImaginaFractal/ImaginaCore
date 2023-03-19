@@ -38,7 +38,21 @@ namespace Imagina {
 			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
 			currentExecutionContext->WaitAndRelease();
 		}
+		this->x = x;
+		this->y = y;
+		this->radius = radius;
 		Precompute(x, y, radius);
+	}
+
+	void SimpleEvaluator::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+		if (currentExecutionContext) {
+			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
+			currentExecutionContext->WaitAndRelease();
+		}
+		this->parameters = parameters;
+		if (x.Valid()) {
+			Precompute(x, y, radius);
+		}
 	}
 
 	class LowPrecisionEvaluator::LPRasterizingInterface : public IRasterizingInterface {
@@ -102,6 +116,8 @@ namespace Imagina {
 	}
 
 	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal radius) {
+		delete[] reference;
+		reference = new SRComplex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
 		referenceC = HRComplex(HRReal(x), HRReal(y));
 
@@ -111,7 +127,7 @@ namespace Imagina {
 		HPComplex Z = C;
 
 		size_t i;
-		for (i = 2; i <= 1024; i++) {
+		for (i = 2; i <= parameters.Iterations; i++) {
 			Z = Z * Z + C;
 			SRComplex z = SRComplex(Z);
 			reference[i] = z;
@@ -132,7 +148,7 @@ namespace Imagina {
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
 			long i = 0, j = 0;
-			while (i < 1024) {
+			while (i < parameters.Iterations) {
 				dz = dz * (Z + z) + dc;
 				i++; j++;
 

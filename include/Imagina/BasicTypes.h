@@ -14,4 +14,6 @@ namespace Imagina {
 	using HPComplex = Complex<HPReal>;
 
 	using GRInt = int32_t;
+	using ITInt = int64_t;
+	using ITUint = uint64_t;
 }

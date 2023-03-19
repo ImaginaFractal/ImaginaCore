@@ -99,7 +99,7 @@ namespace Imagina {
 
 	using MultiPrecision = const _MultiPrecision;
 
-	struct MPReal {
+	struct MPReal { // FIXME: Do not use default precision
 		const void *Content[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
 		MultiPrecision *const MP = nullptr;
 
@@ -109,10 +109,12 @@ namespace Imagina {
 		MPReal(const MPReal &x) : MPReal(x.MP) { MP->Set(this, x); }
 		~MPReal() { if (MP) MP->ClearContent(this); }
 
+		bool Valid() { return MP != nullptr; }
+
 		operator MPReal *() { return this; }
 		operator const MPReal *() const { return this; }
 
-		MPReal &operator=(const MPReal &x) { MP->Set(this, x); return *this; }
+		MPReal &operator=(const MPReal &x);
 		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
 
 		explicit operator double() const { return MP->ToDouble(this); }
@@ -141,6 +143,15 @@ namespace Imagina {
 	inline void _MultiPrecision::Clear(MPReal *x) const {
 		ClearContent(x);
 		const_cast<MultiPrecision *&>(x->MP) = nullptr;
+	}
+
+	inline MPReal &MPReal::operator=(const MPReal &x) {
+		if (MP != x.MP) [[unlikely]] {
+			if (MP) MP->ClearContent(this);
+			x.MP->Init(this);
+		}
+		MP->Set(this, x);
+		return *this;
 	}
 
 	inline MPReal operator+(MPReal x, const MPReal &y) { return x += y; }
