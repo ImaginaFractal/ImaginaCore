@@ -105,6 +105,8 @@ namespace Imagina {
 		TextureMappings.resize(1);
 
 		TextureMappings[0].Texture = gpuTexture;
+		TextureMappings[0].FractalRectangle = this->location.ToRectangle((SRReal)width / height);
+		TextureMappings[0].TextureRectangle = GRRectangle{ 0.0f, 0.0f, 1.0f, 1.0f };
 
 		return TextureMappings;
 	}
