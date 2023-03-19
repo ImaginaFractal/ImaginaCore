@@ -6,16 +6,18 @@
 #include "Types.h"
 
 namespace Imagina {
-	class im_export IGpuTexture {
+	class IGpuTexture {
 	public:
+		virtual ~IGpuTexture() = default;
+
 		virtual void SetImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 		virtual void UpdateImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
-
-		virtual ~IGpuTexture();
 	};
 
 	class IGpuTextureCreater {
 	public:
+		virtual ~IGpuTextureCreater() = default;
+
 		virtual IGpuTexture *CreateTexture() = 0;
 		virtual void DeleteTexture(IGpuTexture *texture) = 0;
 	};
@@ -28,6 +30,8 @@ namespace Imagina {
 
 	class IPixelManager {
 	public:
+		virtual ~IPixelManager() = default;
+
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) = 0;
 
@@ -40,6 +44,8 @@ namespace Imagina {
 
 	class IGpuTextureManager {
 	public:
+		virtual ~IGpuTextureManager() = default;
+
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) = 0;
 		virtual void DeactivateGpu() = 0;
 
@@ -48,9 +54,9 @@ namespace Imagina {
 
 	class IGpuPixelManager : public IPixelManager, public IGpuTextureManager {};
 
-	class im_export IRasterizingInterface {
+	class IRasterizingInterface {
 	public:
-		virtual ~IRasterizingInterface();
+		virtual ~IRasterizingInterface() = default;
 
 		virtual bool GetCoordinate(HRReal &x, HRReal &y) = 0;
 		virtual void WriteResults(void *value) = 0;
@@ -58,6 +64,8 @@ namespace Imagina {
 
 	class im_export IRasterizer {
 	public:
+		virtual ~IRasterizer() = default;
+
 		virtual void Cancel();
 
 		virtual IRasterizingInterface &GetRasterizingInterface() = 0;
