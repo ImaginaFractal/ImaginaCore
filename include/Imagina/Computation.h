@@ -51,7 +51,7 @@ namespace Imagina {
 		virtual bool IsSynchronous() override final;
 	};
 
-	class ExecutionContext {
+	class im_export ExecutionContext {
 		friend class Computation;
 	private:
 		std::atomic_uint32_t ReferenceCount = { 1 };
