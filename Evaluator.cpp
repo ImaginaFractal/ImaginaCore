@@ -26,7 +26,7 @@ namespace Imagina {
 	}
 
 
-	ExecutionContext *SimpleEvaluator::RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) {
+	ExecutionContext *SimpleEvaluator::RunTaskForRectangle(const HRRectangle &, IRasterizer *rasterizer) {
 		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
 		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
 		currentExecutionContext->AddReference();
@@ -98,14 +98,14 @@ namespace Imagina {
 	}
 
 
-	ExecutionContext *LowPrecisionEvaluator::RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) {
+	ExecutionContext *LowPrecisionEvaluator::RunTaskForRectangle(const HRRectangle &, IRasterizer *rasterizer) {
 		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
 		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer, referenceX, referenceY));
 		currentExecutionContext->AddReference();
 		return currentExecutionContext;
 	}
 
-	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
+	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal) {
 		referenceX = SRReal(x);
 		referenceY = SRReal(y);
 	}
@@ -115,7 +115,7 @@ namespace Imagina {
 		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 
-	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal radius) {
+	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal) {
 		delete[] reference;
 		reference = new SRComplex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
@@ -147,7 +147,7 @@ namespace Imagina {
 			SRComplex dc = { x, y };
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
-			long i = 0, j = 0;
+			ITUint i = 0, j = 0;
 			while (i < parameters.Iterations) {
 				dz = dz * (Z + z) + dc;
 				i++; j++;

@@ -26,13 +26,13 @@ namespace Imagina {
 		int64_t NumberOfWords = Size;
 		intptr_t LSBOffset = 8 - NumberOfWords * 32;
 		if (n == 0.0) {
-			for (size_t i = 0; i < NumberOfWords; i++) {
+			for (int64_t i = 0; i < NumberOfWords; i++) {
 				Value[i] = 0;
 			}
 			return;
 		}
 		int64_t temp = reinterpret_cast<const uint64_t &>(n);
-		int64_t Fraction = temp & 0x000FFFFFFFFFFFFF | 0x0010000000000000;
+		int64_t Fraction = (temp & 0x000FFFFFFFFFFFFF) | 0x0010000000000000;
 		int64_t Exponent = temp >> 52 & 0x7FF;
 		bool Sign = bool(temp >> 63);
 		if (Sign)
@@ -181,10 +181,10 @@ namespace Imagina {
 	void DoubleInitContent(double *x) { *x = 0.0; }
 	void DoubleInitContentWithPrecision(double *x, MPBitCount) { *x = 0.0; }
 
-	void DoubleClearContent(double *x) {}
+	void DoubleClearContent(double *) {}
 
-	MPBitCount DoubleGetPrecision(const double *x) { return 53; }
-	void DoubleSetPrecision(double *x, MPBitCount) {}
+	MPBitCount DoubleGetPrecision(const double *) { return 53; }
+	void DoubleSetPrecision(double *, MPBitCount) {}
 
 	void DoubleSet(double *dst, const double *src) { *dst = *src; }
 	void DoubleSetDouble(double *dst, double src) { *dst = src; }
