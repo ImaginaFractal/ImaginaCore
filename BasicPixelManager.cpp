@@ -44,8 +44,13 @@ namespace Imagina {
 		gpuTexture = gpuTextureCreater->CreateTexture();
 	}
 
-	void BasicPixelManager::DeactivateGpu() {
-		// TODO: Implement
+	void BasicPixelManager::DeactivateGpu(bool cleanup) {
+		if (cleanup && gpuTextureCreater) {
+			gpuTextureCreater->DeleteTexture(gpuTexture);
+		}
+
+		gpuTextureCreater = nullptr;
+		gpuTexture = nullptr;
 	}
 
 	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) {

@@ -35,7 +35,7 @@ namespace Imagina {
 
 	public:
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
-		virtual void DeactivateGpu() override;
+		virtual void DeactivateGpu(bool cleanup = true) override;
 
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
 

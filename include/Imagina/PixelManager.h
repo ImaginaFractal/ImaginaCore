@@ -47,7 +47,7 @@ namespace Imagina {
 		virtual ~IGpuTextureManager() = default;
 
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) = 0;
-		virtual void DeactivateGpu() = 0;
+		virtual void DeactivateGpu(bool cleanup = true) = 0;
 
 		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) = 0; // Return type may change
 	};
