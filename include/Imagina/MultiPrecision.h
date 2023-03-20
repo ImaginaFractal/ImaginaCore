@@ -66,8 +66,10 @@ namespace Imagina {
 		//virtual MPReal &operator<<=(const ??? x)
 	};*/
 
-	using MPBitCount = size_t;
-	using MPExponent = ptrdiff_t;
+
+	using MPBCInt = int64_t;
+	using MPBCUint = uint64_t;
+	using MPExpInt = int64_t;
 
 	struct MPReal;
 
@@ -78,16 +80,16 @@ namespace Imagina {
 		const char *Name;
 
 		void Init(MPReal *x) const;
-		void InitWithPrecision(MPReal *x, MPBitCount precision) const;
+		void InitWithPrecision(MPReal *x, MPBCUint precision) const;
 
 		void (*InitContent)(MPReal *); // Do not use directly, use Init instead.
-		void (*InitContentWithPrecision)(MPReal *, MPBitCount); // Do not use directly, use InitWithPrecision instead.
+		void (*InitContentWithPrecision)(MPReal *, MPBCUint); // Do not use directly, use InitWithPrecision instead.
 
 		void Clear(MPReal *x) const;
 		void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
 
-		MPBitCount (*GetPrecision)(const MPReal *);
-		void (*SetPrecision)(MPReal *, MPBitCount);
+		MPBCUint (*GetPrecision)(const MPReal *);
+		void (*SetPrecision)(MPReal *, MPBCUint);
 
 		void (*Set)(MPReal *, const MPReal *);
 		void (*Copy)(MPReal *, const MPReal *); // Set value and precision
@@ -124,8 +126,8 @@ namespace Imagina {
 
 		explicit operator double() const { return MP->ToDouble(this); }
 
-		MPBitCount GetPrecision() const { return MP->GetPrecision(this); }
-		void SetPrecision(MPBitCount precision) { MP->SetPrecision(this, precision); }
+		MPBCUint GetPrecision() const { return MP->GetPrecision(this); }
+		void SetPrecision(MPBCUint precision) { MP->SetPrecision(this, precision); }
 
 		MPReal &operator+=(const MPReal &x) { MP->Add(this, this, x); return *this; }
 		MPReal &operator-=(const MPReal &x) { MP->Sub(this, this, x); return *this; }
@@ -140,7 +142,7 @@ namespace Imagina {
 		InitContent(x);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}
-	inline void _MultiPrecision::InitWithPrecision(MPReal *x, MPBitCount precision) const {
+	inline void _MultiPrecision::InitWithPrecision(MPReal *x, MPBCUint precision) const {
 		InitContentWithPrecision(x, precision);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}

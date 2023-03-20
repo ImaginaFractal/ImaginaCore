@@ -179,12 +179,12 @@ namespace Imagina {
 	}
 
 	void DoubleInitContent(double *x) { *x = 0.0; }
-	void DoubleInitContentWithPrecision(double *x, MPBitCount) { *x = 0.0; }
+	void DoubleInitContentWithPrecision(double *x, MPBCUint) { *x = 0.0; }
 
 	void DoubleClearContent(double *) {}
 
-	MPBitCount DoubleGetPrecision(const double *) { return 53; }
-	void DoubleSetPrecision(double *, MPBitCount) {}
+	MPBCUint DoubleGetPrecision(const double *) { return 53; }
+	void DoubleSetPrecision(double *, MPBCUint) {}
 
 	void DoubleSet(double *dst, const double *src) { *dst = *src; }
 	void DoubleSetDouble(double *dst, double src) { *dst = src; }
@@ -199,12 +199,12 @@ namespace Imagina {
 		.Name = "double",
 
 		.InitContent = (void (*)(MPReal *))DoubleInitContent,
-		.InitContentWithPrecision = (void (*)(MPReal *, MPBitCount))DoubleInitContentWithPrecision,
+		.InitContentWithPrecision = (void (*)(MPReal *, MPBCUint))DoubleInitContentWithPrecision,
 
 		.ClearContent = (void (*)(MPReal *))DoubleClearContent,
 
-		.GetPrecision = (MPBitCount (*)(const MPReal *))DoubleGetPrecision,
-		.SetPrecision = (void (*)(MPReal *, MPBitCount))DoubleSetPrecision,
+		.GetPrecision = (MPBCUint(*)(const MPReal *))DoubleGetPrecision,
+		.SetPrecision = (void (*)(MPReal *, MPBCUint))DoubleSetPrecision,
 
 		.Set = (void (*)(MPReal *, const MPReal *))DoubleSet,
 		.SetDouble = (void (*)(MPReal *, double))DoubleSetDouble,
