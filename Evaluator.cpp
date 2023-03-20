@@ -38,8 +38,8 @@ namespace Imagina {
 			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
 			currentExecutionContext->WaitAndRelease();
 		}
-		this->x = x;
-		this->y = y;
+		this->x |= x;
+		this->y |= y;
 		this->radius = radius;
 		Precompute(x, y, radius);
 	}

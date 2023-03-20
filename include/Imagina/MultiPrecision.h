@@ -90,6 +90,7 @@ namespace Imagina {
 		void (*SetPrecision)(MPReal *, MPBitCount);
 
 		void (*Set)(MPReal *, const MPReal *);
+		void (*Copy)(MPReal *, const MPReal *); // Set value and precision
 		void (*SetDouble)(MPReal *, double);
 		double (*ToDouble)(const MPReal *);
 
@@ -116,7 +117,9 @@ namespace Imagina {
 		operator MPReal *() { return this; }
 		operator const MPReal *() const { return this; }
 
-		MPReal &operator=(const MPReal &x);
+		MPReal &operator=(const MPReal &x) { MP->Set(this, x); return *this; } // Assign
+		MPReal &operator&=(const MPReal &x); // Copy (set precision and assign)
+		MPReal &operator|=(const MPReal &x); // Set MP and copy
 		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
 
 		explicit operator double() const { return MP->ToDouble(this); }
@@ -147,12 +150,17 @@ namespace Imagina {
 		const_cast<MultiPrecision *&>(x->MP) = nullptr;
 	}
 
-	inline MPReal &MPReal::operator=(const MPReal &x) {
+	inline MPReal &MPReal::operator&=(const MPReal &x) {
+		MP->Copy(this, x);
+		return *this;
+	}
+
+	inline MPReal &MPReal::operator|=(const MPReal &x) {
 		if (MP != x.MP) [[unlikely]] {
 			if (MP) MP->ClearContent(this);
-			x.MP->Init(this);
+			x.MP->InitWithPrecision(this, x.GetPrecision());
 		}
-		MP->Set(this, x);
+		MP->Copy(this, x);
 		return *this;
 	}
 
