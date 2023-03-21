@@ -18,7 +18,7 @@ namespace Imagina {
 		IFractalContext *fractalContext = nullptr;
 
 	public:
-		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(mp, 0.0), referenceY(mp, 0.0) {}
+		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(0.0, mp), referenceY(0.0, mp) {}
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetFractalContext(IFractalContext *fractalContext) override;

@@ -79,11 +79,15 @@ namespace Imagina {
 
 		const char *Name;
 
-		void Init(MPReal *x) const;
-		void InitWithPrecision(MPReal *x, MPBCUint precision) const;
+		//void Init(MPReal *x) const;
+		//void InitWithPrecision(MPReal *x, MPBCUint precision) const;
+		void Init(MPReal *x, MPBCUint precision) const;
+		void InitCopy(MPReal *dst, const MPReal *src) const;
 
-		void (*InitContent)(MPReal *); // Do not use directly, use Init instead.
-		void (*InitContentWithPrecision)(MPReal *, MPBCUint); // Do not use directly, use InitWithPrecision instead.
+		//void (*InitContent)(MPReal *); // Do not use directly, use Init instead.
+		//void (*InitContentWithPrecision)(MPReal *, MPBCUint); // Do not use directly, use InitWithPrecision instead.
+		void (*InitContent)(MPReal *, MPBCUint); // Do not use directly, use Init instead.
+		void (*InitContentCopy)(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
 
 		void Clear(MPReal *x) const;
 		void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
@@ -109,9 +113,12 @@ namespace Imagina {
 		MultiPrecision *const MP = nullptr;
 
 		MPReal() = default;
-		MPReal(MultiPrecision *mp) : MP(mp) { mp->InitContent(this); }
-		MPReal(MultiPrecision *mp, double x) : MP(mp) { mp->InitContent(this); mp->SetDouble(this, x); }
-		MPReal(const MPReal &x) : MPReal(x.MP) { MP->Set(this, x); }
+		//MPReal(MultiPrecision *mp) : MP(mp) { mp->InitContent(this); }
+		//MPReal(const MPReal &x) : MP(x.MP) { MP->InitContentWithPrecision(this, x.GetPrecision()); MP->Set(this, x); }
+		//MPReal(MultiPrecision *mp, MPBCUint precision)				: MP(mp) { mp->InitContent(this, precision); }
+		MPReal(double x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetDouble(this, x); }
+		MPReal(double x, MultiPrecision *mp, MPBCUint precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
+		MPReal(const MPReal &x) : MP(x.MP) { MP->InitContent(this, x.GetPrecision()); MP->Set(this, x); }
 		~MPReal() { if (MP) MP->ClearContent(this); }
 
 		bool Valid() { return MP != nullptr; }
@@ -134,17 +141,26 @@ namespace Imagina {
 		MPReal &operator*=(const MPReal &x) { MP->Mul(this, this, x); return *this; }
 		MPReal &operator/=(const MPReal &x) { MP->Div(this, this, x); return *this; }
 
-		MPReal &operator+=(double x) { MP->Add(this, this, MPReal(MP, x)); return *this; }
-		MPReal &operator-=(double x) { MP->Sub(this, this, MPReal(MP, x)); return *this; }
+		MPReal &operator+=(double x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
+		MPReal &operator-=(double x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
 	};
 
-	inline void Imagina::_MultiPrecision::Init(MPReal *x) const {
-		InitContent(x);
+	//inline void Imagina::_MultiPrecision::Init(MPReal *x) const {
+	//	InitContent(x);
+	//	const_cast<MultiPrecision *&>(x->MP) = this;
+	//}
+	//inline void _MultiPrecision::InitWithPrecision(MPReal *x, MPBCUint precision) const {
+	//	InitContentWithPrecision(x, precision);
+	//	const_cast<MultiPrecision *&>(x->MP) = this;
+	//}
+	inline void _MultiPrecision::Init(MPReal *x, MPBCUint precision) const {
+		InitContent(x, precision);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}
-	inline void _MultiPrecision::InitWithPrecision(MPReal *x, MPBCUint precision) const {
-		InitContentWithPrecision(x, precision);
-		const_cast<MultiPrecision *&>(x->MP) = this;
+
+	inline void _MultiPrecision::InitCopy(MPReal *dst, const MPReal *src) const {
+		InitContentCopy(dst, src);
+		const_cast<MultiPrecision *&>(dst->MP) = this;
 	}
 
 	inline void _MultiPrecision::Clear(MPReal *x) const {
@@ -160,9 +176,12 @@ namespace Imagina {
 	inline MPReal &MPReal::operator|=(const MPReal &x) {
 		if (MP != x.MP) [[unlikely]] {
 			if (MP) MP->ClearContent(this);
-			x.MP->InitWithPrecision(this, x.GetPrecision());
+			//x.MP->InitWithPrecision(this, x.GetPrecision());
+			//x.MP->Init(this, x.GetPrecision());
+			x.MP->InitCopy(this, x);
+		} else {
+			MP->Copy(this, x);
 		}
-		MP->Copy(this, x);
 		return *this;
 	}
 

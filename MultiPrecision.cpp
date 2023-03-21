@@ -178,8 +178,10 @@ namespace Imagina {
 		return *this;
 	}
 
-	void DoubleInitContent(double *x) { *x = 0.0; }
-	void DoubleInitContentWithPrecision(double *x, MPBCUint) { *x = 0.0; }
+	//void DoubleInitContent(double *x) { *x = 0.0; }
+	//void DoubleInitContentWithPrecision(double *x, MPBCUint) { *x = 0.0; }
+	void DoubleInitContent(double *x, MPBCUint) { *x = 0.0; }
+	void DoubleInitContentCopy(double *dst, const double *src) { *dst = *src; }
 
 	void DoubleClearContent(double *) {}
 
@@ -198,8 +200,11 @@ namespace Imagina {
 	MultiPrecision MPDouble{
 		.Name = "double",
 
-		.InitContent = (void (*)(MPReal *))DoubleInitContent,
-		.InitContentWithPrecision = (void (*)(MPReal *, MPBCUint))DoubleInitContentWithPrecision,
+		//.InitContent = (void (*)(MPReal *))DoubleInitContent,
+		//.InitContentWithPrecision = (void (*)(MPReal *, MPBCUint))DoubleInitContentWithPrecision,
+		.InitContent = (void (*)(MPReal *, MPBCUint))DoubleInitContent,
+		.InitContentCopy = (void (*)(MPReal *, const MPReal *))DoubleInitContentCopy,
+
 
 		.ClearContent = (void (*)(MPReal *))DoubleClearContent,
 
