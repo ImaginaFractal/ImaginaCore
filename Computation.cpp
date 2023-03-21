@@ -59,6 +59,8 @@ namespace Imagina {
 	void ExecutionContext::Wait() {
 		std::unique_lock lock(Mutex);
 
+		if (ExecutingThreadCount == 0 && !AcceptNewThreads) return;
+
 		ConditionVariable.wait(lock, [this]() { return ExecutingThreadCount == 0 && !AcceptNewThreads; });
 	}
 
