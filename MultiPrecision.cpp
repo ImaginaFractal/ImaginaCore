@@ -212,6 +212,7 @@ namespace Imagina {
 		.SetPrecision = (void (*)(MPReal *, MPBCUint))DoubleSetPrecision,
 
 		.Set = (void (*)(MPReal *, const MPReal *))DoubleSet,
+		.Copy = (void (*)(MPReal *, const MPReal *))DoubleSet,
 		.SetDouble = (void (*)(MPReal *, double))DoubleSetDouble,
 		.ToDouble = (double (*)(const MPReal *))DoubleToDouble,
 
