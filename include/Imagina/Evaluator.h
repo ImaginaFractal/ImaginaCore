@@ -8,8 +8,11 @@
 namespace Imagina {
 	class IEvaluator {
 	public:
+		virtual ~IEvaluator() = default;
+
 		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
 
+		virtual bool Ready();
 		//virtual void Evaluate(IRasterizer &rasterizer) = 0;
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) = 0;
 	};

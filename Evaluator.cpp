@@ -3,6 +3,10 @@
 #include "OutputDescriptorHelper.h"
 
 namespace Imagina {
+	bool IEvaluator::Ready() {
+		return true;
+	}
+
 	class SimpleEvaluator::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {
 		SimpleEvaluator *evaluator;
 		IRasterizer *rasterizer;

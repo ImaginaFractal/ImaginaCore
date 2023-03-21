@@ -92,11 +92,13 @@ namespace Imagina {
 			//evaluator->Evaluate(*this);
 			if (executionContext) CancelAndWait();
 
-			i = 0;
-			//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-			executionContext = evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this);
+			if (evaluator->Ready()) {
+				i = 0;
+				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
+				executionContext = evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this);
 
-			valid = true;
+				valid = true;
+			}
 		}
 		if (gpuTexture) {
 			gpuTexture->SetImage(width, height, pixels);
