@@ -37,6 +37,7 @@ namespace Imagina {
 
 		virtual void SetTargetLocation(const HRLocation &location) = 0;
 		virtual void SetResolution(GRInt width, GRInt height) = 0;
+		virtual void InvalidatePixels() = 0;
 
 		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) = 0;
 		virtual void Update() = 0;

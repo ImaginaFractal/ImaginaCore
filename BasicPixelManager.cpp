@@ -76,6 +76,10 @@ namespace Imagina {
 		initialized = false;
 	}
 
+	void BasicPixelManager::InvalidatePixels() {
+		valid = false;
+	}
+
 	void BasicPixelManager::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
 		CancelAndWait();
 
@@ -106,7 +110,8 @@ namespace Imagina {
 	}
 
 	std::vector<TextureMapping> BasicPixelManager::GetTextureMappings(const HRRectangle &location) {
-		if (!gpuTexture || !valid) return std::vector<TextureMapping>();
+		//if (!gpuTexture || !valid) return std::vector<TextureMapping>();
+		if (!gpuTexture) return std::vector<TextureMapping>();
 
 		std::vector<TextureMapping> TextureMappings;
 		TextureMappings.resize(1);

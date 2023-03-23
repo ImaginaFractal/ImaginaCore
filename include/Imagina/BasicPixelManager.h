@@ -42,6 +42,7 @@ namespace Imagina {
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetTargetLocation(const HRLocation &location) override;
 		virtual void SetResolution(GRInt width, GRInt height) override;
+		virtual void InvalidatePixels() override;
 
 		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) override;
 		virtual void Update() override;
