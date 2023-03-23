@@ -6,7 +6,7 @@
 #include "PixelProcessing.h"
 
 namespace Imagina {
-	class IEvaluator {
+	class im_export IEvaluator {
 	public:
 		virtual ~IEvaluator() = default;
 
@@ -32,7 +32,10 @@ namespace Imagina {
 	class im_export SimpleEvaluator : public StandardEvaluator {
 		class EvaluationTask;
 
-		ExecutionContext *currentExecutionContext = nullptr;
+		ExecutionContext *precomputeExecutionContext = nullptr;
+		ExecutionContext *pixelExecutionContext = nullptr;
+
+		void CancelTasks();
 
 	protected:
 		HPReal x, y;
@@ -40,11 +43,12 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
+		virtual bool Ready() override final;
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
 
-		virtual void Precompute(const HPReal &x, const HPReal &y, HRReal radius) = 0;
+		virtual void Precompute() = 0;
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
 
@@ -55,9 +59,13 @@ namespace Imagina {
 		SRReal referenceX = 0.0, referenceY = 0.0;
 		ExecutionContext *currentExecutionContext = nullptr;
 
+	protected:
+		StandardEvaluationParameters parameters;
+
 	public:
 		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
+		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
 
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
@@ -75,7 +83,7 @@ namespace Imagina {
 	public:
 		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
 
-		virtual void Precompute(const HPReal &x, const HPReal &y, HRReal radius) override;
+		virtual void Precompute() override;
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 

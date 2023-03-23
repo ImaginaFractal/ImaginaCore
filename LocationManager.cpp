@@ -11,14 +11,17 @@ namespace Imagina {
 	}
 
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {
-		BCInt precision = std::max<ExpInt>(32, -ExponentOf(location.HalfHeight)) + 32;
+		HRReal distance = std::max(std::abs(location.X), std::abs(location.Y));
+		BCInt precision = std::max<ExpInt>(0, -ExponentOf(location.HalfHeight)) + 32;
 
-		referenceX.SetPrecision(precision);
-		referenceY.SetPrecision(precision);
+		if (distance > 64.0 * location.HalfHeight || precision > referenceX.GetPrecision()) {
+			referenceX.SetPrecision(precision + 16);
+			referenceY.SetPrecision(precision + 16);
 
-		referenceX += location.X;
-		referenceY += location.Y;
-		static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
-		fractalContext->UpdateRelativeCoordinate(-location.X, -location.Y);
+			referenceX += location.X;
+			referenceY += location.Y;
+			static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
+			fractalContext->UpdateRelativeCoordinate(-location.X, -location.Y);
+		}
 	}
 }

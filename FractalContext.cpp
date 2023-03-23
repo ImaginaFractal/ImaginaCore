@@ -24,12 +24,15 @@ namespace Imagina {
 		if (Evaluator) LocationManager->SetEvaluator(Evaluator);
 	}
 	void FractalContext::SetTargetLocation(const HRLocation &location) {
+		temporaryLocation = location;
 		PixelManager->SetTargetLocation(location);
 		LocationManager->LocationChanged(location);
 	}
 
 	void FractalContext::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
 		PixelManager->UpdateRelativeCoordinate(differenceX, differenceY);
+		temporaryLocation.X += differenceX;
+		temporaryLocation.Y += differenceY;
 	}
 
 	void FractalContext::Update(SRReal deltaTime) {

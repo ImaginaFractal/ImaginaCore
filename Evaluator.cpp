@@ -30,32 +30,48 @@ namespace Imagina {
 	}
 
 
+	void SimpleEvaluator::CancelTasks() {
+		if (precomputeExecutionContext && !precomputeExecutionContext->Terminated()) precomputeExecutionContext->Cancel();
+		if (pixelExecutionContext) {
+			if (!pixelExecutionContext->Terminated()) pixelExecutionContext->Cancel();
+			pixelExecutionContext->WaitAndRelease();
+			pixelExecutionContext = nullptr;
+		}
+		if (precomputeExecutionContext) {
+			precomputeExecutionContext->WaitAndRelease();
+			precomputeExecutionContext = nullptr;
+		}
+	}
+
+	bool SimpleEvaluator::Ready() {
+		if (precomputeExecutionContext) {
+			if (!precomputeExecutionContext->Terminated()) return false;
+			precomputeExecutionContext->Release();
+			precomputeExecutionContext = nullptr;
+		}
+		return true;
+	}
+
 	ExecutionContext *SimpleEvaluator::RunTaskForRectangle(const HRRectangle &, IRasterizer *rasterizer) {
-		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
-		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
-		currentExecutionContext->AddReference();
-		return currentExecutionContext;
+		if (pixelExecutionContext) pixelExecutionContext->WaitAndRelease();
+		pixelExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
+		pixelExecutionContext->AddReference();
+		return pixelExecutionContext;
 	}
 
 	void SimpleEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
-		if (currentExecutionContext) {
-			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
-			currentExecutionContext->WaitAndRelease();
-		}
+		CancelTasks();
 		this->x |= x;
 		this->y |= y;
 		this->radius = radius;
-		Precompute(x, y, radius);
+		precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Precompute, this));
 	}
 
 	void SimpleEvaluator::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
-		if (currentExecutionContext) {
-			if (!currentExecutionContext->Terminated()) currentExecutionContext->Cancel();
-			currentExecutionContext->WaitAndRelease();
-		}
+		CancelTasks();
 		this->parameters = parameters;
 		if (x.Valid()) {
-			Precompute(x, y, radius);
+			precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Precompute, this));
 		}
 	}
 
@@ -114,12 +130,18 @@ namespace Imagina {
 		referenceY = SRReal(y);
 	}
 
+	void LowPrecisionEvaluator::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+		// FIXME
+		//CancelTasks();
+		this->parameters = parameters;
+	}
+
 
 	const PixelDataDescriptor *TestSimpleEvaluator::GetOutputDescriptor() {
 		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 
-	void TestSimpleEvaluator::Precompute(const HPReal &x, const HPReal &y, HRReal) {
+	void TestSimpleEvaluator::Precompute() {
 		delete[] reference;
 		reference = new SRComplex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
@@ -205,7 +227,7 @@ namespace Imagina {
 			SRComplex z = 0.0;
 	
 			long i;
-			for (i = 0; i < 256; i++) {
+			for (i = 0; i < parameters.Iterations; i++) {
 				z = z * z + c;
 				if (norm(z) > 4096.0) break;
 			}

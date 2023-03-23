@@ -19,6 +19,8 @@ namespace Imagina {
 		IEvaluator *Evaluator = nullptr;
 		ILocationManager *LocationManager = nullptr;
 
+		HRLocation temporaryLocation; // TEMPORARY!!!
+
 		void UsePixelManager(IPixelManager *pixelManager);
 		void UsePixelManager(IGpuPixelManager *pixelManager);
 		void UseEvaluator(IEvaluator *evaluator);
