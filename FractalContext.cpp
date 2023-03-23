@@ -19,20 +19,18 @@ namespace Imagina {
 	}
 	void FractalContext::UseLocationManager(ILocationManager *locationManager) {
 		LocationManager = locationManager;
-		LocationManager->SetFractalContext(this);
+		locationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
 
 		if (Evaluator) LocationManager->SetEvaluator(Evaluator);
 	}
 	void FractalContext::SetTargetLocation(const HRLocation &location) {
-		temporaryLocation = location;
 		PixelManager->SetTargetLocation(location);
 		LocationManager->LocationChanged(location);
 	}
 
 	void FractalContext::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
 		PixelManager->UpdateRelativeCoordinate(differenceX, differenceY);
-		temporaryLocation.X += differenceX;
-		temporaryLocation.Y += differenceY;
+		if (OnReferenceChange) OnReferenceChange(differenceX, differenceY);
 	}
 
 	void FractalContext::Update(SRReal deltaTime) {

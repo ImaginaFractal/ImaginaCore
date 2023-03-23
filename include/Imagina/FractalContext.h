@@ -19,7 +19,7 @@ namespace Imagina {
 		IEvaluator *Evaluator = nullptr;
 		ILocationManager *LocationManager = nullptr;
 
-		HRLocation temporaryLocation; // TEMPORARY!!!
+		std::function<void(HRReal, HRReal)> OnReferenceChange;
 
 		void UsePixelManager(IPixelManager *pixelManager);
 		void UsePixelManager(IGpuPixelManager *pixelManager);

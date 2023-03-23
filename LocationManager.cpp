@@ -6,9 +6,6 @@ namespace Imagina {
 	void StandardLocationManager::SetEvaluator(IEvaluator *evaluator) {
 		this->evaluator = evaluator;
 	}
-	void StandardLocationManager::SetFractalContext(IFractalContext *fractalContext) {
-		this->fractalContext = fractalContext;
-	}
 
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {
 		HRReal distance = std::max(std::abs(location.X), std::abs(location.Y));
@@ -21,7 +18,7 @@ namespace Imagina {
 			referenceX += location.X;
 			referenceY += location.Y;
 			static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
-			fractalContext->UpdateRelativeCoordinate(-location.X, -location.Y);
+			if (OnReferenceChange) OnReferenceChange(-location.X, -location.Y);
 		}
 	}
 }

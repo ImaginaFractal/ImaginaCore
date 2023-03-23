@@ -2,12 +2,14 @@
 
 #include "Types.h"
 #include "Declarations.h"
+#include <functional>
 
 namespace Imagina {
 	class ILocationManager {
 	public:
+		std::function<void(HRReal, HRReal)> OnReferenceChange;
+
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
-		virtual void SetFractalContext(IFractalContext *fractalContext) = 0; // TODO: Use callback function instead?
 		virtual void LocationChanged(const HRLocation &location) = 0;
 	};
 
@@ -15,13 +17,11 @@ namespace Imagina {
 		IEvaluator *evaluator = nullptr;
 		MultiPrecision &mp;
 		HPReal referenceX, referenceY;
-		IFractalContext *fractalContext = nullptr;
 
 	public:
 		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(0.0, mp), referenceY(0.0, mp) {}
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
-		virtual void SetFractalContext(IFractalContext *fractalContext) override;
 		virtual void LocationChanged(const HRLocation &location) override;
 	};
 }
