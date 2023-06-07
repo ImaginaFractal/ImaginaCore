@@ -1,8 +1,9 @@
 #pragma once
 
+#include <exception>
 #include "BasicTypes.h"
 #include "Constants.h"
-#include <exception>
+#include "ImMath.h"
 
 namespace Imagina {
 	template<intmax_t factor, typename type>
@@ -18,6 +19,21 @@ namespace Imagina {
 
 		GRReal Width()	{ return MaxX - MinX; }
 		GRReal Height()	{ return MaxY - MinY; }
+	};
+
+	template <typename real>
+	struct Circle {
+		real X, Y;
+		real Radius;
+
+		Circle() = default;
+		Circle(real X, real Y, real Radius) : X(X), Y(Y), Radius(Radius) {}
+
+		template<typename real2>
+		explicit(!std::is_convertible_v<real2, real>)
+			Circle(const Circle<real2> &circle) : X(circle.X), Y(circle.Y), Radius(circle.Radius) {}
+
+		real Diameter() const { return MulInt<2>(Radius); }
 	};
 
 	template <typename real>
@@ -58,6 +74,15 @@ namespace Imagina {
 				HalfHeight	/ rectangle.HalfHeight);
 		}
 
+		Circle<real> Circumcircle() const {
+			//using std::hypot; // Computes the square root of the sum of the squares of x and y, without undue overflow or underflow at intermediate stages of the computation
+			return Circle(X, Y, hypot(HalfHeight, HalfWidth));
+		}
+
+		Circle<real> ApproximateCircumcircle() const {
+			//using std::hypot; // Computes the square root of the sum of the squares of x and y, without undue overflow or underflow at intermediate stages of the computation
+			return Circle(X, Y, ManhattanHypot(HalfHeight, HalfWidth));
+		}
 	};
 	
 	template <typename real>
@@ -100,6 +125,9 @@ namespace Imagina {
 				MulInt<2>(HalfHeight));
 		}
 	};
+
+	using SRCircle = Circle<SRReal>;
+	using HRCircle = Circle<HRReal>;
 
 	using SRRectangle = Rectangle<SRReal>;
 	using HRRectangle = Rectangle<HRReal>;
