@@ -15,6 +15,7 @@ namespace Imagina {
 		std::atomic_size_t i = 0;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;
+		PixelPipeline::Stage gpuTextureUploadPoint = PixelPipeline::Stage::None;
 		IEvaluator *evaluator = nullptr;
 
 		HRLocation location;
@@ -24,6 +25,7 @@ namespace Imagina {
 		bool initialized = false, valid = false;
 
 		size_t preprocessedDataSize = 0;
+		size_t postprocessedDataSize = 0;
 		size_t finalDataSize = 0;
 
 		char *preprocessedPixels = nullptr;
@@ -36,6 +38,8 @@ namespace Imagina {
 	public:
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		virtual void DeactivateGpu(bool cleanup = true) override;
+
+		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
 
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
 

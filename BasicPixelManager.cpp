@@ -1,22 +1,21 @@
 #include "BasicPixelManager.h"
 #include "Evaluator.h"
-#include <assert.h> // TEMPORARY
+#include "PlatformDependent.h"
+#include <assert.h>
 
 namespace Imagina {
 	void BasicPixelManager::Initialize() {
 		assert(pixelPipeline);
 		assert(evaluator);
 
-		IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
-		IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
+		//IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
+		//IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
 
-		const PixelDataDescriptor *preprocessedData = preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
-		const PixelDataDescriptor *finalData = postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
-
-		assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
+		const PixelDataDescriptor *preprocessedData = pixelPipeline->GetDataAtStage(PixelPipeline::Stage::Preprocess);//preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
+		const PixelDataDescriptor *postprocessedData = pixelPipeline->GetDataAtStage(PixelPipeline::Stage::Postprocess);
 
 		preprocessedDataSize = preprocessedData->Size;
-		finalDataSize = finalData->Size;
+		postprocessedDataSize = postprocessedData->Size;
 
 		if (preprocessedPixels) {
 			delete[] preprocessedPixels;
@@ -30,10 +29,18 @@ namespace Imagina {
 		pixelCount = size_t(width) * size_t(height);
 
 		preprocessedPixels = new char[pixelCount * preprocessedDataSize];
-		if (preprocessedData == finalData) {
-			pixels = (float *)preprocessedPixels;
-		} else {
-			pixels = new float[pixelCount];
+
+		if (gpuTextureUploadPoint != PixelPipeline::Stage::None) {
+			const PixelDataDescriptor *finalData = pixelPipeline->GetDataAtStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
+
+			assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
+
+			finalDataSize = finalData->Size;
+			if (preprocessedData == finalData) {
+				pixels = (float *)preprocessedPixels;
+			} else {
+				pixels = new float[pixelCount];
+			}
 		}
 		initialized = true;
 	}
@@ -51,6 +58,10 @@ namespace Imagina {
 
 		gpuTextureCreater = nullptr;
 		gpuTexture = nullptr;
+	}
+
+	void BasicPixelManager::SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
+		gpuTextureUploadPoint = uploadPoint;
 	}
 
 	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) {
@@ -111,7 +122,7 @@ namespace Imagina {
 
 	std::vector<TextureMapping> BasicPixelManager::GetTextureMappings(const HRRectangle &location) {
 		//if (!gpuTexture || !valid) return std::vector<TextureMapping>();
-		if (!gpuTexture) return std::vector<TextureMapping>();
+		if (!gpuTexture || gpuTextureUploadPoint == PixelPipeline::Stage::None) return std::vector<TextureMapping>();
 
 		std::vector<TextureMapping> TextureMappings;
 		TextureMappings.resize(1);
@@ -164,6 +175,7 @@ namespace Imagina {
 	void BasicRasterizingInterface::WriteResults(void *value) {
 		const IPixelProcessor *preprocessor = pixelManager->pixelPipeline->GetPreprocessor();
 		const IPixelProcessor *postprocessor = pixelManager->pixelPipeline->GetPostprocessor();
+		const IPixelProcessor *colorizer = pixelManager->pixelPipeline->GetColorizer();
 
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelManager->preprocessedDataSize];
@@ -174,8 +186,31 @@ namespace Imagina {
 			memcpy(preprocessedOutput, value, pixelManager->preprocessedDataSize);
 		}
 
-		if (postprocessor) {
-			postprocessor->Process(&pixelManager->pixels[pixelIndex], preprocessedOutput);
+		if (!pixelManager->pixels || (char *)pixelManager->pixels == pixelManager->preprocessedPixels) return;
+
+		void *finalOutput = &pixelManager->pixels[pixelIndex];
+
+		assert(pixelManager->gpuTextureUploadPoint >= PixelPipeline::Stage::Postprocess);
+
+		void *postprocessedOutput;
+
+		if (!colorizer || pixelManager->gpuTextureUploadPoint == PixelPipeline::Stage::Postprocess) { // Don't need colorizing
+			if (postprocessor) {
+				postprocessor->Process(finalOutput, preprocessedOutput);
+			} else {
+				memcpy(finalOutput, preprocessedOutput, pixelManager->postprocessedDataSize);
+			}
+			return;
 		}
+
+		// Need colorizing
+		if (postprocessor) {
+			postprocessedOutput = alloca(pixelManager->postprocessedDataSize);
+			postprocessor->Process(postprocessedOutput, preprocessedOutput);
+		} else {
+			postprocessedOutput = preprocessedOutput;
+		}
+
+		colorizer->Process(finalOutput, postprocessedOutput);
 	}
 }
