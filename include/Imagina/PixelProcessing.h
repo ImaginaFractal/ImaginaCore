@@ -84,12 +84,12 @@ namespace Imagina {
 
 	public:
 
-		void ConnectEvaluator(IEvaluator *evaluator);
+		void UseEvaluator(IEvaluator *evaluator);
 
 		void UsePreprocessor(IPixelProcessor *processor);
 		void UsePostprocessor(IPixelProcessor *processor);
 
-		void Connect();
+		void Link();
 
 		inline IPixelProcessor *GetPreprocessor() { return preprocessor; }
 		inline IPixelProcessor *GetPostprocessor() { return postprocessor; }

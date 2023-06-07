@@ -12,7 +12,7 @@ namespace Imagina {
 
 		return nullptr;
 	}
-	void PixelPipeline::ConnectEvaluator(IEvaluator *evaluator) {
+	void PixelPipeline::UseEvaluator(IEvaluator *evaluator) {
 		evaluatorOutput = evaluator->GetOutputDescriptor();
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
@@ -22,7 +22,7 @@ namespace Imagina {
 		postprocessor = processor;
 	}
 
-	void PixelPipeline::Connect() {
+	void PixelPipeline::Link() {
 		const PixelDataDescriptor *pixelData = evaluatorOutput;
 
 		if (preprocessor) {

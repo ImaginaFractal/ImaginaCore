@@ -17,6 +17,7 @@ namespace Imagina {
 
 			referenceX += location.X;
 			referenceY += location.Y;
+			// FIXME: Calculate radius correctly
 			static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
 			if (OnReferenceChange) OnReferenceChange(-location.X, -location.Y);
 		}
