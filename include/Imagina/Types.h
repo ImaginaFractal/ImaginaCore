@@ -43,14 +43,14 @@ namespace Imagina {
 
 		void AspectRatio(real value) { HalfWidth = HalfHeight * value; }
 		
-		Rectangle TransformTo(Rectangle rectangle) {
+		Rectangle TransformTo(Rectangle rectangle) const {
 			return Rectangle(
 				X * rectangle.HalfWidth  + rectangle.X,
 				Y * rectangle.HalfHeight + rectangle.Y,
 				HalfWidth	* rectangle.HalfWidth,
 				HalfHeight	* rectangle.HalfHeight);
 		}
-		Rectangle TransformFrom(Rectangle rectangle) {
+		Rectangle TransformFrom(Rectangle rectangle) const {
 			return Rectangle(
 				(X - rectangle.X) / rectangle.HalfWidth,
 				(Y - rectangle.Y) / rectangle.HalfHeight,
@@ -81,11 +81,11 @@ namespace Imagina {
 		real MinX(real aspectRatio)			const { return X - HalfWidth(aspectRatio); }
 		real MaxX(real aspectRatio)			const { return X + HalfWidth(aspectRatio); }
 
-		Rectangle<real> ToRectangle(real aspectRatio) {
+		Rectangle<real> ToRectangle(real aspectRatio) const {
 			return Rectangle<real>(X, Y, HalfWidth(aspectRatio), HalfHeight);
 		}
 		
-		Location ZoomIn(SRReal centerX, SRReal centerY) {
+		Location ZoomIn(SRReal centerX, SRReal centerY) const {
 			HRReal newHalfHeight = HalfHeight * 0.5; // TODO: replace "* 0.5"
 			return Location(
 				X + centerX * newHalfHeight,
@@ -93,7 +93,7 @@ namespace Imagina {
 				newHalfHeight);
 		}
 
-		Location ZoomOut(SRReal centerX, SRReal centerY) {
+		Location ZoomOut(SRReal centerX, SRReal centerY) const {
 			return Location(
 				X - centerX * HalfHeight,
 				Y - centerY * HalfHeight,
