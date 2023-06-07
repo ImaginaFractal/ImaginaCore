@@ -14,7 +14,7 @@ namespace Imagina {
 
 		virtual bool Ready();
 		//virtual void Evaluate(IRasterizer &rasterizer) = 0;
-		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) = 0;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) = 0;
 	};
 
 	struct StandardEvaluationParameters {
@@ -44,7 +44,7 @@ namespace Imagina {
 
 	public:
 		virtual bool Ready() override final;
-		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
 
@@ -63,7 +63,7 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
-		virtual ExecutionContext *RunTaskForRectangle(const HRRectangle &rectangle, IRasterizer *rasterizer) override final;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
 

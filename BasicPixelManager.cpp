@@ -99,7 +99,7 @@ namespace Imagina {
 			if (evaluator->Ready()) {
 				i = 0;
 				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-				executionContext = evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this);
+				executionContext = evaluator->RunEvaluation(location.ToRectangle((SRReal)width / height).Circumcircle(), this);
 
 				valid = true;
 			}

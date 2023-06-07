@@ -52,7 +52,7 @@ namespace Imagina {
 		return true;
 	}
 
-	ExecutionContext *SimpleEvaluator::RunTaskForRectangle(const HRRectangle &, IRasterizer *rasterizer) {
+	ExecutionContext *SimpleEvaluator::RunEvaluation(const HRCircle &, IRasterizer *rasterizer) {
 		if (pixelExecutionContext) pixelExecutionContext->WaitAndRelease();
 		pixelExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer));
 		pixelExecutionContext->AddReference();
@@ -118,7 +118,7 @@ namespace Imagina {
 	}
 
 
-	ExecutionContext *LowPrecisionEvaluator::RunTaskForRectangle(const HRRectangle &, IRasterizer *rasterizer) {
+	ExecutionContext *LowPrecisionEvaluator::RunEvaluation(const HRCircle &, IRasterizer *rasterizer) {
 		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
 		currentExecutionContext = Computation::AddTask(new EvaluationTask(this, rasterizer, referenceX, referenceY));
 		currentExecutionContext->AddReference();
