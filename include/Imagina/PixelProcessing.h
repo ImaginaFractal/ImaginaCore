@@ -2,6 +2,7 @@
 
 #include "Declarations.h"
 #include <string_view>
+#include <cassert>
 
 namespace Imagina {
 	enum class PixelDataType {
@@ -78,24 +79,46 @@ namespace Imagina {
 	};
 
 	class im_export PixelPipeline {
-		const PixelDataDescriptor *evaluatorOutput = nullptr;
 		IPixelProcessor *preprocessor = nullptr;
 		IPixelProcessor *postprocessor = nullptr;
+		IPixelProcessor *colorizer = nullptr;
+		const PixelDataDescriptor *evaluatorOutput = nullptr;
+		const PixelDataDescriptor *preprocessorOutput = nullptr;
+		const PixelDataDescriptor *postprocessorOutput = nullptr;
+		const PixelDataDescriptor *colorizerOutput = nullptr;
+		bool linked = false;
 
 	public:
+		enum class Stage {
+			None = 0,
+			Preprocess = 1,
+			Postprocess = 2,
+			Colorize = 3,
+		};
 
 		void UseEvaluator(IEvaluator *evaluator);
 
 		void UsePreprocessor(IPixelProcessor *processor);
 		void UsePostprocessor(IPixelProcessor *processor);
+		void UseColorizer(IPixelProcessor *processor);
 
 		void Link();
 
-		inline IPixelProcessor *GetPreprocessor() { return preprocessor; }
-		inline IPixelProcessor *GetPostprocessor() { return postprocessor; }
+		inline bool IsLinked() { return linked; }
 
-		inline void Preprocess(void *output, void *input) const { preprocessor->Process(output, input); } // FIXME: Doesn't work if preprocessor == nullptr
-		inline void Postprocess(void *output, void *input) const { postprocessor->Process(output, input); } // FIXME: Doesn't work if postprocessor == nullptr
+		inline IPixelProcessor *GetPreprocessor()	{ return preprocessor; }
+		inline IPixelProcessor *GetPostprocessor()	{ return postprocessor; }
+		inline IPixelProcessor *GetColorizer()		{ return colorizer; }
+
+		inline size_t PreprocessedDataSize()	const { return preprocessorOutput->Size; }
+		inline size_t PostprocessedDataSize()	const { return postprocessorOutput->Size; }
+		inline size_t ColorizedDataSize()		const { return colorizerOutput->Size; }
+
+		const PixelDataDescriptor *GetDataAtStage(Stage stage);
+
+		inline void Preprocess(void *output, void *input)	const { assert(linked); preprocessor->Process(output, input); } // FIXME: Doesn't work if preprocessor == nullptr
+		inline void Postprocess(void *output, void *input)	const { assert(linked); postprocessor->Process(output, input); } // FIXME: Doesn't work if postprocessor == nullptr
+		inline void Colorize(void *output, void *input)		const { assert(linked); colorizer->Process(output, input); } // FIXME: Doesn't work if colorizer == nullptr
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32

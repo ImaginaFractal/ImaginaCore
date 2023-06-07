@@ -17,9 +17,15 @@ namespace Imagina {
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
 		preprocessor = processor;
+		linked = false;
 	}
 	void PixelPipeline::UsePostprocessor(IPixelProcessor *processor) {
 		postprocessor = processor;
+		linked = false;
+	}
+	void PixelPipeline::UseColorizer(IPixelProcessor *processor) {
+		colorizer = processor;
+		linked = false;
 	}
 
 	void PixelPipeline::Link() {
@@ -29,9 +35,29 @@ namespace Imagina {
 			preprocessor->SetInput(pixelData);
 			pixelData = preprocessor->GetOutputDescriptor();
 		}
+		preprocessorOutput = pixelData;
 		if (postprocessor) {
 			postprocessor->SetInput(pixelData);
+			pixelData = postprocessor->GetOutputDescriptor();
 		}
+		postprocessorOutput = pixelData;
+		if (colorizer) {
+			colorizer->SetInput(pixelData);
+			pixelData = colorizer->GetOutputDescriptor();
+		}
+		colorizerOutput = pixelData;
+		linked = true;
+	}
+
+	const PixelDataDescriptor *PixelPipeline::GetDataAtStage(Stage stage) {
+		assert(linked);
+		switch (stage) {
+			case Imagina::PixelPipeline::Stage::None:			return nullptr;
+			case Imagina::PixelPipeline::Stage::Preprocess:		return preprocessorOutput;
+			case Imagina::PixelPipeline::Stage::Postprocess:	return postprocessorOutput;
+			case Imagina::PixelPipeline::Stage::Colorize:		return colorizerOutput;
+		}
+		return nullptr;
 	}
 
 	using namespace std;
