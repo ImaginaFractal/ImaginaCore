@@ -173,44 +173,30 @@ namespace Imagina {
 	}
 
 	void BasicRasterizingInterface::WriteResults(void *value) {
-		const IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
-		const IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
-		const IPixelProcessor *colorizer = pixelPipeline->GetColorizer();
-
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelPipeline->PreprocessedDataSize()];
 
-		if (preprocessor) {
-			preprocessor->Process(preprocessedOutput, value);
-		} else {
-			memcpy(preprocessedOutput, value, pixelPipeline->PreprocessedDataSize());
-		}
+		pixelPipeline->Preprocess(preprocessedOutput, value);
 
 		if (!pixelManager->pixels || (char *)pixelManager->pixels == pixelManager->preprocessedPixels) return;
+		assert(pixelManager->gpuTextureUploadPoint >= PixelPipeline::Stage::Postprocess);
 
 		void *finalOutput = &pixelManager->pixels[pixelIndex];
 
-		assert(pixelManager->gpuTextureUploadPoint >= PixelPipeline::Stage::Postprocess);
+		const IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
+		const IPixelProcessor *colorizer = pixelPipeline->GetColorizer();
 
-		void *postprocessedOutput;
-
-		if (!colorizer || pixelManager->gpuTextureUploadPoint == PixelPipeline::Stage::Postprocess) { // Don't need colorizing
-			if (postprocessor) {
-				postprocessor->Process(finalOutput, preprocessedOutput);
-			} else {
-				memcpy(finalOutput, preprocessedOutput, pixelPipeline->PostprocessedDataSize());
-			}
-			return;
-		}
-
-		// Need colorizing
-		if (postprocessor) {
-			postprocessedOutput = alloca(pixelPipeline->PostprocessedDataSize());
+		const IPixelProcessor *finalProcessor = postprocessor;
+		if (!postprocessor) {
+			assert(colorizer); // Otherwise the function should have already returned
+			finalProcessor = colorizer;
+		} else if (colorizer) { // Has both postprocessor and colorizer
+			void *postprocessedOutput = alloca(pixelPipeline->PostprocessedDataSize());
 			postprocessor->Process(postprocessedOutput, preprocessedOutput);
-		} else {
-			postprocessedOutput = preprocessedOutput;
+			colorizer->Process(finalOutput, postprocessedOutput);
 		}
 
-		colorizer->Process(finalOutput, postprocessedOutput);
+		// Has only one
+		finalProcessor->Process(finalOutput, preprocessedOutput);
 	}
 }

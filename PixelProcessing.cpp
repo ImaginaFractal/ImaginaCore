@@ -13,51 +13,45 @@ namespace Imagina {
 		return nullptr;
 	}
 	void PixelPipeline::UseEvaluator(IEvaluator *evaluator) {
-		evaluatorOutput = evaluator->GetOutputDescriptor();
+		outputs[0] = evaluator->GetOutputDescriptor();
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
-		preprocessor = processor;
+		stages[1] = processor;
 		linked = false;
 	}
 	void PixelPipeline::UsePostprocessor(IPixelProcessor *processor) {
-		postprocessor = processor;
+		stages[2] = processor;
 		linked = false;
 	}
 	void PixelPipeline::UseColorizer(IPixelProcessor *processor) {
-		colorizer = processor;
+		stages[3] = processor;
 		linked = false;
 	}
 
 	void PixelPipeline::Link() {
-		const PixelDataDescriptor *pixelData = evaluatorOutput;
+		const PixelDataDescriptor *pixelData = outputs[0];
 
-		if (preprocessor) {
-			preprocessor->SetInput(pixelData);
-			pixelData = preprocessor->GetOutputDescriptor();
+		if (stages[1]) {
+			stages[1]->SetInput(pixelData);
+			pixelData = stages[1]->GetOutputDescriptor();
 		}
-		preprocessorOutput = pixelData;
-		if (postprocessor) {
-			postprocessor->SetInput(pixelData);
-			pixelData = postprocessor->GetOutputDescriptor();
+		outputs[1] = pixelData;
+		if (stages[2]) {
+			stages[2]->SetInput(pixelData);
+			pixelData = stages[2]->GetOutputDescriptor();
 		}
-		postprocessorOutput = pixelData;
-		if (colorizer) {
-			colorizer->SetInput(pixelData);
-			pixelData = colorizer->GetOutputDescriptor();
+		outputs[2] = pixelData;
+		if (stages[3]) {
+			stages[3]->SetInput(pixelData);
+			pixelData = stages[3]->GetOutputDescriptor();
 		}
-		colorizerOutput = pixelData;
+		outputs[3] = pixelData;
 		linked = true;
 	}
 
 	const PixelDataDescriptor *PixelPipeline::GetDataAtStage(Stage stage) {
 		assert(linked);
-		switch (stage) {
-			case Imagina::PixelPipeline::Stage::None:			return nullptr;
-			case Imagina::PixelPipeline::Stage::Preprocess:		return preprocessorOutput;
-			case Imagina::PixelPipeline::Stage::Postprocess:	return postprocessorOutput;
-			case Imagina::PixelPipeline::Stage::Colorize:		return colorizerOutput;
-		}
-		return nullptr;
+		return outputs[(size_t)stage];
 	}
 
 	using namespace std;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Declarations.h"
+#include "PlatformDependent.h"
 #include <string_view>
 #include <cassert>
 
@@ -79,13 +80,8 @@ namespace Imagina {
 	};
 
 	class im_export PixelPipeline {
-		IPixelProcessor *preprocessor = nullptr;
-		IPixelProcessor *postprocessor = nullptr;
-		IPixelProcessor *colorizer = nullptr;
-		const PixelDataDescriptor *evaluatorOutput = nullptr;
-		const PixelDataDescriptor *preprocessorOutput = nullptr;
-		const PixelDataDescriptor *postprocessorOutput = nullptr;
-		const PixelDataDescriptor *colorizerOutput = nullptr;
+		IPixelProcessor *stages[4]{};
+		const PixelDataDescriptor *outputs[4]{};
 		bool linked = false;
 
 	public:
@@ -95,6 +91,42 @@ namespace Imagina {
 			Postprocess = 2,
 			Colorize = 3,
 		};
+
+		inline void Process(Stage stage, void *output, void *input) const {
+			assert(linked);
+			const IPixelProcessor *processor = stages[(size_t)stage];
+			if (processor) {
+				processor->Process(output, input);
+			} else {
+				memcpy(output, input, outputs[(size_t)stage]->Size);
+			}
+		}
+
+		// Process two consecutive stages, unnecessary copy and allocation are eliminated
+		inline void Process2(Stage stage1, void *output, void *input) const {
+			assert(linked);
+			const IPixelProcessor *processor1 = stages[(size_t)stage1];
+			const IPixelProcessor *processor2 = stages[(size_t)stage1 + 1];
+
+			if (!processor2) {
+				if (processor1) {
+					processor1->Process(output, input);
+				} else {
+					memcpy(output, input, outputs[(size_t)stage1]->Size);
+				}
+				return;
+			}
+
+			void *processor1Output;
+			if (processor1) {
+				processor1Output = alloca(outputs[(size_t)stage1]->Size);
+				processor1->Process(processor1Output, input);
+			} else {
+				processor1Output = input;
+			}
+
+			processor2->Process(output, processor1Output);
+		}
 
 		void UseEvaluator(IEvaluator *evaluator);
 
@@ -106,19 +138,19 @@ namespace Imagina {
 
 		inline bool IsLinked() { return linked; }
 
-		inline IPixelProcessor *GetPreprocessor()	{ return preprocessor; }
-		inline IPixelProcessor *GetPostprocessor()	{ return postprocessor; }
-		inline IPixelProcessor *GetColorizer()		{ return colorizer; }
+		inline IPixelProcessor *GetPreprocessor()	{ return stages[1]; }
+		inline IPixelProcessor *GetPostprocessor()	{ return stages[2]; }
+		inline IPixelProcessor *GetColorizer()		{ return stages[3]; }
 
-		inline size_t PreprocessedDataSize()	const { return preprocessorOutput->Size; }
-		inline size_t PostprocessedDataSize()	const { return postprocessorOutput->Size; }
-		inline size_t ColorizedDataSize()		const { return colorizerOutput->Size; }
+		inline size_t PreprocessedDataSize()	const { return outputs[1]->Size; }
+		inline size_t PostprocessedDataSize()	const { return outputs[2]->Size; }
+		inline size_t ColorizedDataSize()		const { return outputs[3]->Size; }
 
 		const PixelDataDescriptor *GetDataAtStage(Stage stage);
 
-		inline void Preprocess(void *output, void *input)	const { assert(linked); preprocessor->Process(output, input); } // FIXME: Doesn't work if preprocessor == nullptr
-		inline void Postprocess(void *output, void *input)	const { assert(linked); postprocessor->Process(output, input); } // FIXME: Doesn't work if postprocessor == nullptr
-		inline void Colorize(void *output, void *input)		const { assert(linked); colorizer->Process(output, input); } // FIXME: Doesn't work if colorizer == nullptr
+		inline void Preprocess(void *output, void *input)	const { Process(Stage::Preprocess, output, input); }
+		inline void Postprocess(void *output, void *input)	const { Process(Stage::Postprocess, output, input); }
+		inline void Colorize(void *output, void *input)		const { Process(Stage::Colorize, output, input); }
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32
