@@ -62,7 +62,8 @@ namespace Imagina {
 		friend class BasicPixelManager;
 
 		BasicPixelManager *pixelManager;
-		BasicRasterizingInterface(BasicPixelManager *pixelManager) : pixelManager(pixelManager) {}
+		PixelPipeline *pixelPipeline;
+		BasicRasterizingInterface(BasicPixelManager *pixelManager) : pixelManager(pixelManager), pixelPipeline(pixelManager->pixelPipeline) {}
 
 		int pixelX, pixelY;
 

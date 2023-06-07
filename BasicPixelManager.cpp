@@ -173,17 +173,17 @@ namespace Imagina {
 	}
 
 	void BasicRasterizingInterface::WriteResults(void *value) {
-		const IPixelProcessor *preprocessor = pixelManager->pixelPipeline->GetPreprocessor();
-		const IPixelProcessor *postprocessor = pixelManager->pixelPipeline->GetPostprocessor();
-		const IPixelProcessor *colorizer = pixelManager->pixelPipeline->GetColorizer();
+		const IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
+		const IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
+		const IPixelProcessor *colorizer = pixelPipeline->GetColorizer();
 
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
-		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelManager->preprocessedDataSize];
+		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelPipeline->PreprocessedDataSize()];
 
 		if (preprocessor) {
 			preprocessor->Process(preprocessedOutput, value);
 		} else {
-			memcpy(preprocessedOutput, value, pixelManager->preprocessedDataSize);
+			memcpy(preprocessedOutput, value, pixelPipeline->PreprocessedDataSize());
 		}
 
 		if (!pixelManager->pixels || (char *)pixelManager->pixels == pixelManager->preprocessedPixels) return;
@@ -198,14 +198,14 @@ namespace Imagina {
 			if (postprocessor) {
 				postprocessor->Process(finalOutput, preprocessedOutput);
 			} else {
-				memcpy(finalOutput, preprocessedOutput, pixelManager->postprocessedDataSize);
+				memcpy(finalOutput, preprocessedOutput, pixelPipeline->PostprocessedDataSize());
 			}
 			return;
 		}
 
 		// Need colorizing
 		if (postprocessor) {
-			postprocessedOutput = alloca(pixelManager->postprocessedDataSize);
+			postprocessedOutput = alloca(pixelPipeline->PostprocessedDataSize());
 			postprocessor->Process(postprocessedOutput, preprocessedOutput);
 		} else {
 			postprocessedOutput = preprocessedOutput;
