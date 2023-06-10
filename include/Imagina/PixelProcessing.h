@@ -128,6 +128,35 @@ namespace Imagina {
 			processor2->Process(output, processor1Output);
 		}
 
+		inline void ProcessAll(void *output, void *input) const {
+			void *data1 = nullptr, *data2 = nullptr;
+			do {
+				if (stages[3]) break;
+				data2 = output;
+				if (stages[2]) break;
+				data1 = output;
+				if (stages[1]) break;
+				memcpy(output, input, outputs[3]->Size);
+				return;
+			} while (0);
+
+			if (stages[1]) {
+				if (!data1) data1 = alloca(outputs[1]->Size);
+				stages[1]->Process(data1, input);
+			} else {
+				data1 = input;
+			}
+			if (stages[2]) {
+				if (!data2) data2 = alloca(outputs[2]->Size);
+				stages[2]->Process(data2, data1);
+			} else {
+				data2 = data1;
+			}
+			if (stages[3]) {
+				stages[3]->Process(output, data2);
+			}
+		}
+
 		void UseEvaluator(IEvaluator *evaluator);
 
 		void UsePreprocessor(IPixelProcessor *processor);

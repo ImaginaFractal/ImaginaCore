@@ -39,9 +39,8 @@ namespace Imagina {
 		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
 		virtual void DeactivateGpu(bool cleanup = true) override;
 
-		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
-
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
+		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void SetTargetLocation(const HRLocation &location) override;

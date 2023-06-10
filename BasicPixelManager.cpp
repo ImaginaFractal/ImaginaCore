@@ -60,14 +60,14 @@ namespace Imagina {
 		gpuTexture = nullptr;
 	}
 
-	void BasicPixelManager::SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
-		gpuTextureUploadPoint = uploadPoint;
-	}
-
 	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) {
 		pixelPipeline = pipeline;
 		valid = false;
 		initialized = false;
+	}
+
+	void BasicPixelManager::SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
+		gpuTextureUploadPoint = uploadPoint;
 	}
 
 	void BasicPixelManager::SetEvaluator(IEvaluator *evaluator) {
