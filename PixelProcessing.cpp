@@ -49,7 +49,7 @@ namespace Imagina {
 		linked = true;
 	}
 
-	const PixelDataDescriptor *PixelPipeline::GetDataAtStage(Stage stage) {
+	const PixelDataDescriptor *PixelPipeline::GetOutputOfStage(Stage stage) {
 		assert(linked);
 		return outputs[(size_t)stage];
 	}

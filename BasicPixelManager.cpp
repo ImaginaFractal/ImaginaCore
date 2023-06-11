@@ -11,8 +11,8 @@ namespace Imagina {
 		//IPixelProcessor *preprocessor = pixelPipeline->GetPreprocessor();
 		//IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
 
-		const PixelDataDescriptor *preprocessedData = pixelPipeline->GetDataAtStage(PixelPipeline::Stage::Preprocess);//preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
-		const PixelDataDescriptor *postprocessedData = pixelPipeline->GetDataAtStage(PixelPipeline::Stage::Postprocess);
+		const PixelDataDescriptor *preprocessedData = pixelPipeline->GetOutputOfStage(PixelPipeline::Stage::Preprocess);//preprocessor ? preprocessor->GetOutputDescriptor() : evaluator->GetOutputDescriptor();
+		const PixelDataDescriptor *postprocessedData = pixelPipeline->GetOutputOfStage(PixelPipeline::Stage::Postprocess);
 
 		preprocessedDataSize = preprocessedData->Size;
 		postprocessedDataSize = postprocessedData->Size;
@@ -31,7 +31,7 @@ namespace Imagina {
 		preprocessedPixels = new char[pixelCount * preprocessedDataSize];
 
 		if (gpuTextureUploadPoint != PixelPipeline::Stage::None) {
-			const PixelDataDescriptor *finalData = pixelPipeline->GetDataAtStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
+			const PixelDataDescriptor *finalData = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
 
 			assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
 

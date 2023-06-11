@@ -175,7 +175,7 @@ namespace Imagina {
 		inline size_t PostprocessedDataSize()	const { return outputs[2]->Size; }
 		inline size_t ColorizedDataSize()		const { return outputs[3]->Size; }
 
-		const PixelDataDescriptor *GetDataAtStage(Stage stage);
+		const PixelDataDescriptor *GetOutputOfStage(Stage stage);
 
 		inline void Preprocess(void *output, void *input)	const { Process(Stage::Preprocess, output, input); }
 		inline void Postprocess(void *output, void *input)	const { Process(Stage::Postprocess, output, input); }
