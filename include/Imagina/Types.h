@@ -124,6 +124,13 @@ namespace Imagina {
 				Y - centerY * HalfHeight,
 				MulInt<2>(HalfHeight));
 		}
+
+		bool operator==(const Location &location) {
+			return X == location.X && Y == location.Y && HalfHeight == location.HalfHeight;
+		}
+		bool operator!=(const Location &location) {
+			return X != location.X || Y != location.Y || HalfHeight != location.HalfHeight;
+		}
 	};
 
 	using SRCircle = Circle<SRReal>;

@@ -18,6 +18,8 @@ namespace Imagina {
 		void UseEvaluator(IEvaluator *evaluator);
 		void UseLocationManager(ILocationManager *locationManager);
 
+		void Link();
+
 		void SetTargetLocation(const HRLocation &location);
 
 		void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY);

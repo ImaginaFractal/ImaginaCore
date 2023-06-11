@@ -11,6 +11,8 @@
 #endif
 
 namespace Imagina {
+	class IController;
+
 	class IPixelManager;
 	class IGpuTextureManager;
 	class IGpuPixelManager;

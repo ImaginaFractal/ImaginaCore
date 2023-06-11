@@ -5,23 +5,33 @@ namespace Imagina {
 	void FractalContext::UsePixelManager(IPixelManager *pixelManager) {
 		PixelManager = pixelManager;
 
-		if (Evaluator) PixelManager->SetEvaluator(Evaluator);
+		//if (Evaluator) PixelManager->SetEvaluator(Evaluator);
 	}
 	void FractalContext::UsePixelManager(IGpuPixelManager *pixelManager) {
-		UsePixelManager(static_cast<IPixelManager *>(pixelManager));
+		//UsePixelManager(static_cast<IPixelManager *>(pixelManager));
+		PixelManager = pixelManager;
 		GpuTextureManager = pixelManager;
 	}
 	void FractalContext::UseEvaluator(IEvaluator *evaluator) {
 		Evaluator = evaluator;
 
-		if (PixelManager) PixelManager->SetEvaluator(Evaluator);
-		if (LocationManager) LocationManager->SetEvaluator(Evaluator);
+		//if (PixelManager) PixelManager->SetEvaluator(Evaluator);
+		//if (LocationManager) LocationManager->SetEvaluator(Evaluator);
 	}
 	void FractalContext::UseLocationManager(ILocationManager *locationManager) {
 		LocationManager = locationManager;
-		locationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
+		//locationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
+		//
+		//if (Evaluator) LocationManager->SetEvaluator(Evaluator);
+	}
+	void FractalContext::Link() {
+		assert(PixelManager);
+		assert(Evaluator);
+		assert(LocationManager);
 
-		if (Evaluator) LocationManager->SetEvaluator(Evaluator);
+		PixelManager->SetEvaluator(Evaluator);
+		LocationManager->SetEvaluator(Evaluator);
+		LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
 	}
 	void FractalContext::SetTargetLocation(const HRLocation &location) {
 		PixelManager->SetTargetLocation(location);
