@@ -17,8 +17,8 @@ namespace Imagina {
 		GRRectangle() = default;
 		GRRectangle(GRReal MinX, GRReal MinY, GRReal MaxX, GRReal MaxY) : MinX(MinX), MinY(MinY), MaxX(MaxX), MaxY(MaxY) {}
 
-		GRReal Width()	{ return MaxX - MinX; }
-		GRReal Height()	{ return MaxY - MinY; }
+		GRReal Width()	const { return MaxX - MinX; }
+		GRReal Height()	const { return MaxY - MinY; }
 	};
 
 	template <typename real>
