@@ -98,4 +98,9 @@ namespace Imagina {
 		zooming = true;
 		remainingZoomTime = 0.25;
 	}
+	void NavigationController::Move(SRReal x, SRReal y) {
+		if (zooming) return;
+		targetLocation.X += x * targetLocation.HalfHeight;
+		targetLocation.Y += y * targetLocation.HalfHeight;
+	}
 }

@@ -39,5 +39,6 @@ namespace Imagina {
 
 		void ZoomIn(SRReal centerX, SRReal centerY);
 		void ZoomOut(SRReal centerX, SRReal centerY);
+		void Move(SRReal x, SRReal y);
 	};
 }
