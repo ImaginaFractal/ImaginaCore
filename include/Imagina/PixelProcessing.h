@@ -2,6 +2,7 @@
 
 #include "Declarations.h"
 #include "PlatformDependent.h"
+#include <cstdint>
 #include <string_view>
 #include <cassert>
 
@@ -85,77 +86,33 @@ namespace Imagina {
 		bool linked = false;
 
 	public:
-		enum class Stage {
+		enum class Stage : uint8_t {
 			None = 0,
 			Preprocess = 1,
 			Postprocess = 2,
 			Colorize = 3,
 		};
 
+		static constexpr bool StageValid(Stage stage) { return stage > Stage::None && stage <= Stage::Colorize; }
+		Stage TrueStage(Stage stage) {
+			assert(StageValid(stage));
+			while (stage > Stage::Preprocess && !stages[(uint8_t)stage]) --(uint8_t &)stage;
+		}
+
 		inline void Process(Stage stage, void *output, void *input) const {
 			assert(linked);
-			const IPixelProcessor *processor = stages[(size_t)stage];
+			const IPixelProcessor *processor = stages[(uint8_t)stage];
 			if (processor) {
 				processor->Process(output, input);
 			} else {
-				memcpy(output, input, outputs[(size_t)stage]->Size);
+				memcpy(output, input, outputs[(uint8_t)stage]->Size);
 			}
 		}
 
 		// Process two consecutive stages, unnecessary copy and allocation are eliminated
-		inline void Process2(Stage stage1, void *output, void *input) const {
-			assert(linked);
-			const IPixelProcessor *processor1 = stages[(size_t)stage1];
-			const IPixelProcessor *processor2 = stages[(size_t)stage1 + 1];
+		void Process2(Stage stage1, void *output, void *input) const;
 
-			if (!processor2) {
-				if (processor1) {
-					processor1->Process(output, input);
-				} else {
-					memcpy(output, input, outputs[(size_t)stage1]->Size);
-				}
-				return;
-			}
-
-			void *processor1Output;
-			if (processor1) {
-				processor1Output = alloca(outputs[(size_t)stage1]->Size);
-				processor1->Process(processor1Output, input);
-			} else {
-				processor1Output = input;
-			}
-
-			processor2->Process(output, processor1Output);
-		}
-
-		inline void ProcessAll(void *output, void *input) const {
-			void *data1 = nullptr, *data2 = nullptr;
-			do {
-				if (stages[3]) break;
-				data2 = output;
-				if (stages[2]) break;
-				data1 = output;
-				if (stages[1]) break;
-				memcpy(output, input, outputs[3]->Size);
-				return;
-			} while (0);
-
-			if (stages[1]) {
-				if (!data1) data1 = alloca(outputs[1]->Size);
-				stages[1]->Process(data1, input);
-			} else {
-				data1 = input;
-			}
-			if (stages[2]) {
-				if (!data2) data2 = alloca(outputs[2]->Size);
-				stages[2]->Process(data2, data1);
-			} else {
-				data2 = data1;
-			}
-			if (stages[3]) {
-				stages[3]->Process(output, data2);
-			}
-		}
+		void ProcessAll(void *output, void *input) const;
 
 		void UseEvaluator(IEvaluator *evaluator);
 

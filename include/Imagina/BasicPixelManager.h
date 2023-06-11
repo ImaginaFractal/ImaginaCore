@@ -29,7 +29,7 @@ namespace Imagina {
 		size_t finalDataSize = 0;
 
 		char *preprocessedPixels = nullptr;
-		float *pixels = nullptr; // Equal to preprocessedPixels when no preprocessing is needed
+		float *finalPixels = nullptr; // Equal to preprocessedPixels when no preprocessing is needed
 
 		PixelPipeline *pixelPipeline;
 
@@ -40,6 +40,9 @@ namespace Imagina {
 		virtual void DeactivateGpu(bool cleanup = true) override;
 
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
+		virtual void GetPixelData(void *data, PixelPipeline::Stage stage) override;
+		virtual void GetPixelData(void *data, PixelPipeline::Stage stage, std::string_view field) override;
+
 		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;

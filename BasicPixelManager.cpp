@@ -19,12 +19,12 @@ namespace Imagina {
 
 		if (preprocessedPixels) {
 			delete[] preprocessedPixels;
-			if ((char *)pixels == preprocessedPixels) pixels = nullptr;
+			if ((char *)finalPixels == preprocessedPixels) finalPixels = nullptr;
 			preprocessedPixels = nullptr;
 		}
-		if (pixels) {
-			delete[] pixels;
-			pixels = nullptr;
+		if (finalPixels) {
+			delete[] finalPixels;
+			finalPixels = nullptr;
 		}
 		pixelCount = size_t(width) * size_t(height);
 
@@ -37,9 +37,9 @@ namespace Imagina {
 
 			finalDataSize = finalData->Size;
 			if (preprocessedData == finalData) {
-				pixels = (float *)preprocessedPixels;
+				finalPixels = (float *)preprocessedPixels;
 			} else {
-				pixels = new float[pixelCount];
+				finalPixels = new float[pixelCount];
 			}
 		}
 		initialized = true;
@@ -66,7 +66,35 @@ namespace Imagina {
 		initialized = false;
 	}
 
+	void BasicPixelManager::GetPixelData(void *data, PixelPipeline::Stage stage) {
+		assert(PixelPipeline::StageValid(stage));
+		stage = pixelPipeline->TrueStage(stage);
+		if (stage == PixelPipeline::Stage::Preprocess) {
+			memcpy(data, preprocessedPixels, pixelCount * preprocessedDataSize);
+		} else if (stage == gpuTextureUploadPoint) {
+			memcpy(data, finalPixels, pixelCount * sizeof(float));
+		} else if (stage == PixelPipeline::Stage::Postprocess) {
+			for (size_t i = 0; i < pixelCount; i++) {
+				void *output = &((char *)data)[i * pixelPipeline->PostprocessedDataSize()];
+				void *input = &preprocessedPixels[i * pixelPipeline->PreprocessedDataSize()];
+				pixelPipeline->Postprocess(output, input);
+			}
+		} else { // Colorize
+			for (size_t i = 0; i < pixelCount; i++) {
+				void *output = &((char *)data)[i * pixelPipeline->ColorizedDataSize()];
+				void *input = &preprocessedPixels[i * pixelPipeline->PreprocessedDataSize()];
+				pixelPipeline->Process2(PixelPipeline::Stage::Postprocess, output, input);
+			}
+		}
+	}
+
+	void BasicPixelManager::GetPixelData(void *data, PixelPipeline::Stage stage, std::string_view field) {
+		assert(PixelPipeline::StageValid(stage));
+		throw not_implemented();
+	}
+
 	void BasicPixelManager::SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
+		assert(PixelPipeline::StageValid(uploadPoint));
 		gpuTextureUploadPoint = uploadPoint;
 	}
 
@@ -116,7 +144,7 @@ namespace Imagina {
 			}
 		}
 		if (gpuTexture) {
-			gpuTexture->SetImage(width, height, pixels);
+			gpuTexture->SetImage(width, height, finalPixels);
 		}
 	}
 
@@ -178,10 +206,10 @@ namespace Imagina {
 
 		pixelPipeline->Preprocess(preprocessedOutput, value);
 
-		if (!pixelManager->pixels || (char *)pixelManager->pixels == pixelManager->preprocessedPixels) return;
+		if (!pixelManager->finalPixels || (char *)pixelManager->finalPixels == pixelManager->preprocessedPixels) return;
 		assert(pixelManager->gpuTextureUploadPoint >= PixelPipeline::Stage::Postprocess);
 
-		void *finalOutput = &pixelManager->pixels[pixelIndex];
+		void *finalOutput = &pixelManager->finalPixels[pixelIndex];
 
 		const IPixelProcessor *postprocessor = pixelPipeline->GetPostprocessor();
 		const IPixelProcessor *colorizer = pixelPipeline->GetColorizer();

@@ -35,6 +35,8 @@ namespace Imagina {
 
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) = 0;
+		virtual void GetPixelData(void *data, PixelPipeline::Stage stage) = 0; // TODO: Add invertY
+		virtual void GetPixelData(void *data, PixelPipeline::Stage stage, std::string_view field) = 0; // TODO: Add invertY
 
 		virtual void SetTargetLocation(const HRLocation &location) = 0;
 		virtual void SetResolution(GRInt width, GRInt height) = 0;
