@@ -97,6 +97,7 @@ namespace Imagina {
 		Stage TrueStage(Stage stage) {
 			assert(StageValid(stage));
 			while (stage > Stage::Preprocess && !stages[(uint8_t)stage]) --(uint8_t &)stage;
+			return stage;
 		}
 
 		inline void Process(Stage stage, void *output, void *input) const {

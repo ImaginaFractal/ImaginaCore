@@ -6,6 +6,7 @@
 namespace Imagina {
 	class im_export FractalContext {
 	public:
+		IController *Controller = nullptr;
 		IPixelManager *PixelManager = nullptr;
 		IGpuTextureManager *GpuTextureManager = nullptr;
 		IEvaluator *Evaluator = nullptr;
@@ -13,6 +14,7 @@ namespace Imagina {
 
 		std::function<void(HRReal, HRReal)> OnReferenceChange;
 
+		void UseController(IController *controller);
 		void UsePixelManager(IPixelManager *pixelManager);
 		void UsePixelManager(IGpuPixelManager *pixelManager);
 		void UseEvaluator(IEvaluator *evaluator);

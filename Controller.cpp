@@ -8,6 +8,7 @@ namespace Imagina {
 	}
 	void NavigationController::SetPixelManager(IPixelManager *pixelManager) {
 		this->pixelManager = pixelManager;
+		pixelManager->SetTargetLocation(immediateTarget);
 	}
     void NavigationController::SetLocationManager(ILocationManager *locationManager) {
 		this->locationManager = locationManager;

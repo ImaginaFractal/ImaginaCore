@@ -4,6 +4,7 @@
 
 namespace Imagina {
 	class IController {
+	public:
 		virtual HRLocation GetRenderLocation() = 0;
 
 		virtual void SetPixelManager(IPixelManager *pixelManager) = 0;
@@ -14,7 +15,7 @@ namespace Imagina {
 		virtual void Update(SRReal deltaTime) = 0;
 	};
 
-	class im_export NavigationController : IController {
+	class im_export NavigationController : public IController {
 	private:
 		HRLocation targetLocation = HRLocation(0.0, 0.0, 2.0);
 		HRLocation renderLocation = HRLocation(0.0, 0.0, 2.0);
