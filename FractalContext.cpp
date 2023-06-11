@@ -31,8 +31,8 @@ namespace Imagina {
 		LocationManager->SetEvaluator(Evaluator);
 		LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
 	}
-	//void FractalContext::SetTargetLocation(const HRLocation &location) {
-	//	PixelManager->SetTargetLocation(location);
+	//void FractalContext::SetImmediateTarget(const HRLocation &location) {
+	//	PixelManager->SetImmediateTarget(location);
 	//	LocationManager->LocationChanged(location);
 	//}
 

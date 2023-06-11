@@ -46,7 +46,7 @@ namespace Imagina {
 		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
 
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
-		virtual void SetTargetLocation(const HRLocation &location) override;
+		virtual void SetImmediateTarget(const HRLocation &location) override;
 		virtual void SetResolution(GRInt width, GRInt height) override;
 		virtual void InvalidatePixels() override;
 

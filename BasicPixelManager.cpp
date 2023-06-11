@@ -103,7 +103,7 @@ namespace Imagina {
 		valid = false;
 	}
 
-	void BasicPixelManager::SetTargetLocation(const HRLocation &location) {
+	void BasicPixelManager::SetImmediateTarget(const HRLocation &location) {
 		this->location = location;
 		valid = false;
 	}

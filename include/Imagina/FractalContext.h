@@ -22,7 +22,7 @@ namespace Imagina {
 
 		void Link();
 
-		//void SetTargetLocation(const HRLocation &location);
+		//void SetImmediateTarget(const HRLocation &location);
 
 		void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY);
 		void Update(SRReal deltaTime);
