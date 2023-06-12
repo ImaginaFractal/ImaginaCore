@@ -90,7 +90,7 @@ namespace Imagina {
 		}
 	}
 
-	void BasicPixelManager::GetPixelData(void *data, PixelPipeline::Stage stage, std::string_view field) {
+	void BasicPixelManager::GetPixelData(void *data, PixelPipeline::Stage stage, const char *field) {
 		assert(PixelPipeline::StageValid(stage));
 		throw not_implemented();
 	}

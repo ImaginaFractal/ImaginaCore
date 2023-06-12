@@ -3,9 +3,9 @@
 #include "Declarations.h"
 #include "PlatformDependent.h"
 #include <cstdint>
-#include <string_view>
 #include <initializer_list>
 #include <cassert>
+#include <cstring>
 
 namespace Imagina {
 	enum class PixelDataType {
@@ -60,7 +60,7 @@ namespace Imagina {
 	};
 
 	struct FieldDescriptor {
-		std::string_view Name;
+		const char *Name;
 		PixelDataType Type;
 		ptrdiff_t Offset;
 	};
@@ -70,7 +70,7 @@ namespace Imagina {
 		size_t FieldCount;
 		const FieldDescriptor *Fields;
 
-		const FieldDescriptor *FindField(std::string_view name) const;
+		const FieldDescriptor *FindField(const char *name) const;
 	};
 
 	class IPixelProcessor {

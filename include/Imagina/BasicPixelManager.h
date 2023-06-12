@@ -43,7 +43,7 @@ namespace Imagina {
 
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
 		virtual void GetPixelData(void *data, PixelPipeline::Stage stage) override;
-		virtual void GetPixelData(void *data, PixelPipeline::Stage stage, std::string_view field) override;
+		virtual void GetPixelData(void *data, PixelPipeline::Stage stage, const char *field) override;
 
 		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
 

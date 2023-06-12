@@ -1,11 +1,13 @@
 #include "PixelProcessing.h"
 #include "Evaluator.h"
-#include <assert.h> // TEMPORARY
+#include <assert.h>
+#include <string.h>
 
 namespace Imagina {
-	im_export const FieldDescriptor *PixelDataDescriptor::FindField(std::string_view name) const {
+	im_export const FieldDescriptor *PixelDataDescriptor::FindField(const char *name) const {
 		for (size_t i = 0; i < FieldCount; i++) {
-			if (Fields[i].Name == name) {
+			//if (Fields[i].Name == name) {
+			if (strcmp(Fields[i].Name, name) == 0) {
 				return &Fields[i];
 			}
 		}
@@ -156,11 +158,11 @@ namespace Imagina {
 	};
 
 	const FieldDescriptor TestProcessor::OutputFields[1]{
-		{ "Iterations"sv, PixelDataType::Float32, 0 }
+		{ "Iterations", PixelDataType::Float32, 0 }
 	};
 
 	void TestProcessor::SetInput(const PixelDataDescriptor *descriptor) {
-		const FieldDescriptor *sourceField = descriptor->FindField("Value"sv);
+		const FieldDescriptor *sourceField = descriptor->FindField("Value");
 
 		assert(sourceField->Type == PixelDataType::Float64);
 
@@ -173,8 +175,8 @@ namespace Imagina {
 		*(float *)output = (float)*(double *)((char *)input + sourceOffset);
 	}
 	void TestProcessor2::SetInput(const PixelDataDescriptor *descriptor) {
-		const FieldDescriptor *iterationsField = descriptor->FindField("Iterations"sv);
-		const FieldDescriptor *finalZField = descriptor->FindField("FinalZ"sv);
+		const FieldDescriptor *iterationsField = descriptor->FindField("Iterations");
+		const FieldDescriptor *finalZField = descriptor->FindField("FinalZ");
 
 		assert(iterationsField->Type == PixelDataType::Uint64);
 		assert(finalZField->Type == PixelDataType::SRComplex);
@@ -185,7 +187,7 @@ namespace Imagina {
 	const PixelDataDescriptor *TestProcessor2::GetOutputDescriptor() {
 		using namespace std;
 		static const FieldDescriptor OutputFields[1]{
-			{ "Value"sv, PixelDataType::Float64, 0 }
+			{ "Value", PixelDataType::Float64, 0 }
 		};
 
 		static const PixelDataDescriptor OutputDescriptor{
