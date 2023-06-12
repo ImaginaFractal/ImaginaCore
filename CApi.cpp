@@ -2,6 +2,14 @@
 #include "PixelManager.h"
 
 namespace ImCApi {
+	void *ImAlloc(size_t size) {
+		return malloc(size);
+	}
+
+	void ImFree(void *p) {
+		free(p);
+	}
+
 	bool RasterizingInterface_GetCoordinate(IRasterizingInterface *rasterizingInterface, HRReal *x, HRReal *y) {
 		return ((Imagina::IRasterizingInterface *)rasterizingInterface)->GetCoordinate(*x, *y);
 	}

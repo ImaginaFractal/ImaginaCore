@@ -6,7 +6,11 @@ namespace Imagina {
 		release(instance);
 	}
 	const PixelDataDescriptor *LowPrecisionEvaluatorDelegate::GetOutputDescriptor() {
-		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
+		if (!outputDescriptor) {
+			outputDescriptor = (PixelDataDescriptor *)getOutputDescriptor(instance);
+		}
+		return outputDescriptor;
+		//IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 	void LowPrecisionEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (ImCApi::StandardEvaluationParameters *)&parameters);

@@ -8,7 +8,7 @@
 #include <cstring>
 
 namespace Imagina {
-	enum class PixelDataType {
+	enum class PixelDataType : uint32_t {
 		Invalid = 0x0,
 
 		// Integer
@@ -61,8 +61,8 @@ namespace Imagina {
 
 	struct FieldDescriptor {
 		const char *Name;
-		PixelDataType Type;
 		ptrdiff_t Offset;
+		PixelDataType Type;
 	};
 
 	struct im_export PixelDataDescriptor {
