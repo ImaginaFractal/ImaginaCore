@@ -6,7 +6,7 @@ FILE(GLOB SourceFiles "*.cpp")
 
 add_library (ImaginaCore SHARED ${SourceFiles})
 SET_TARGET_PROPERTIES(ImaginaCore PROPERTIES PREFIX "")
-#set_target_properties (ImaginaCore PROPERTIES OUTPUT_NAME "Imagina")
+set_target_properties (ImaginaCore PROPERTIES OUTPUT_NAME "Imagina")
 
 target_include_directories(ImaginaCore PRIVATE "include/Imagina")
 
