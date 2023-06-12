@@ -65,7 +65,7 @@ namespace Imagina {
 	public:
 		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
-		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override final;
+		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
 
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
