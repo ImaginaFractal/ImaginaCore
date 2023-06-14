@@ -4,6 +4,7 @@
 #include "PlatformDependent.h"
 #include <cstdint>
 #include <string_view>
+#include <initializer_list>
 #include <cassert>
 
 namespace Imagina {
@@ -74,47 +75,86 @@ namespace Imagina {
 
 	class IPixelProcessor {
 	public:
+		virtual ~IPixelProcessor() = default;
+
 		virtual void SetInput(const PixelDataDescriptor *descriptor) = 0;
 		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
 
 		virtual void Process(void *output, void *input) const = 0;
 	};
 
-	class im_export PixelPipeline {
+	// A special case of SerialCompositeProcessor
+	class im_export SerialCompositeProcessor2 : public IPixelProcessor {
+		IPixelProcessor *processors[2];
+		size_t intermediateDataSize = 0;
+
+	public:
+		SerialCompositeProcessor2(IPixelProcessor *first, IPixelProcessor *second) : processors{ first, second } { assert(first && second); }
+
+		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void Process(void *output, void *input) const override;
+	};
+
+	class im_export SerialCompositeProcessor : public IPixelProcessor {
+		IPixelProcessor **processors;
+		size_t processorCount;
+		size_t intermediateDataSize = 0;
+
+	public:
+		SerialCompositeProcessor(std::initializer_list<IPixelProcessor *> processors);
+
+		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void Process(void *output, void *input) const override;
+	};
+
+	class im_export CopyProcessor : public IPixelProcessor {
+		const PixelDataDescriptor *output;
+		size_t dataSize;
+
+	public:
+		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
+		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void Process(void *output, void *input) const override;
+	};
+
+	class im_export PixelPipeline final {
 		IPixelProcessor *stages[4]{};
 		const PixelDataDescriptor *outputs[4]{};
+
+		IPixelProcessor *composite2[2]{};
+		IPixelProcessor *composite3 = nullptr;
+
 		bool linked = false;
 
 	public:
-		enum class Stage : uint8_t {
+		enum Stage : uint8_t {
 			None = 0,
+			Evaluated = 0,
+
 			Preprocess = 1,
+			Preprocessed = 1,
+
 			Postprocess = 2,
+			Postprocessed = 2,
+
 			Colorize = 3,
+			Colorized = 3,
 		};
 
+		~PixelPipeline() {
+			delete composite2[0];
+			delete composite2[1];
+			delete composite3;
+		}
+
+		IPixelProcessor *GetCompositeProcessor(Stage first, Stage last);
+
 		static constexpr bool StageValid(Stage stage) { return stage > Stage::None && stage <= Stage::Colorize; }
-		Stage TrueStage(Stage stage) {
-			assert(StageValid(stage));
-			while (stage > Stage::Preprocess && !stages[(uint8_t)stage]) --(uint8_t &)stage;
-			return stage;
-		}
 
-		inline void Process(Stage stage, void *output, void *input) const {
-			assert(linked);
-			const IPixelProcessor *processor = stages[(uint8_t)stage];
-			if (processor) {
-				processor->Process(output, input);
-			} else {
-				memcpy(output, input, outputs[(uint8_t)stage]->Size);
-			}
-		}
-
-		// Process two consecutive stages, unnecessary copy and allocation are eliminated
-		void Process2(Stage stage1, void *output, void *input) const;
-
-		void ProcessAll(void *output, void *input) const;
-
+		bool Equivalent(Stage a, Stage b) { return outputs[a] == outputs[b]; }
+		
 		void UseEvaluator(IEvaluator *evaluator);
 
 		void UsePreprocessor(IPixelProcessor *processor);
@@ -134,10 +174,6 @@ namespace Imagina {
 		inline size_t ColorizedDataSize()		const { return outputs[3]->Size; }
 
 		const PixelDataDescriptor *GetOutputOfStage(Stage stage);
-
-		inline void Preprocess(void *output, void *input)	const { Process(Stage::Preprocess, output, input); }
-		inline void Postprocess(void *output, void *input)	const { Process(Stage::Postprocess, output, input); }
-		inline void Colorize(void *output, void *input)		const { Process(Stage::Colorize, output, input); }
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32

@@ -25,13 +25,15 @@ namespace Imagina {
 		bool initialized = false, valid = false;
 
 		size_t preprocessedDataSize = 0;
-		size_t postprocessedDataSize = 0;
 		size_t finalDataSize = 0;
 
 		char *preprocessedPixels = nullptr;
 		float *finalPixels = nullptr; // Equal to preprocessedPixels when no preprocessing is needed
 
-		PixelPipeline *pixelPipeline;
+		PixelPipeline *pixelPipeline = nullptr;
+		IPixelProcessor *preprocessor = nullptr;
+		IPixelProcessor *finalProcessor = nullptr;
+		CopyProcessor copyProcessor; // used as preprocessor if no preprocessor is provided
 
 		void Initialize();
 

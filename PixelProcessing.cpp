@@ -13,61 +13,100 @@ namespace Imagina {
 		return nullptr;
 	}
 
-	// Process two consecutive stages, unnecessary copy and allocation are eliminated
-
-	void PixelPipeline::Process2(Stage stage1, void *output, void *input) const {
-		assert(linked);
-		const IPixelProcessor *processor1 = stages[(size_t)stage1];
-		const IPixelProcessor *processor2 = stages[(size_t)stage1 + 1];
-
-		if (!processor2) {
-			if (processor1) {
-				processor1->Process(output, input);
-			} else {
-				memcpy(output, input, outputs[(size_t)stage1]->Size);
-			}
-			return;
-		}
-
-		void *processor1Output;
-		if (processor1) {
-			processor1Output = alloca(outputs[(size_t)stage1]->Size);
-			processor1->Process(processor1Output, input);
-		} else {
-			processor1Output = input;
-		}
-
-		processor2->Process(output, processor1Output);
+	void SerialCompositeProcessor2::SetInput(const PixelDataDescriptor *descriptor) {
+		processors[0]->SetInput(descriptor);
+		const PixelDataDescriptor *intermediateData = processors[0]->GetOutputDescriptor();
+		intermediateDataSize = intermediateData->Size;
+		processors[1]->SetInput(intermediateData);
 	}
 
-	void PixelPipeline::ProcessAll(void *output, void *input) const {
-		void *data1 = nullptr, *data2 = nullptr;
-		do {
-			if (stages[3]) break;
-			data2 = output;
-			if (stages[2]) break;
-			data1 = output;
-			if (stages[1]) break;
-			memcpy(output, input, outputs[3]->Size);
-			return;
-		} while (0);
+	const PixelDataDescriptor *SerialCompositeProcessor2::GetOutputDescriptor() {
+		return processors[1]->GetOutputDescriptor();
+	}
 
-		if (stages[1]) {
-			if (!data1) data1 = alloca(outputs[1]->Size);
-			stages[1]->Process(data1, input);
-		} else {
-			data1 = input;
-		}
-		if (stages[2]) {
-			if (!data2) data2 = alloca(outputs[2]->Size);
-			stages[2]->Process(data2, data1);
-		} else {
-			data2 = data1;
-		}
-		if (stages[3]) {
-			stages[3]->Process(output, data2);
+	void SerialCompositeProcessor2::Process(void *output, void *input) const {
+		void *intermediateData = alloca(intermediateDataSize);
+
+		processors[0]->Process(intermediateData, input);
+		processors[1]->Process(output, intermediateData);
+	}
+
+	SerialCompositeProcessor::SerialCompositeProcessor(std::initializer_list<IPixelProcessor *> processors) {
+		assert(std::find(processors.begin(), processors.end(), nullptr) == processors.end());
+		assert(processors.size() > 1);
+
+		processorCount = processors.size();
+		this->processors = new IPixelProcessor * [processorCount];
+		std::copy(processors.begin(), processors.end(), this->processors);
+		//memcpy(this->processors, processors.begin(), processorCount * sizeof(IPixelProcessor *));
+	}
+
+	void SerialCompositeProcessor::SetInput(const PixelDataDescriptor *descriptor) {
+		const PixelDataDescriptor *intermediateData;
+
+		processors[0]->SetInput(descriptor);
+		intermediateData = processors[0]->GetOutputDescriptor();
+
+		for (size_t i = 1; i < processorCount; i++) {
+			intermediateDataSize = std::max(intermediateDataSize, intermediateData->Size);
+			processors[i]->SetInput(descriptor);
+			intermediateData = processors[i]->GetOutputDescriptor();
 		}
 	}
+
+	const PixelDataDescriptor *SerialCompositeProcessor::GetOutputDescriptor() {
+		return processors[processorCount - 1]->GetOutputDescriptor();
+	}
+
+	void SerialCompositeProcessor::Process(void *output, void *input) const {
+		void *intermediateData[2] = { alloca(intermediateDataSize * 2) };
+		intermediateData[1] = (char *)intermediateData[0] + intermediateDataSize;
+
+		processors[0]->Process(intermediateData[0], input);
+
+		size_t i;
+		for (i = 1; i < processorCount - 1; i++) {
+			processors[i]->Process(intermediateData[i & 1], intermediateData[~i & 1]);
+		}
+		processors[i]->Process(output, intermediateData[~i & 1]);
+	}
+
+	void CopyProcessor::SetInput(const PixelDataDescriptor *descriptor) {
+		output = descriptor;
+		dataSize = descriptor->Size;
+	}
+
+	const PixelDataDescriptor *CopyProcessor::GetOutputDescriptor() {
+		return output;
+	}
+
+	void CopyProcessor::Process(void *output, void *input) const {
+		memcpy(output, input, dataSize);
+	}
+
+	IPixelProcessor *PixelPipeline::GetCompositeProcessor(Stage first, Stage last) {
+		assert(StageValid(first) && StageValid(last) && first <= last);
+
+		uint8_t First = (uint8_t)first;
+		uint8_t Last = (uint8_t)last;
+
+		while (!stages[First] && First < (uint8_t)Stage::Colorize) First++;
+		while (!stages[Last] && Last > (uint8_t)Stage::Preprocess) Last--;
+
+		if (Last < First) {
+			return nullptr;
+		} else if (First == Last) { // One
+			return stages[First];
+		} else if (First + 1 == Last || !stages[(uint8_t)Stage::Postprocess]) { // Two
+			IPixelProcessor *&compositeProcessor = composite2[First - (uint8_t)Stage::Preprocess];
+			if (compositeProcessor) return compositeProcessor;
+
+			return compositeProcessor = new SerialCompositeProcessor2(stages[First], stages[Last]);
+		} else { // Three
+			if (!composite3) composite3 = new SerialCompositeProcessor({ stages[1], stages[2], stages[3] });
+		}
+	}
+
 	void PixelPipeline::UseEvaluator(IEvaluator *evaluator) {
 		outputs[0] = evaluator->GetOutputDescriptor();
 	}
