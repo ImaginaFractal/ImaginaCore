@@ -6,70 +6,61 @@
 #include <initializer_list>
 #include <cassert>
 #include <cstring>
+#include "pixel_processing.h"
 
 namespace Imagina {
 	enum class PixelDataType : uint32_t {
-		Invalid = 0x0,
+		Invalid = IM_PDT_Invalid,
 
 		// Integer
-		Int8 = 0x10000,
+		Int8 = IM_PDT_Int8,
 		Int16,
 		Int32,
 		Int64,
 
-		Uint8 = 0x10010,
+		Uint8 = IM_PDT_Uint8,
 		Uint16,
 		Uint32,
 		Uint64,
 
 		// Fixed point
-		Fract8 = 0x20000, // Same as Uint, but binary point is before MSB
+		Fract8 = IM_PDT_Fract8, // Same as Uint, but binary point is before MSB
 		Fract16,
 		Fract32,
 		Fract64,
 
 		// Floating point
-		Float16 = 0x30000, // Reserved
+		Float16 = IM_PDT_Float16, // Reserved
 		Float32,
 		Float64,
 		FloatHR,
 
 		// Complex
-		SRComplex = 0x40000,
+		SRComplex = IM_PDT_SRComplex,
 		HRComplex,
 
 		// Color
-		Monochrome8 = 0x80000,
-		Monochrome16 = 0x80000,
+		Monochrome8 = IM_PDT_Monochrome8,
+		Monochrome16,
 
-		RGB8 = 0x80010,
-		RGB16 = 0x80010,
+		RGB8 = IM_PDT_RGB8,
+		RGB16,
 
-		RGB16F = 0x80018,
-		RGB32F = 0x80019,
+		RGB16F = IM_PDT_RGB16F,
+		RGB32F,
 
-		RGBA8 = 0x80020,
-		RGBA16 = 0x80020,
+		RGBA8 = IM_PDT_RGBA8,
+		RGBA16,
 
-		RGBA16F = 0x80028,
-		RGBA32F = 0x80029,
+		RGBA16F = IM_PDT_RGBA16F,
+		RGBA32F,
 
 
 		SRReal = Float64,
 		HRReal = FloatHR,
 	};
 
-	struct FieldDescriptor {
-		const char *Name;
-		ptrdiff_t Offset;
-		PixelDataType Type;
-	};
-
-	struct im_export PixelDataDescriptor {
-		size_t Size;
-		size_t FieldCount;
-		const FieldDescriptor *Fields;
-
+	struct im_export PixelDataDescriptor : _PixelDataDescriptor {
 		const FieldDescriptor *FindField(const char *name) const;
 	};
 

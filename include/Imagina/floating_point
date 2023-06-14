@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bit>
-#include "basic_types"
+#include "types.h"
 
 namespace Imagina {
 	constexpr ExpInt ExponentOf(double x)	{ return ExpInt((std::bit_cast<uint64_t>(x) >> 52) & 0x7FF) - 0x3FF; }

@@ -1,11 +1,18 @@
 #pragma once
 
 #include <exception>
-#include "basic_types"
+#include "complex"
+#include "multi-precision"
+#include "types.h"
+//#include "basic_types"
 #include "constants"
 #include "math"
 
 namespace Imagina {
+	using SRComplex = Complex<SRReal>;
+	using HRComplex = Complex<HRReal>;
+	using HPComplex = Complex<HPReal>;
+
 	template<intmax_t factor, typename type>
 	type MulInt(type a) {
 		return a * Constants::Integer<type, factor>();
