@@ -101,11 +101,13 @@ namespace Imagina {
 			return stages[First];
 		} else if (First + 1 == Last || !stages[(uint8_t)Stage::Postprocess]) { // Two
 			IPixelProcessor *&compositeProcessor = composite2[First - (uint8_t)Stage::Preprocess];
-			if (compositeProcessor) return compositeProcessor;
+			if (!compositeProcessor) compositeProcessor = new SerialCompositeProcessor2(stages[First], stages[Last]);
 
-			return compositeProcessor = new SerialCompositeProcessor2(stages[First], stages[Last]);
+			return compositeProcessor;
 		} else { // Three
 			if (!composite3) composite3 = new SerialCompositeProcessor({ stages[1], stages[2], stages[3] });
+
+			return composite3;
 		}
 	}
 
