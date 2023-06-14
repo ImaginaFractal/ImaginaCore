@@ -4,6 +4,7 @@
 #include "declarations"
 #include "computation" // TODO: Use declarations instead
 #include "pixel_processing"
+#include "evaluator.h"
 
 namespace Imagina {
 	class im_export IEvaluator {
@@ -17,10 +18,12 @@ namespace Imagina {
 		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) = 0;
 	};
 
-	struct StandardEvaluationParameters {
-		ITUint Iterations = 1024;
-		HRReal DivergentEscapeRadius = 0x1.0p8;
-		HRReal ConvergentEscapeRadius = 0x1.0p-16;
+	struct StandardEvaluationParameters : _StandardEvaluationParameters {
+		StandardEvaluationParameters() : _StandardEvaluationParameters{
+			.Iterations = 1024,
+			.DivergentEscapeRadius = 0x1.0p8,
+			.ConvergentEscapeRadius = 0x1.0p-16,
+		} {}
 	};
 
 	class StandardEvaluator : public IEvaluator {

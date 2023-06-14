@@ -1,5 +1,7 @@
-#include "c_api.h"
+#include "imagina.h"
 #include "pixel_manager"
+
+using namespace Imagina;
 
 namespace ImCApi {
 	void *ImAlloc(size_t size) {

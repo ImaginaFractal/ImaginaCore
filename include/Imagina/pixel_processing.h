@@ -1,12 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-
-#ifdef __cplusplus
-#define IM_C_STRUCT_ALIAS(x) struct x
-#else
-#define IM_C_STRUCT_ALIAS(x) typedef struct _##x x
-#endif
+#include "declarations.h"
 
 #ifdef __cplusplus
 namespace Imagina {

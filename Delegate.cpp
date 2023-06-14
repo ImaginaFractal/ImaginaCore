@@ -13,7 +13,7 @@ namespace Imagina {
 		//IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 	void LowPrecisionEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
-		setEvaluationParameters(instance, (ImCApi::StandardEvaluationParameters *)&parameters);
+		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
 	}
 	void LowPrecisionEvaluatorDelegate::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);

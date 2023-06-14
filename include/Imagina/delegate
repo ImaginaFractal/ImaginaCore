@@ -2,7 +2,7 @@
 
 #include "declarations"
 #include "evaluator"
-#include "c_api.h"
+#include "imagina.h"
 
 namespace Imagina {
 	class im_export LowPrecisionEvaluatorDelegate : public LowPrecisionEvaluator {
