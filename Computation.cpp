@@ -1,5 +1,5 @@
-#include "Computation.h"
-#include "PlatformDependent.h"
+#include "computation"
+#include "platform_dependent"
 
 namespace Imagina {
 	bool Task::IsSynchronous() {

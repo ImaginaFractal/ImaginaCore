@@ -1,6 +1,6 @@
 #pragma once
-#include "Types.h"
-#include "Declarations.h"
+#include "types"
+#include "declarations"
 
 namespace Imagina {
 	class IController {

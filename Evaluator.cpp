@@ -1,6 +1,6 @@
-#include "Evaluator.h"
-#include "PixelManager.h"
-#include "OutputDescriptorHelper.h"
+#include "evaluator"
+#include "pixel_manager"
+#include "output_descriptor_helper"
 
 namespace Imagina {
 	bool IEvaluator::Ready() {

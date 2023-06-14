@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PixelManager.h"
-#include "Evaluator.h"
+#include "pixel_manager"
+#include "evaluator"
 
 namespace Imagina {
 	class im_export FractalContext {

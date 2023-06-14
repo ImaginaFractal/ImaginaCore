@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Declarations.h"
-#include "Evaluator.h"
-#include "CApi.h"
+#include "declarations"
+#include "evaluator"
+#include "c_api.h"
 
 namespace Imagina {
 	class im_export LowPrecisionEvaluatorDelegate : public LowPrecisionEvaluator {

@@ -1,6 +1,6 @@
-#include "Controller.h"
-#include "FractalContext.h"
-#include "LocationManager.h"
+#include "controller"
+#include "fractal_context"
+#include "location_manager"
 
 namespace Imagina {
 	void FractalContext::UseController(IController *controller) {

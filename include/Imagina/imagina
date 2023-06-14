@@ -1,0 +1,13 @@
+#pragma once
+
+#include "types"
+#include "controller"
+#include "pixel_processing"
+#include "pixel_manager"
+#include "basic_pixel_manager"
+
+#include "evaluator"
+
+#include "fractal_context"
+
+#include "location_manager"

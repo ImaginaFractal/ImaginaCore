@@ -1,5 +1,5 @@
-#include "CApi.h"
-#include "PixelManager.h"
+#include "c_api.h"
+#include "pixel_manager"
 
 namespace ImCApi {
 	void *ImAlloc(size_t size) {

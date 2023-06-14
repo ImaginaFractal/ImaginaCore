@@ -2,9 +2,9 @@
 
 #include <stdint.h>
 #include <vector>
-#include "Declarations.h"
-#include "Types.h"
-#include "PixelProcessing.h"
+#include "declarations"
+#include "types"
+#include "pixel_processing"
 
 namespace Imagina {
 	class IGpuTexture {

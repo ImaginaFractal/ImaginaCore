@@ -1,6 +1,6 @@
-#include "LocationManager.h"
-#include "FractalContext.h"
-#include "FloatingPoint.h"
+#include "location_manager"
+#include "fractal_context"
+#include "floating_point"
 
 namespace Imagina {
 	void StandardLocationManager::SetEvaluator(IEvaluator *evaluator) {

@@ -2,9 +2,9 @@
 
 #include <atomic>
 
-#include "Declarations.h"
-#include "PixelManager.h"
-#include "Computation.h" // TODO: Replace with Declarations.h
+#include "declarations"
+#include "pixel_manager"
+#include "computation" // TODO: Replace with declarations
 
 namespace Imagina {
 	class BasicRasterizingInterface;

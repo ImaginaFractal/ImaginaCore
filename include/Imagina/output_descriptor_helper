@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "Types.h"
-#include "PixelProcessing.h"
+#include "types"
+#include "pixel_processing"
 
 //https://www.scs.stanford.edu/~dm/blog/va-opt.html
 #define PARENS ()

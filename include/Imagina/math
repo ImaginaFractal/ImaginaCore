@@ -2,8 +2,8 @@
 
 #include <cmath>
 #include <algorithm>
-#include "BasicTypes.h"
-#include "Constants.h"
+#include "basic_types"
+#include "constants"
 
 namespace Imagina {
 	template<typename T> inline T ManhattanHypot(T x, T y) {

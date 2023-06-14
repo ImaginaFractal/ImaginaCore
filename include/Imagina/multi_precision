@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "Declarations.h"
+#include "declarations"
 
 namespace Imagina {
 	struct im_export FixedGeneric32 {

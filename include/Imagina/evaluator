@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Types.h"
-#include "Declarations.h"
-#include "Computation.h" // TODO: Use Declarations.h instead
-#include "PixelProcessing.h"
+#include "types"
+#include "declarations"
+#include "computation" // TODO: Use declarations instead
+#include "pixel_processing"
 
 namespace Imagina {
 	class im_export IEvaluator {

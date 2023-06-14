@@ -1,5 +1,5 @@
-#include "PixelProcessing.h"
-#include "Evaluator.h"
+#include "pixel_processing"
+#include "evaluator"
 #include <assert.h>
 #include <string.h>
 

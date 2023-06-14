@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include "Constants.h"
+#include "constants"
 
 namespace Imagina {
 	template<typename Real>

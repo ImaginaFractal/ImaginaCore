@@ -1,5 +1,5 @@
-#include "Delegate.h"
-#include "OutputDescriptorHelper.h"
+#include "delegate"
+#include "output_descriptor_helper"
 
 namespace Imagina {
 	LowPrecisionEvaluatorDelegate::~LowPrecisionEvaluatorDelegate() {

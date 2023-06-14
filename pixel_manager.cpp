@@ -1,6 +1,4 @@
-#include "Includes.h"
-
-#include "PixelManager.h"
+#include "pixel_manager"
 
 namespace Imagina {
 	void IRasterizer::Cancel() {}

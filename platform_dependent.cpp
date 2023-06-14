@@ -1,4 +1,4 @@
-#include "PlatformDependent.h"
+#include "platform_dependent"
 
 #ifdef _WIN32
 
