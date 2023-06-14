@@ -1,7 +1,7 @@
 #pragma once
 
 #include "complex"
-#include "multi_precision"
+#include "multi-precision"
 
 namespace Imagina {
 	using GRReal = float; // Real type for graphics

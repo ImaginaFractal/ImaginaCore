@@ -1,4 +1,4 @@
-#include "multi_precision"
+#include "multi-precision"
 #include <algorithm>
 
 namespace Imagina {
@@ -197,7 +197,7 @@ namespace Imagina {
 	void DoubleMul(double *dst, const double *x, const double *y) { *dst = *x * *y; }
 	void DoubleDiv(double *dst, const double *x, const double *y) { *dst = *x / *y; }
 
-	MultiPrecision MPDouble{
+	MultiPrecision MPDouble{ {
 		.Name = "double",
 
 		//.InitContent = (void (*)(MPReal *))DoubleInitContent,
@@ -220,5 +220,5 @@ namespace Imagina {
 		.Sub = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleSub,
 		.Mul = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleMul,
 		.Div = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleDiv,
-	};
+	} };
 }
