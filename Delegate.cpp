@@ -10,12 +10,32 @@ namespace Imagina {
 			outputDescriptor = (PixelDataDescriptor *)getOutputDescriptor(instance);
 		}
 		return outputDescriptor;
-		//IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
 	}
 	void LowPrecisionEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
 	}
 	void LowPrecisionEvaluatorDelegate::Evaluate(IRasterizingInterface &rasterizingInterface) {
+		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);
+	}
+
+
+	SimpleEvaluatorDelegate::~SimpleEvaluatorDelegate() {
+		release(instance);
+	}
+	const PixelDataDescriptor *SimpleEvaluatorDelegate::GetOutputDescriptor() {
+		if (!outputDescriptor) {
+			outputDescriptor = (PixelDataDescriptor *)getOutputDescriptor(instance);
+		}
+		return outputDescriptor;
+	}
+	void SimpleEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
+		SimpleEvaluator::SetEvaluationParameters(parameters);
+	}
+	void SimpleEvaluatorDelegate::Precompute() {
+		setReferenceLocationAndPrecompute(instance, x, y, radius);
+	}
+	void SimpleEvaluatorDelegate::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);
 	}
 }
