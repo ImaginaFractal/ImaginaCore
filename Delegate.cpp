@@ -1,15 +1,15 @@
 #include "delegate"
-#include "output_descriptor_helper"
+#include "output_info_helper"
 
 namespace Imagina {
 	LowPrecisionEvaluatorDelegate::~LowPrecisionEvaluatorDelegate() {
 		release(instance);
 	}
-	const PixelDataDescriptor *LowPrecisionEvaluatorDelegate::GetOutputDescriptor() {
-		if (!outputDescriptor) {
-			outputDescriptor = (PixelDataDescriptor *)getOutputDescriptor(instance);
+	const PixelDataInfo *LowPrecisionEvaluatorDelegate::GetOutputInfo() {
+		if (!outputInfo) {
+			outputInfo = (PixelDataInfo *)getOutputInfo(instance);
 		}
-		return outputDescriptor;
+		return outputInfo;
 	}
 	void LowPrecisionEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
@@ -22,11 +22,11 @@ namespace Imagina {
 	SimpleEvaluatorDelegate::~SimpleEvaluatorDelegate() {
 		release(instance);
 	}
-	const PixelDataDescriptor *SimpleEvaluatorDelegate::GetOutputDescriptor() {
-		if (!outputDescriptor) {
-			outputDescriptor = (PixelDataDescriptor *)getOutputDescriptor(instance);
+	const PixelDataInfo *SimpleEvaluatorDelegate::GetOutputInfo() {
+		if (!outputInfo) {
+			outputInfo = (PixelDataInfo *)getOutputInfo(instance);
 		}
-		return outputDescriptor;
+		return outputInfo;
 	}
 	void SimpleEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);

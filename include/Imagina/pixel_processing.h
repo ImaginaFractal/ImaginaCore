@@ -64,19 +64,19 @@ typedef uint32_t PixelDataType;
 enum class PixelDataType : uint32_t;
 #endif
 
-typedef struct _FieldDescriptor {
+typedef struct _FieldInfo {
 	const char *Name;
 	ptrdiff_t Offset;
 	PixelDataType Type;
-}FieldDescriptor;
+}FieldInfo;
 
-struct _PixelDataDescriptor {
+struct _PixelDataInfo {
 	size_t Size;
 	size_t FieldCount;
-	const FieldDescriptor *Fields;
+	const FieldInfo *Fields;
 };
 
-IM_C_STRUCT_ALIAS(PixelDataDescriptor);
+IM_C_STRUCT_ALIAS(PixelDataInfo);
 
 
 #ifdef __cplusplus

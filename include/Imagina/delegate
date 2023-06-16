@@ -11,23 +11,23 @@ namespace Imagina {
 		};
 		ImCApi::IEvaluator *instance;
 		ImCApi::pIEvaluator_Release release;
-		ImCApi::pIEvaluator_GetOutputDescriptor getOutputDescriptor;
+		ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
 		ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters;
 		ImCApi::pLowPrecisionEvaluator_Evaluate evaluate;
 
-		PixelDataDescriptor *outputDescriptor = nullptr;
+		PixelDataInfo *outputInfo = nullptr;
 	public:
 		LowPrecisionEvaluatorDelegate(
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
-			ImCApi::pIEvaluator_GetOutputDescriptor getOutputDescriptor,
+			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
 			ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters,
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
-		) : instance(instance), release(release), getOutputDescriptor(getOutputDescriptor), setEvaluationParameters(setEvaluationParameters), evaluate(evaluate) {}
+		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), evaluate(evaluate) {}
 
 		virtual ~LowPrecisionEvaluatorDelegate() override;
 
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
 
@@ -37,26 +37,26 @@ namespace Imagina {
 	class im_export SimpleEvaluatorDelegate : public SimpleEvaluator {
 		ImCApi::IEvaluator *instance;
 		ImCApi::pIEvaluator_Release release;
-		ImCApi::pIEvaluator_GetOutputDescriptor getOutputDescriptor;
+		ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
 		ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters;
 		ImCApi::pSimpleEvaluator_SetReferenceLocationAndPrecompute setReferenceLocationAndPrecompute;
 		ImCApi::pSimpleEvaluator_Evaluate evaluate;
 
-		PixelDataDescriptor *outputDescriptor = nullptr;
+		PixelDataInfo *outputInfo = nullptr;
 
 	public:
 		SimpleEvaluatorDelegate(
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
-			ImCApi::pIEvaluator_GetOutputDescriptor getOutputDescriptor,
+			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
 			ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters,
 			ImCApi::pSimpleEvaluator_SetReferenceLocationAndPrecompute setReferenceLocationAndPrecompute,
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
-		) : instance(instance), release(release), getOutputDescriptor(getOutputDescriptor), setEvaluationParameters(setEvaluationParameters), setReferenceLocationAndPrecompute(setReferenceLocationAndPrecompute), evaluate(evaluate) {}
+		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), setReferenceLocationAndPrecompute(setReferenceLocationAndPrecompute), evaluate(evaluate) {}
 
 		virtual ~SimpleEvaluatorDelegate() override;
 
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
 

@@ -23,7 +23,7 @@ im_export bool RasterizingInterface_GetCoordinate(IRasterizingInterface *rasteri
 im_export void RasterizingInterface_WriteResults(IRasterizingInterface *rasterizingInterface, void *value);
 
 typedef void (*pIEvaluator_Release)(IEvaluator *instance);
-typedef const Imagina::PixelDataDescriptor *(*pIEvaluator_GetOutputDescriptor)(IEvaluator *instance);
+typedef const Imagina::PixelDataInfo *(*pIEvaluator_GetOutputInfo)(IEvaluator *instance);
 
 typedef void (*pStandardEvaluator_SetEvaluationParameters)(IEvaluator *instance, const Imagina::StandardEvaluationParameters *parameters);
 

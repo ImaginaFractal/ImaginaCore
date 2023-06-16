@@ -4,7 +4,7 @@
 #include <string.h>
 
 namespace Imagina {
-	im_export const FieldDescriptor *PixelDataDescriptor::FindField(const char *name) const {
+	im_export const FieldInfo *PixelDataInfo::FindField(const char *name) const {
 		for (size_t i = 0; i < FieldCount; i++) {
 			//if (Fields[i].Name == name) {
 			if (strcmp(Fields[i].Name, name) == 0) {
@@ -15,15 +15,15 @@ namespace Imagina {
 		return nullptr;
 	}
 
-	void SerialCompositeProcessor2::SetInput(const PixelDataDescriptor *descriptor) {
-		processors[0]->SetInput(descriptor);
-		const PixelDataDescriptor *intermediateData = processors[0]->GetOutputDescriptor();
+	void SerialCompositeProcessor2::SetInput(const PixelDataInfo *info) {
+		processors[0]->SetInput(info);
+		const PixelDataInfo *intermediateData = processors[0]->GetOutputInfo();
 		intermediateDataSize = intermediateData->Size;
 		processors[1]->SetInput(intermediateData);
 	}
 
-	const PixelDataDescriptor *SerialCompositeProcessor2::GetOutputDescriptor() {
-		return processors[1]->GetOutputDescriptor();
+	const PixelDataInfo *SerialCompositeProcessor2::GetOutputInfo() {
+		return processors[1]->GetOutputInfo();
 	}
 
 	void SerialCompositeProcessor2::Process(void *output, void *input) const {
@@ -43,21 +43,21 @@ namespace Imagina {
 		//memcpy(this->processors, processors.begin(), processorCount * sizeof(IPixelProcessor *));
 	}
 
-	void SerialCompositeProcessor::SetInput(const PixelDataDescriptor *descriptor) {
-		const PixelDataDescriptor *intermediateData;
+	void SerialCompositeProcessor::SetInput(const PixelDataInfo *info) {
+		const PixelDataInfo *intermediateData;
 
-		processors[0]->SetInput(descriptor);
-		intermediateData = processors[0]->GetOutputDescriptor();
+		processors[0]->SetInput(info);
+		intermediateData = processors[0]->GetOutputInfo();
 
 		for (size_t i = 1; i < processorCount; i++) {
 			intermediateDataSize = std::max(intermediateDataSize, intermediateData->Size);
-			processors[i]->SetInput(descriptor);
-			intermediateData = processors[i]->GetOutputDescriptor();
+			processors[i]->SetInput(info);
+			intermediateData = processors[i]->GetOutputInfo();
 		}
 	}
 
-	const PixelDataDescriptor *SerialCompositeProcessor::GetOutputDescriptor() {
-		return processors[processorCount - 1]->GetOutputDescriptor();
+	const PixelDataInfo *SerialCompositeProcessor::GetOutputInfo() {
+		return processors[processorCount - 1]->GetOutputInfo();
 	}
 
 	void SerialCompositeProcessor::Process(void *output, void *input) const {
@@ -73,12 +73,12 @@ namespace Imagina {
 		processors[i]->Process(output, intermediateData[~i & 1]);
 	}
 
-	void CopyProcessor::SetInput(const PixelDataDescriptor *descriptor) {
-		output = descriptor;
-		dataSize = descriptor->Size;
+	void CopyProcessor::SetInput(const PixelDataInfo *info) {
+		output = info;
+		dataSize = info->Size;
 	}
 
-	const PixelDataDescriptor *CopyProcessor::GetOutputDescriptor() {
+	const PixelDataInfo *CopyProcessor::GetOutputInfo() {
 		return output;
 	}
 
@@ -112,7 +112,7 @@ namespace Imagina {
 	}
 
 	void PixelPipeline::UseEvaluator(IEvaluator *evaluator) {
-		outputs[0] = evaluator->GetOutputDescriptor();
+		outputs[0] = evaluator->GetOutputInfo();
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
 		stages[1] = processor;
@@ -128,57 +128,57 @@ namespace Imagina {
 	}
 
 	void PixelPipeline::Link() {
-		const PixelDataDescriptor *pixelData = outputs[0];
+		const PixelDataInfo *pixelData = outputs[0];
 
 		if (stages[1]) {
 			stages[1]->SetInput(pixelData);
-			pixelData = stages[1]->GetOutputDescriptor();
+			pixelData = stages[1]->GetOutputInfo();
 		}
 		outputs[1] = pixelData;
 		if (stages[2]) {
 			stages[2]->SetInput(pixelData);
-			pixelData = stages[2]->GetOutputDescriptor();
+			pixelData = stages[2]->GetOutputInfo();
 		}
 		outputs[2] = pixelData;
 		if (stages[3]) {
 			stages[3]->SetInput(pixelData);
-			pixelData = stages[3]->GetOutputDescriptor();
+			pixelData = stages[3]->GetOutputInfo();
 		}
 		outputs[3] = pixelData;
 		linked = true;
 	}
 
-	const PixelDataDescriptor *PixelPipeline::GetOutputOfStage(Stage stage) {
+	const PixelDataInfo *PixelPipeline::GetOutputOfStage(Stage stage) {
 		assert(linked);
 		assert(StageValid(stage));
 		return outputs[(size_t)stage];
 	}
 
 	using namespace std;
-	const PixelDataDescriptor TestProcessor::OutputDescriptor{
+	const PixelDataInfo TestProcessor::OutputInfo{
 		4, 1, TestProcessor::OutputFields
 	};
 
-	const FieldDescriptor TestProcessor::OutputFields[1]{
+	const FieldInfo TestProcessor::OutputFields[1]{
 		{ "Iterations", 0, PixelDataType::Float32 }
 	};
 
-	void TestProcessor::SetInput(const PixelDataDescriptor *descriptor) {
-		const FieldDescriptor *sourceField = descriptor->FindField("Value");
+	void TestProcessor::SetInput(const PixelDataInfo *info) {
+		const FieldInfo *sourceField = info->FindField("Value");
 
 		assert(sourceField->Type == PixelDataType::Float64);
 
 		sourceOffset = sourceField->Offset;
 	}
-	const PixelDataDescriptor *TestProcessor::GetOutputDescriptor() {
-		return &OutputDescriptor;
+	const PixelDataInfo *TestProcessor::GetOutputInfo() {
+		return &OutputInfo;
 	}
 	void TestProcessor::Process(void *output, void *input) const {
 		*(float *)output = (float)*(double *)((char *)input + sourceOffset);
 	}
-	void TestProcessor2::SetInput(const PixelDataDescriptor *descriptor) {
-		const FieldDescriptor *iterationsField = descriptor->FindField("Iterations");
-		const FieldDescriptor *finalZField = descriptor->FindField("FinalZ");
+	void TestProcessor2::SetInput(const PixelDataInfo *info) {
+		const FieldInfo *iterationsField = info->FindField("Iterations");
+		const FieldInfo *finalZField = info->FindField("FinalZ");
 
 		assert(iterationsField->Type == PixelDataType::Uint64);
 		assert(finalZField->Type == PixelDataType::SRComplex);
@@ -186,17 +186,17 @@ namespace Imagina {
 		iterationsOffset = iterationsField->Offset;
 		finalZOffset = finalZField->Offset;
 	}
-	const PixelDataDescriptor *TestProcessor2::GetOutputDescriptor() {
+	const PixelDataInfo *TestProcessor2::GetOutputInfo() {
 		using namespace std;
-		static const FieldDescriptor OutputFields[1]{
+		static const FieldInfo OutputFields[1]{
 			{ "Value", 0, PixelDataType::Float64 }
 		};
 
-		static const PixelDataDescriptor OutputDescriptor{
+		static const PixelDataInfo OutputInfo{
 			8, 1, OutputFields
 		};
 
-		return &OutputDescriptor;
+		return &OutputInfo;
 	}
 	template<typename T> T &GetField(void *base, ptrdiff_t offset) {
 		return *(T *)((char *)base + offset);

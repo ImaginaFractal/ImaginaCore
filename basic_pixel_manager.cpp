@@ -9,7 +9,7 @@ namespace Imagina {
 		assert(evaluator);
 #ifdef _DEBUG
 		if (gpuTextureUploadPoint != PixelPipeline::None) {
-			const PixelDataDescriptor *finalData = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputDescriptor() : preprocessedData;
+			const PixelDataInfo *finalData = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputInfo() : preprocessedData;
 			assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
 		}
 #endif
@@ -30,7 +30,7 @@ namespace Imagina {
 
 		preprocessor = pixelPipeline->GetPreprocessor();
 		if (!preprocessor) {
-			copyProcessor.SetInput(evaluator->GetOutputDescriptor());
+			copyProcessor.SetInput(evaluator->GetOutputInfo());
 			preprocessor = &copyProcessor;
 		}
 
@@ -80,7 +80,7 @@ namespace Imagina {
 		} else {
 			IPixelProcessor *processor = pixelPipeline->GetCompositeProcessor(PixelPipeline::Postprocess, stage);
 			size_t inputSize = pixelPipeline->PreprocessedDataSize();
-			size_t outputSize = processor->GetOutputDescriptor()->Size;
+			size_t outputSize = processor->GetOutputInfo()->Size;
 
 			for (size_t i = 0; i < pixelCount; i++) {
 				void *input = &preprocessedPixels[i * inputSize];

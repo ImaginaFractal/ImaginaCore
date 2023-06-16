@@ -1,6 +1,6 @@
 #include "evaluator"
 #include "pixel_manager"
-#include "output_descriptor_helper"
+#include "output_info_helper"
 
 namespace Imagina {
 	bool IEvaluator::Ready() {
@@ -137,8 +137,8 @@ namespace Imagina {
 	}
 
 
-	const PixelDataDescriptor *TestSimpleEvaluator::GetOutputDescriptor() {
-		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Value);
+	const PixelDataInfo *TestSimpleEvaluator::GetOutputInfo() {
+		IM_GET_OUTPUT_INFO_IMPL(Output, Value);
 	}
 
 	void TestSimpleEvaluator::Precompute() {
@@ -199,25 +199,25 @@ namespace Imagina {
 	}
 
 
-	const PixelDataDescriptor *TestEvaluator::GetOutputDescriptor() {
+	const PixelDataInfo *TestEvaluator::GetOutputInfo() {
 		//struct output {
 		//	double Iterations;
 		//	double Iterations2;
 		//};
 		//IM_OUTPUT_FIELD(a, b);
-		//IM_OUTPUT_DESCRIPTOR(output, Iterations, Iterations2);
-		//return &OutputDescriptor;
+		//IM_OUTPUT_INFO(output, Iterations, Iterations2);
+		//return &OutputInfo;
 		/*using namespace std;
-		static const FieldDescriptor OutputFields[1]{
+		static const FieldInfo OutputFields[1]{
 			{ PixelDataType::Float64, 0, "Iterations"sv }
 		};
 
-		static const PixelDataDescriptor OutputDescriptor{
+		static const PixelDataInfo OutputInfo{
 			8, 1, OutputFields
 		};
 
-		return &OutputDescriptor;*/
-		IM_GET_OUTPUT_DESCRIPTOR_IMPL(Output, Iterations, FinalZ);
+		return &OutputInfo;*/
+		IM_GET_OUTPUT_INFO_IMPL(Output, Iterations, FinalZ);
 	}
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {

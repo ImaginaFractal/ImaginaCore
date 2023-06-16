@@ -60,16 +60,16 @@ namespace Imagina {
 		HRReal = FloatHR,
 	};
 
-	struct im_export PixelDataDescriptor : _PixelDataDescriptor {
-		const FieldDescriptor *FindField(const char *name) const;
+	struct im_export PixelDataInfo : _PixelDataInfo {
+		const FieldInfo *FindField(const char *name) const;
 	};
 
 	class IPixelProcessor {
 	public:
 		virtual ~IPixelProcessor() = default;
 
-		virtual void SetInput(const PixelDataDescriptor *descriptor) = 0;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() = 0;
+		virtual void SetInput(const PixelDataInfo *info) = 0;
+		virtual const PixelDataInfo *GetOutputInfo() = 0;
 
 		virtual void Process(void *output, void *input) const = 0;
 	};
@@ -82,8 +82,8 @@ namespace Imagina {
 	public:
 		SerialCompositeProcessor2(IPixelProcessor *first, IPixelProcessor *second) : processors{ first, second } { assert(first && second); }
 
-		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
 	};
 
@@ -95,24 +95,24 @@ namespace Imagina {
 	public:
 		SerialCompositeProcessor(std::initializer_list<IPixelProcessor *> processors);
 
-		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
 	};
 
 	class im_export CopyProcessor : public IPixelProcessor {
-		const PixelDataDescriptor *output;
+		const PixelDataInfo *output;
 		size_t dataSize;
 
 	public:
-		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
 	};
 
 	class im_export PixelPipeline final {
 		IPixelProcessor *stages[4]{};
-		const PixelDataDescriptor *outputs[4]{};
+		const PixelDataInfo *outputs[4]{};
 
 		IPixelProcessor *composite2[2]{};
 		IPixelProcessor *composite3 = nullptr;
@@ -164,18 +164,18 @@ namespace Imagina {
 		inline size_t PostprocessedDataSize()	const { return outputs[2]->Size; }
 		inline size_t ColorizedDataSize()		const { return outputs[3]->Size; }
 
-		const PixelDataDescriptor *GetOutputOfStage(Stage stage);
+		const PixelDataInfo *GetOutputOfStage(Stage stage);
 	};
 
 	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32
-		static const PixelDataDescriptor OutputDescriptor;
-		static const FieldDescriptor OutputFields[1];
+		static const PixelDataInfo OutputInfo;
+		static const FieldInfo OutputFields[1];
 
 		ptrdiff_t sourceOffset;
 
 	public:
-		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
 	};
 
@@ -184,8 +184,8 @@ namespace Imagina {
 		ptrdiff_t finalZOffset;
 
 	public:
-		virtual void SetInput(const PixelDataDescriptor *descriptor) override;
-		virtual const PixelDataDescriptor *GetOutputDescriptor() override;
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
 	};
 }
