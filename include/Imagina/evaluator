@@ -7,7 +7,7 @@
 #include "evaluator.h"
 
 namespace Imagina {
-	class im_export IEvaluator {
+	class im_export IEvaluator { // TODO: virtual void PrepareFor(const HRCircle &circle) = 0;
 	public:
 		virtual ~IEvaluator() = default;
 
