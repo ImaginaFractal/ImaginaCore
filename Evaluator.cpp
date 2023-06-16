@@ -226,7 +226,7 @@ namespace Imagina {
 			SRComplex c = { x, y };
 			SRComplex z = 0.0;
 	
-			long i;
+			ITUInt i;
 			for (i = 0; i < parameters.Iterations; i++) {
 				z = z * z + c;
 				if (norm(z) > 4096.0) break;
