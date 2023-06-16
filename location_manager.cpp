@@ -9,7 +9,7 @@ namespace Imagina {
 
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {
 		HRReal distance = std::max(std::abs(location.X), std::abs(location.Y));
-		BCInt precision = std::max<ExpInt>(0, -ExponentOf(location.HalfHeight)) + 32;
+		BCUInt precision = std::max<ExpInt>(0, -ExponentOf(location.HalfHeight)) + 32;
 
 		if (distance > 64.0 * location.HalfHeight || precision > referenceX.GetPrecision()) {
 			referenceX.SetPrecision(precision + 16);

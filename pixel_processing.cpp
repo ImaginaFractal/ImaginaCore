@@ -180,7 +180,7 @@ namespace Imagina {
 		const FieldInfo *iterationsField = info->FindField("Iterations");
 		const FieldInfo *finalZField = info->FindField("FinalZ");
 
-		assert(iterationsField->Type == PixelDataType::Uint64);
+		assert(iterationsField->Type == PixelDataType::UInt64);
 		assert(finalZField->Type == PixelDataType::SRComplex);
 
 		iterationsOffset = iterationsField->Offset;

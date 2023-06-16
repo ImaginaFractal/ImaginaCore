@@ -8,7 +8,7 @@ namespace Imagina {
 
 typedef int64_t MPExpInt;
 typedef int64_t MPBCInt;
-typedef uint64_t MPBCUint;
+typedef uint64_t MPBCUInt;
 
 #ifdef __cplusplus
 struct MPReal;
@@ -19,13 +19,13 @@ typedef struct _MPReal MPReal;
 struct _MultiPrecisionMutable {
 	const char *Name;
 
-	void (*InitContent)(MPReal *, MPBCUint); // Do not use directly, use Init instead.
+	void (*InitContent)(MPReal *, MPBCUInt); // Do not use directly, use Init instead.
 	void (*InitContentCopy)(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
 
 	void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
 
-	MPBCUint (*GetPrecision)(const MPReal *);
-	void (*SetPrecision)(MPReal *, MPBCUint);
+	MPBCUInt (*GetPrecision)(const MPReal *);
+	void (*SetPrecision)(MPReal *, MPBCUInt);
 
 	void (*Set)(MPReal *, const MPReal *);
 	void (*Copy)(MPReal *, const MPReal *); // Set value and precision

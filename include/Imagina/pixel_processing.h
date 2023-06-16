@@ -16,13 +16,13 @@ enum _PixelDataType {
 	IM_PDT_Int32,
 	IM_PDT_Int64,
 
-	IM_PDT_Uint8 = 0x10010,
-	IM_PDT_Uint16,
-	IM_PDT_Uint32,
-	IM_PDT_Uint64,
+	IM_PDT_UInt8 = 0x10010,
+	IM_PDT_UInt16,
+	IM_PDT_UInt32,
+	IM_PDT_UInt64,
 
 	// Fixed point
-	IM_PDT_Fract8 = 0x20000, // Same as Uint, but binary point is before MSB
+	IM_PDT_Fract8 = 0x20000, // Same as UInt, but binary point is before MSB
 	IM_PDT_Fract16,
 	IM_PDT_Fract32,
 	IM_PDT_Fract64,

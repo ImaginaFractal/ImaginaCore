@@ -46,10 +46,10 @@ namespace Imagina {
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<int32_t> = PixelDataType::Int32;
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<int64_t> = PixelDataType::Int64;
 
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint8_t>  = PixelDataType::Uint8;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint16_t> = PixelDataType::Uint16;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint32_t> = PixelDataType::Uint32;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint64_t> = PixelDataType::Uint64;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint8_t>  = PixelDataType::UInt8;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint16_t> = PixelDataType::UInt16;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint32_t> = PixelDataType::UInt32;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint64_t> = PixelDataType::UInt64;
 
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<float>  = PixelDataType::Float32;
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<double> = PixelDataType::Float64;

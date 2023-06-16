@@ -173,7 +173,7 @@ namespace Imagina {
 			SRComplex dc = { x, y };
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
-			ITUint i = 0, j = 0;
+			ITUInt i = 0, j = 0;
 			while (i < parameters.Iterations) {
 				dz = dz * (Z + z) + dc;
 				i++; j++;

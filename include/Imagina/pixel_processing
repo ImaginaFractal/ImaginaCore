@@ -18,13 +18,13 @@ namespace Imagina {
 		Int32,
 		Int64,
 
-		Uint8 = IM_PDT_Uint8,
-		Uint16,
-		Uint32,
-		Uint64,
+		UInt8 = IM_PDT_UInt8,
+		UInt16,
+		UInt32,
+		UInt64,
 
 		// Fixed point
-		Fract8 = IM_PDT_Fract8, // Same as Uint, but binary point is before MSB
+		Fract8 = IM_PDT_Fract8, // Same as UInt, but binary point is before MSB
 		Fract16,
 		Fract32,
 		Fract64,

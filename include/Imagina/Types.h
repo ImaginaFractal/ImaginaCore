@@ -14,10 +14,10 @@ using HPReal = MPReal; // Real type for fractal with high precision
 
 using GRInt = int32_t;
 using ITInt = int64_t;
-using ITUint = uint64_t;
+using ITUInt = uint64_t;
 
 using BCInt = int64_t; // Integer type for bit count
-using BCUint = uint64_t; // Integer type for bit count
+using BCUInt = uint64_t; // Integer type for bit count
 using ExpInt = int64_t;
 
 #ifdef __cplusplus

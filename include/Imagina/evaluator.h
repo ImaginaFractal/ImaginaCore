@@ -8,7 +8,7 @@ namespace Imagina {
 #endif
 	
 struct _StandardEvaluationParameters {
-	ITUint Iterations;
+	ITUInt Iterations;
 	HRReal DivergentEscapeRadius;
 	HRReal ConvergentEscapeRadius;
 };
