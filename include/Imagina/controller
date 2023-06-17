@@ -10,7 +10,7 @@ namespace Imagina {
 		virtual void SetPixelManager(IPixelManager *pixelManager) = 0;
 		virtual void SetLocationManager(ILocationManager *locationManager) = 0;
 
-		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) = 0;
+		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) = 0;
 
 		virtual void Update(SRReal deltaTime) = 0;
 	};
@@ -33,7 +33,7 @@ namespace Imagina {
 		virtual void SetPixelManager(IPixelManager *pixelManager) override;
 		virtual void SetLocationManager(ILocationManager *locationManager) override;
 
-		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) override;
+		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) override;
 
 		virtual void Update(SRReal deltaTime) override;
 

@@ -29,16 +29,16 @@ namespace Imagina {
 		Controller->SetLocationManager(LocationManager);
 		PixelManager->SetEvaluator(Evaluator);
 		LocationManager->SetEvaluator(Evaluator);
-		LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinate, this);
+		LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinates, this);
 	}
 	//void FractalContext::SetImmediateTarget(const HRLocation &location) {
 	//	PixelManager->SetImmediateTarget(location);
 	//	LocationManager->LocationChanged(location);
 	//}
 
-	void FractalContext::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
-		Controller->UpdateRelativeCoordinate(differenceX, differenceY);
-		PixelManager->UpdateRelativeCoordinate(differenceX, differenceY);
+	void FractalContext::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
+		Controller->UpdateRelativeCoordinates(differenceX, differenceY);
+		PixelManager->UpdateRelativeCoordinates(differenceX, differenceY);
 		if (OnReferenceChange) OnReferenceChange(differenceX, differenceY);
 	}
 

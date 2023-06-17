@@ -13,7 +13,7 @@ namespace Imagina {
     void NavigationController::SetLocationManager(ILocationManager *locationManager) {
 		this->locationManager = locationManager;
     }
-	void NavigationController::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
+	void NavigationController::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
 		targetLocation.X += differenceX;
 		targetLocation.Y += differenceY;
 		renderLocation.X += differenceX;

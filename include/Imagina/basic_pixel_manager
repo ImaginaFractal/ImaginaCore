@@ -52,7 +52,7 @@ namespace Imagina {
 		virtual void SetResolution(GRInt width, GRInt height) override;
 		virtual void InvalidatePixels() override;
 
-		virtual void UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) override;
+		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) override;
 		virtual void Update() override;
 
 		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
@@ -72,7 +72,7 @@ namespace Imagina {
 		int pixelX, pixelY;
 
 	public:
-		virtual bool GetCoordinate(HRReal &x, HRReal &y) override;
+		virtual bool GetCoordinates(HRReal &x, HRReal &y) override;
 		virtual void WriteResults(void *value) override;
 	};
 }

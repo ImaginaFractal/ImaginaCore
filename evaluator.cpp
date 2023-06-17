@@ -83,12 +83,12 @@ namespace Imagina {
 		LPRasterizingInterface(IRasterizingInterface &rasterizingInterface, SRReal referenceX, SRReal referenceY)
 			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
 
-		virtual bool GetCoordinate(HRReal &x, HRReal &y) override;
+		virtual bool GetCoordinates(HRReal &x, HRReal &y) override;
 		virtual void WriteResults(void *value) override;
 	};
 
-	bool LowPrecisionEvaluator::LPRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
-		bool result = rasterizingInterface.GetCoordinate(x, y);
+	bool LowPrecisionEvaluator::LPRasterizingInterface::GetCoordinates(HRReal &x, HRReal &y) {
+		bool result = rasterizingInterface.GetCoordinates(x, y);
 		x += referenceX;
 		y += referenceY;
 		return result;
@@ -169,7 +169,7 @@ namespace Imagina {
 
 	void TestSimpleEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
-		while (rasterizingInterface.GetCoordinate(x, y)) {
+		while (rasterizingInterface.GetCoordinates(x, y)) {
 			SRComplex dc = { x, y };
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
@@ -222,7 +222,7 @@ namespace Imagina {
 
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
-		while (rasterizingInterface.GetCoordinate(x, y)) {
+		while (rasterizingInterface.GetCoordinates(x, y)) {
 			SRComplex c = { x, y };
 			SRComplex z = 0.0;
 	

@@ -121,7 +121,7 @@ namespace Imagina {
 		valid = false;
 	}
 
-	void BasicPixelManager::UpdateRelativeCoordinate(HRReal differenceX, HRReal differenceY) {
+	void BasicPixelManager::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
 		CancelAndWait();
 
 		location.X += differenceX;
@@ -181,7 +181,7 @@ namespace Imagina {
 		return *new BasicRasterizingInterface(this);
 	}
 
-	bool BasicRasterizingInterface::GetCoordinate(HRReal &x, HRReal &y) {
+	bool BasicRasterizingInterface::GetCoordinates(HRReal &x, HRReal &y) {
 		size_t i = pixelManager->i++;
 		if (i >= pixelManager->pixelCount) return false;
 
