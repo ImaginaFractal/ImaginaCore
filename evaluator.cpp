@@ -1,5 +1,5 @@
 #include "evaluator"
-#include "pixel_manager"
+#include "pixel_management"
 #include "output_info_helper"
 
 namespace Imagina {

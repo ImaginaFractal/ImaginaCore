@@ -1,5 +1,5 @@
 #include "controller"
-#include "pixel_manager"
+#include "pixel_management"
 #include "location_manager"
 
 namespace Imagina {

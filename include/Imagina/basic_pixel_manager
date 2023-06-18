@@ -3,7 +3,7 @@
 #include <atomic>
 
 #include "declarations"
-#include "pixel_manager"
+#include "pixel_management"
 #include "computation" // TODO: Replace with declarations
 
 namespace Imagina {

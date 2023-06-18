@@ -1,5 +1,5 @@
 #include "imagina.h"
-#include "pixel_manager"
+#include "pixel_management"
 
 using namespace Imagina;
 

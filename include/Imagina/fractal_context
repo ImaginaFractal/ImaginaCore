@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pixel_manager"
+#include "pixel_management"
 #include "evaluator"
 
 namespace Imagina {
