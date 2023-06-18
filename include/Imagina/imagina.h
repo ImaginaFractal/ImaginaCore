@@ -18,7 +18,7 @@ extern "C" namespace ImCApi {
 im_export void *ImAlloc(size_t size);
 im_export void ImFree(void *p);
 
-im_export bool RasterizingInterface_GetCoordinates(IRasterizingInterface *rasterizingInterface, Imagina::HRReal *x, Imagina::HRReal *y);
+im_export bool RasterizingInterface_GetPixel(IRasterizingInterface *rasterizingInterface, Imagina::HRReal *x, Imagina::HRReal *y);
 
 im_export void RasterizingInterface_WriteResults(IRasterizingInterface *rasterizingInterface, void *value);
 

@@ -181,7 +181,7 @@ namespace Imagina {
 		return *new BasicRasterizingInterface(this);
 	}
 
-	bool BasicRasterizingInterface::GetCoordinates(HRReal &x, HRReal &y) {
+	bool BasicRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
 		size_t i = pixelManager->i++;
 		if (i >= pixelManager->pixelCount) return false;
 

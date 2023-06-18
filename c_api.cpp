@@ -12,8 +12,8 @@ namespace ImCApi {
 		free(p);
 	}
 
-	bool RasterizingInterface_GetCoordinates(IRasterizingInterface *rasterizingInterface, HRReal *x, HRReal *y) {
-		return ((Imagina::IRasterizingInterface *)rasterizingInterface)->GetCoordinates(*x, *y);
+	bool RasterizingInterface_GetPixel(IRasterizingInterface *rasterizingInterface, HRReal *x, HRReal *y) {
+		return ((Imagina::IRasterizingInterface *)rasterizingInterface)->GetPixel(*x, *y);
 	}
 
 	void RasterizingInterface_WriteResults(IRasterizingInterface *rasterizingInterface, void *value) {

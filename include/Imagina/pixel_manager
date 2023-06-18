@@ -64,7 +64,7 @@ namespace Imagina {
 	public:
 		virtual ~IRasterizingInterface() = default;
 
-		virtual bool GetCoordinates(HRReal &x, HRReal &y) = 0;
+		virtual bool GetPixel(HRReal &x, HRReal &y) = 0;
 		virtual void WriteResults(void *value) = 0;
 	};
 

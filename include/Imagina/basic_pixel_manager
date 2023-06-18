@@ -72,7 +72,7 @@ namespace Imagina {
 		int pixelX, pixelY;
 
 	public:
-		virtual bool GetCoordinates(HRReal &x, HRReal &y) override;
+		virtual bool GetPixel(HRReal &x, HRReal &y) override;
 		virtual void WriteResults(void *value) override;
 	};
 }
