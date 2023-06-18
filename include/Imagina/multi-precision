@@ -54,7 +54,7 @@ namespace Imagina {
 		MultiPrecision *const MP = nullptr;
 
 		MPReal() = default;
-		//MPReal(MultiPrecision *mp, MPBCUInt precision)				: MP(mp) { mp->InitContent(this, precision); }
+		MPReal(MultiPrecision *mp, MPBCUInt precision)				: MP(mp) { mp->InitContent(this, precision); }
 		MPReal(double x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetDouble(this, x); }
 		MPReal(double x, MultiPrecision *mp, MPBCUInt precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
 		//MPReal(const MPReal &x) : MP(x.MP) { MP->InitContent(this, x.GetPrecision()); MP->Set(this, x); }
