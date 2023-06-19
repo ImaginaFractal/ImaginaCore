@@ -2,9 +2,31 @@
 
 #include <cmath>
 #include <algorithm>
+#include "floating_point"
 #include "constants"
 
 namespace Imagina {
+	using std::abs;
+	using std::max;
+
+	inline FloatF64eI64 abs(FloatF64eI64 x) {
+		x.Mantissa = std::abs(x.Mantissa);
+		return x;
+	}
+
+	inline FloatF64eI64 sqrt(FloatF64eI64 x) {
+		FloatF64eI64 Result;
+		Result.MantissaI64(x.MantissaI64() + ((x.Exponent & 1) << 52));
+		Result.Exponent = x.Exponent >> 1;
+		Result.Mantissa = std::sqrt(Result.Mantissa);
+		Result.Normalize();
+		return Result;
+	}
+
+	inline FloatF64eI64 hypot(FloatF64eI64 x, FloatF64eI64 y) {
+		return sqrt(x * x + y * y);
+	}
+
 	template<typename T> inline T ManhattanHypot(T x, T y) {
 		using namespace std;
 		return abs(x) + abs(y);

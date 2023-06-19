@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "floating_point.h"
 
 #ifdef __cplusplus
 namespace Imagina {
@@ -30,7 +31,10 @@ struct _MultiPrecisionMutable {
 	void (*Set)(MPReal *, const MPReal *);
 	void (*Copy)(MPReal *, const MPReal *); // Set value and precision
 	void (*SetDouble)(MPReal *, double);
-	double (*ToDouble)(const MPReal *);
+	void (*SetFloatF64eI64)(MPReal *, FloatF64eI64);
+
+	double (*GetDouble)(const MPReal *);
+	FloatF64eI64 (*GetFloatF64eI64)(const MPReal *);
 
 	void (*Add)(MPReal *, const MPReal *, const MPReal *);
 	void (*Sub)(MPReal *, const MPReal *, const MPReal *);

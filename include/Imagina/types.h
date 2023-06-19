@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "multi-precision.h"
+#include "floating_point.h"
 
 #ifdef __cplusplus
 namespace Imagina {
@@ -9,7 +10,7 @@ namespace Imagina {
 
 using GRReal = float; // Real type for graphics
 using SRReal = double; // Real type for fractal with standard precision and standard range
-using HRReal = double; // Real type for fractal with standard precision and highest range
+using HRReal = FloatF64eI64; // Real type for fractal with standard precision and highest range
 using HPReal = MPReal; // Real type for fractal with high precision
 
 using GRInt = int32_t;

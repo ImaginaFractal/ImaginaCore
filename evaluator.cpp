@@ -145,7 +145,7 @@ namespace Imagina {
 		delete[] reference;
 		reference = new SRComplex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
-		referenceC = HRComplex(HRReal(x), HRReal(y));
+		referenceC = SRComplex(SRReal(x), SRReal(y));
 
 		reference[0] = 0.0;
 		reference[1] = referenceC;
@@ -170,7 +170,7 @@ namespace Imagina {
 	void TestSimpleEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
-			SRComplex dc = { x, y };
+			SRComplex dc = { SRReal(x), SRReal(y) };
 			SRComplex Z = 0.0, z = 0.0, dz = 0.0;
 
 			ITUInt i = 0, j = 0;
@@ -223,7 +223,7 @@ namespace Imagina {
 	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
-			SRComplex c = { x, y };
+			SRComplex c = { SRReal(x), SRReal(y) };
 			SRComplex z = 0.0;
 	
 			ITUInt i;

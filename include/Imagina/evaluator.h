@@ -4,6 +4,7 @@
 #include "types.h"
 
 #ifdef __cplusplus
+#include "floating_point"
 namespace Imagina {
 #endif
 	

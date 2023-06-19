@@ -190,7 +190,10 @@ namespace Imagina {
 
 	void DoubleSet(double *dst, const double *src) { *dst = *src; }
 	void DoubleSetDouble(double *dst, double src) { *dst = src; }
-	double DoubleToDouble(const double *x) { return *x; }
+	void DoubleSetFloatF64eI64(double *dst, FloatF64eI64 src) { *dst = double(src); }
+
+	double DoubleGetDouble(const double *x) { return *x; }
+	FloatF64eI64 DoubleGetFloatF64eI64(const double *x) { return *x; }
 
 	void DoubleAdd(double *dst, const double *x, const double *y) { *dst = *x + *y; }
 	void DoubleSub(double *dst, const double *x, const double *y) { *dst = *x - *y; }
@@ -214,7 +217,10 @@ namespace Imagina {
 		.Set = (void (*)(MPReal *, const MPReal *))DoubleSet,
 		.Copy = (void (*)(MPReal *, const MPReal *))DoubleSet,
 		.SetDouble = (void (*)(MPReal *, double))DoubleSetDouble,
-		.ToDouble = (double (*)(const MPReal *))DoubleToDouble,
+		.SetFloatF64eI64 = (void (*)(MPReal *, FloatF64eI64)) DoubleSetFloatF64eI64,
+
+		.GetDouble = (double (*)(const MPReal *))DoubleGetDouble,
+		.GetFloatF64eI64 = (FloatF64eI64 (*)(const MPReal *))DoubleGetFloatF64eI64,
 
 		.Add = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleAdd,
 		.Sub = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleSub,
