@@ -26,13 +26,13 @@ namespace Imagina {
 		} {}
 	};
 
-	class StandardEvaluator : public IEvaluator {
+	class ComplexEvaluator : public IEvaluator {
 	public:
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) = 0; // TEMPORARY
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) = 0; // TEMPORARY
 	};
 
-	class im_export SimpleEvaluator : public StandardEvaluator {
+	class im_export SimpleEvaluator : public ComplexEvaluator {
 		class EvaluationTask;
 
 		ExecutionContext *precomputeExecutionContext = nullptr;
@@ -55,7 +55,7 @@ namespace Imagina {
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) = 0;
 	};
 
-	class im_export LowPrecisionEvaluator : public StandardEvaluator {
+	class im_export LowPrecisionEvaluator : public ComplexEvaluator {
 		class LPRasterizingInterface;
 		class EvaluationTask;
 

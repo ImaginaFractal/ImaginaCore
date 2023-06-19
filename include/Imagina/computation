@@ -15,7 +15,7 @@
 
 namespace Imagina {
 	using std::chrono::steady_clock;
-	class Task {
+	class im_export Task {
 		friend class Computation;
 	private:
 		virtual bool IsSynchronous();
@@ -94,7 +94,7 @@ namespace Imagina {
 		size_t WaitAndRelease();
 	};
 
-	class Computation {
+	class im_export Computation {
 		friend class ExecutionContext;
 	private:
 		static size_t WorkerCount;
@@ -109,7 +109,7 @@ namespace Imagina {
 		static void WorkerFunction();
 
 	public:
-		im_export static void Init();
+		static void Init();
 
 		static ExecutionContext *AddTask(Task *task);
 		static ExecutionContext *AddTask(const std::function<void()> &function);
