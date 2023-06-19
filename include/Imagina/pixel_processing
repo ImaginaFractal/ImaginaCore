@@ -179,7 +179,7 @@ namespace Imagina {
 		virtual void Process(void *output, void *input) const override;
 	};
 
-	class im_export TestProcessor2 : public IPixelProcessor { // Converts Float64 to Float32
+	class im_export TestProcessor2 : public IPixelProcessor {
 		ptrdiff_t iterationsOffset;
 		ptrdiff_t finalZOffset;
 

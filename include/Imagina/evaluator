@@ -80,8 +80,9 @@ namespace Imagina {
 
 		uint64_t referenceLength;
 		//SRComplex reference[1025];
-		SRComplex *reference = nullptr;
-		SRComplex referenceC;
+		//SRComplex *reference = nullptr;
+		HRComplex *reference = nullptr;
+		//SRComplex referenceC;
 
 	public:
 		virtual const PixelDataInfo *GetOutputInfo() override;
