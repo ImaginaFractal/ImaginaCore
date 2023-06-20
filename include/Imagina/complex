@@ -34,10 +34,23 @@ namespace Imagina {
 		Complex &operator*=(const Real &a) { re *= a; im *= a; return *this; }
 		Complex &operator/=(const Real &a) { re /= a; im /= a; return *this; }
 
-		Complex &operator+=(const Complex &a) { re += a.re; im += a.im; return *this; }
-		Complex &operator-=(const Complex &a) { re -= a.re; im -= a.im; return *this; }
+		//Complex &operator+=(const Complex &a) { re += a.re; im += a.im; return *this; }
+		//Complex &operator-=(const Complex &a) { re -= a.re; im -= a.im; return *this; }
 		Complex &operator*=(const Complex &a) { *this = *this * a; return *this; }
 		Complex &operator/=(const Complex &a) { *this = *this / a; return *this; }
+
+		template<typename Real2>
+		Complex &operator+=(const Complex<Real2> &a) requires requires (Real a, const Real2 &b) { a += b; } {
+			re += a.re;
+			im += a.im;
+			return *this;
+		}
+		template<typename Real2>
+		Complex &operator-=(const Complex<Real2> &a) requires requires (Real a, const Real2 &b) { a -= b; } {
+			re -= a.re;
+			im -= a.im;
+			return *this;
+		}
 	};
 
 	template<typename Real>

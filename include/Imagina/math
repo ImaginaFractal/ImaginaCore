@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "floating_point"
 #include "constants"
+#include "complex"
 
 namespace Imagina {
 	using std::abs;
@@ -27,14 +28,19 @@ namespace Imagina {
 		return sqrt(x * x + y * y);
 	}
 
-	template<typename T> inline T ManhattanHypot(T x, T y) {
-		using namespace std;
+	template<typename T> inline T ManhattanHypot(const T &x, const T &y) {
 		return abs(x) + abs(y);
 	}
 
-	template<typename T> inline T ChebyshevHypot(T x, T y) {
-		using namespace std;
+	template<typename T> inline T ChebyshevHypot(const T &x, const T &y) {
 		return max(abs(x), abs(y));
 	}
 
+	template<typename T> inline T ManhattanNorm(const Complex<T> &x) {
+		return ManhattanHypot(x.re, x.im);
+	}
+
+	template<typename T> inline T ChebyshevNorm(const Complex<T> &x) {
+		return ChebyshevHypot(x.re, x.im);
+	}
 }
