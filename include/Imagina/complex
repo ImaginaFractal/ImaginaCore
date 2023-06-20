@@ -10,7 +10,10 @@ namespace Imagina {
 		Complex() = default;
 		//Complex(Complex &&) = default;
 		//Complex(const Complex &) = default;
-		Complex(Real re) noexcept : re(re), im(Constants::Zero<Real>()) {}
+		//Complex(Real re) noexcept : re(re), im(Constants::Zero<Real>()) {}
+		template<typename Real2>
+		explicit(!std::is_convertible_v<Real2, Real>)
+		Complex(Real2 re) noexcept : re(re), im(Constants::Zero<Real>()) {}
 		Complex(Real re, Real im) noexcept : re(re), im(im) {}
 		//template<typename Real2>
 		//Complex(Real2 re, Real2 im) noexcept : re(re), im(im) {}

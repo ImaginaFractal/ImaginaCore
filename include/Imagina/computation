@@ -40,7 +40,7 @@ namespace Imagina {
 		virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const = 0;
 	};
 
-	class ParallelTask : public virtual Task {
+	class im_export ParallelTask : public virtual Task {
 	public:
 		virtual void Execute() override;
 		virtual void Execute(size_t ThreadID);
