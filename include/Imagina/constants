@@ -1,14 +1,29 @@
 #pragma once
 
 #include <stdint.h>
+#include <utility>
 
 namespace Imagina {
 	namespace Constants {
-		template<typename type, intmax_t value>
-		constexpr type Integer() noexcept { return type(value); }
+		//template<typename type, intmax_t value>
+		//constexpr type Integer() noexcept { return type(value); }
+		//
+		//template<typename type> constexpr type Zero()	noexcept { return Integer<type, 0>(); }
+		//template<typename type> constexpr type One()	noexcept { return Integer<type, 1>(); }
+		//template<typename type> constexpr type Two()	noexcept { return Integer<type, 2>(); }
 
-		template<typename type> constexpr type Zero()	noexcept { return Integer<type, 0>(); }
-		template<typename type> constexpr type One()	noexcept { return Integer<type, 1>(); }
-		template<typename type> constexpr type Two()	noexcept { return Integer<type, 2>(); }
+		template<intmax_t value>
+		struct IntegerConstant {
+			//template<typename type> constexpr explicit(!std::is_convertible_v<intmax_t, type>)
+			//	operator type() const { return type(value); }
+			operator double() const { return value; }
+			operator intmax_t() const { return value; }
+		};
+
+		template<intmax_t value> constexpr IntegerConstant<value> Integer;
+
+		constexpr IntegerConstant<0> Zero;
+		constexpr IntegerConstant<1> One;
+		constexpr IntegerConstant<2> Two;
 	}
 }

@@ -14,7 +14,7 @@ namespace Imagina {
 
 		template<typename Real2>
 		explicit(!std::is_convertible_v<Real2, Real>)
-		constexpr Complex(Real2 re) noexcept : re(re), im(Constants::Zero<Real>()) {}
+		constexpr Complex(Real2 re) noexcept : re(re), im(Constants::Zero) {}
 
 		constexpr Complex(Real re, Real im) noexcept : re(re), im(im) {}
 		//template<typename Real2>

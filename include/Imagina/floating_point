@@ -38,16 +38,16 @@ namespace Imagina {
 			Mantissa = std::bit_cast<double>(MantissaI64);
 		}
 
-		constexpr FloatF64eI64(float	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(float	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
 		constexpr FloatF64eI64(double	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(int8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(uint8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(int16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(uint16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(int32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(uint32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(int64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(uint64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(int8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(uint8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(int16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(uint16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(int32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(uint32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(int64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		//constexpr FloatF64eI64(uint64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
 
 		constexpr FloatF64eI64(double mantissa, int64_t exponent) : _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } { Normalize(); }
 		constexpr FloatF64eI64(double mantissa, int64_t exponent, int) : _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } {}

@@ -14,10 +14,10 @@ namespace Imagina {
 	using HRComplex = Complex<HRReal>;
 	using HPComplex = Complex<HPReal>;
 
-	template<intmax_t factor, typename type>
-	type MulInt(type a) {
-		return a * Constants::Integer<type, factor>();
-	}
+	//template<intmax_t factor, typename type>
+	//type MulInt(type a) {
+	//	return a * Constants::Integer<type, factor>();
+	//}
 
 	struct GRRectangle {
 		GRReal MinX, MinY, MaxX, MaxY;
@@ -130,7 +130,8 @@ namespace Imagina {
 			return Location(
 				X - centerX * HalfHeight,
 				Y - centerY * HalfHeight,
-				MulInt<2>(HalfHeight));
+				//MulInt<2>(HalfHeight));
+				HalfHeight * Constants::Two);
 		}
 
 		bool operator==(const Location &location) const {
