@@ -12,6 +12,7 @@ namespace Imagina {
 		friend class BasicRasterizingInterface;
 		GRInt width = 0, height = 0;
 		size_t pixelCount;
+		static_assert(sizeof(std::atomic_size_t) == sizeof(size_t));
 		std::atomic_size_t i = 0;
 		IGpuTextureCreater *gpuTextureCreater = nullptr;
 		IGpuTexture *gpuTexture = nullptr;

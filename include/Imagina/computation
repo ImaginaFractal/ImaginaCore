@@ -94,7 +94,7 @@ namespace Imagina {
 		size_t WaitAndRelease();
 	};
 
-	class im_export Computation {
+	class Computation {
 		friend class ExecutionContext;
 	private:
 		static size_t WorkerCount;
@@ -109,10 +109,10 @@ namespace Imagina {
 		static void WorkerFunction();
 
 	public:
-		static void Init();
+		static im_export void Init();
 
-		static ExecutionContext *AddTask(Task *task);
-		static ExecutionContext *AddTask(const std::function<void()> &function);
-		static std::vector<ExecutionContext *> GetExecutionContexts();
+		static im_export ExecutionContext *AddTask(Task *task);
+		static im_export ExecutionContext *AddTask(const std::function<void()> &function);
+		static im_export std::vector<ExecutionContext *> GetExecutionContexts();
 	};
 }

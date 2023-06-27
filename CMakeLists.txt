@@ -13,3 +13,7 @@ target_include_directories(ImaginaCore PRIVATE "include/Imagina")
 target_compile_definitions(ImaginaCore PRIVATE IM_BUILD_CORE)
 
 set_target_properties(ImaginaCore PROPERTIES CXX_STANDARD 20)
+
+if(MSVC)
+	target_compile_options(ImaginaCore PUBLIC "/Zc:preprocessor")
+endif()
