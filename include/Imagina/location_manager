@@ -15,7 +15,7 @@ namespace Imagina {
 
 	class im_export StandardLocationManager : public ILocationManager {
 		IEvaluator *evaluator = nullptr;
-		MultiPrecision &mp;
+		[[maybe_unused]] MultiPrecision &mp;
 		HPReal referenceX, referenceY;
 
 	public:
