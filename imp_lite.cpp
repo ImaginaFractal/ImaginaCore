@@ -87,7 +87,7 @@ namespace IMPLite {
 		}
 	}
 
-	void Float::Set(Float *x, const Float *src) {
+	inline void Float::UnsignedSet(Float *x, const Float *src) {
 		x->Exponent = src->Exponent;
 		if_unlikely(src->Exponent == INT32_MIN) return;
 
@@ -108,18 +108,23 @@ namespace IMPLite {
 		memcpy(dstData, srcData, srcSize * sizeof(uint32_t));
 	}
 
+	void Float::Set(Float *x, const Float *src) {
+		x->Sign = src->Sign;
+
+		UnsignedSet(x, src);
+	}
+
 	void Float::Copy(Float *x, const Float *src) {
 		uint32_t size = x->Size, newSize = src->Size;
 		if (size != newSize) {
 			if (size > BufferSize) free(x->Pointer);
 			if (newSize > BufferSize) x->Pointer = (uint32_t *)malloc(newSize * sizeof(uint32_t));
-			assert(x->Pointer);
 		}
 		x->SignSize = src->SignSize;
 		x->Exponent = src->Exponent;
 		if_unlikely(src->Exponent == INT32_MIN) return;
 
-		memcpy((size > BufferSize) ? x->Pointer : x->Buffer, (size > BufferSize) ? src->Pointer : src->Buffer, size * sizeof(uint32_t));
+		memcpy((size > BufferSize) ? x->Pointer : x->Buffer, (size > BufferSize) ? src->Pointer : src->Buffer, newSize * sizeof(uint32_t));
 	}
 
 	void Float::SetDouble(Float *x, double d) { // FIXME: Denormal
@@ -182,7 +187,7 @@ namespace IMPLite {
 	}
 
 	// Sign of y is ignored
-	void Float::_Add(Float *result, const Float *x, const Float *y) {
+	void Float::UnsignedAdd(Float *result, const Float *x, const Float *y) {
 		result->Sign = x->Sign;
 		if (x->Exponent < y->Exponent) std::swap(x, y);
 
@@ -192,7 +197,7 @@ namespace IMPLite {
 
 		//if_unlikely(y->Exponent == INT32_MIN) {
 		if (uintptr_t(exponentDifference) >= uintptr_t(rsize) * 32) {
-			if (result != x) Set(result, x);
+			if (result != x) UnsignedSet(result, x);
 			return;
 		}
 
@@ -263,12 +268,12 @@ namespace IMPLite {
 				rdata[i - 1] = uint32_t(carry);
 				carry >>= 32;
 			}
-			rdata[i - 1] = uint32_t(carry);
+			rdata[i - 1] = uint32_t(carry) | 0x8000'0000;
 			result->Exponent++;
 		}
 	}
 
-	void Float::_Sub(Float *result, const Float *x, const Float *y) {
+	void Float::UnsignedSub(Float *result, const Float *x, const Float *y) {
 		result->Sign = x->Sign;
 		if (MagnitudeGreater(y, x)) {
 			std::swap(x, y);
@@ -281,7 +286,7 @@ namespace IMPLite {
 
 		//if_unlikely(y->Exponent == INT32_MIN) {
 		if (uintptr_t(exponentDifference) >= uintptr_t(rsize) * 32) {
-			if (result != x) Set(result, x);
+			if (result != x) UnsignedSet(result, x);
 			return;
 		}
 
@@ -387,17 +392,17 @@ namespace IMPLite {
 
 	void Float::Add(Float *result, const Float *x, const Float *y) {
 		if (x->Sign == y->Sign) {
-			_Add(result, x, y);
+			UnsignedAdd(result, x, y);
 		} else {
-			_Sub(result, x, y);
+			UnsignedSub(result, x, y);
 		}
 	}
 
 	void Float::Sub(Float *result, const Float *x, const Float *y) {
 		if (x->Sign == y->Sign) {
-			_Sub(result, x, y);
+			UnsignedSub(result, x, y);
 		} else {
-			_Add(result, x, y);
+			UnsignedAdd(result, x, y);
 		}
 	}
 
@@ -480,6 +485,7 @@ namespace IMPLite {
 
 	bool Float::MagnitudeGreater(const Float *x, const Float *y) {
 		if (x->Exponent > y->Exponent) return true;
+		if (x->Exponent < y->Exponent) return false;
 
 		uint32_t xsize = x->Size;
 		uint32_t ysize = y->Size;

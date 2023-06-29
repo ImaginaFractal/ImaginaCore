@@ -37,14 +37,17 @@ namespace IMPLite {
 		static double GetDouble(const Float *x);
 		static Imagina::FloatF64eI64 GetFloatF64eI64(const Float *x);
 
-		static void _Add(Float *result, const Float *x, const Float *y);
-		static void _Sub(Float *result, const Float *x, const Float *y);
 		static void Add(Float *result, const Float *x, const Float *y);
 		static void Sub(Float *result, const Float *x, const Float *y);
 		static void Mul(Float *result, const Float *x, const Float *y);
 		static void Div(Float *result, const Float *x, const Float *y);
 
 		static bool MagnitudeGreater(const Float *x, const Float *y);
+
+	private:
+		inline static void UnsignedSet(Float *x, const Float *src);
+		static void UnsignedAdd(Float *result, const Float *x, const Float *y);
+		static void UnsignedSub(Float *result, const Float *x, const Float *y);
 	};
 
 	static_assert(sizeof(Float) <= sizeof(void *) * 7);
