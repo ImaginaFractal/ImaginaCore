@@ -7,9 +7,9 @@
 namespace Imagina {
 #endif
 
-typedef int64_t MPExpInt;
-typedef int64_t MPBCInt;
-typedef uint64_t MPBCUInt;
+typedef intptr_t MPExpInt;
+typedef intptr_t MPBCInt;
+typedef uintptr_t MPBCUInt;
 
 #ifdef __cplusplus
 struct MPReal;
@@ -47,7 +47,7 @@ typedef struct _MultiPrecisionMutable MultiPrecisionMutable;
 typedef const struct MultiPrecisionMutable MultiPrecision;
 
 struct _MPReal {
-	const void *Content[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
+	const void *PlaceHolder[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
 	MultiPrecision *const MP;
 };
 #endif

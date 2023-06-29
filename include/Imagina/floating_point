@@ -25,14 +25,19 @@ namespace Imagina {
 		static constexpr int64_t ZeroOffsetShifted = ZeroOffset << 52;
 		static constexpr int64_t NormalizedExponentShifted = NormalizedExponent << 52;
 
+		static constexpr int64_t ZeroExponent = -0x2000'0000'0000'0000;
+		static constexpr int64_t ZeroExponentThreshold = -0x1000'0000'0000'0000;
 
-		FloatF64eI64() : _FloatF64eI64{ .Mantissa = 1.0, .Exponent = -0x10000000000000 } {}
+		FloatF64eI64() : _FloatF64eI64{ .Mantissa = 1.0, .Exponent = ZeroExponent } {}
 
 		constexpr void Normalize() {
 			uint64_t MantissaI64 = std::bit_cast<uint64_t>(Mantissa);
 
-			Exponent += int64_t((MantissaI64 >> 52) & MaxExponent) - NormalizedExponent;
-			if (Mantissa == 0.0) Exponent = -0x10000000000000;
+			if (Mantissa == 0.0 || Exponent <= ZeroExponentThreshold) {
+				Exponent = ZeroExponent;
+			} else {
+				Exponent += int64_t((MantissaI64 >> 52) & MaxExponent) - NormalizedExponent;
+			}
 
 			MantissaI64 = (MantissaI64 & ~ExponentMask) | NormalizedExponentShifted;
 			Mantissa = std::bit_cast<double>(MantissaI64);
@@ -64,6 +69,10 @@ namespace Imagina {
 				int64_t temp = MantissaI64 + (Exponent << 52);
 				return std::bit_cast<double>(temp);
 			}
+		}
+
+		constexpr bool IsZero() const {
+			return Exponent <= ZeroExponentThreshold;
 		}
 
 		constexpr FloatF64eI64 operator+() const {
@@ -130,17 +139,17 @@ namespace Imagina {
 	};
 
 	constexpr bool operator==(const FloatF64eI64 &a, const FloatF64eI64 &b) {
-		return a.Exponent == b.Exponent && a.Mantissa == b.Mantissa;
+		return a.Exponent == b.Exponent && (a.IsZero() || a.Mantissa == b.Mantissa);
 	}
 
 	constexpr bool operator!=(const FloatF64eI64 &a, const FloatF64eI64 &b) {
-		return a.Exponent != b.Exponent || a.Mantissa != b.Mantissa;
+		return a.Exponent != b.Exponent || (!a.IsZero() && a.Mantissa != b.Mantissa);
 	}
 
 	constexpr bool operator>(const FloatF64eI64 &a, const FloatF64eI64 &b) {
 		bool Positive = a.Mantissa > 0;
 		if (Positive == b.Mantissa > 0) {
-			return Positive == (a.Exponent > b.Exponent || (a.Exponent == b.Exponent && a.Mantissa > b.Mantissa));
+			return Positive == (a.Exponent > b.Exponent || (a.Exponent == b.Exponent && !a.IsZero() && a.Mantissa > b.Mantissa));
 		} else {
 			return Positive;
 		}
@@ -149,7 +158,7 @@ namespace Imagina {
 	constexpr bool operator>=(const FloatF64eI64 &a, const FloatF64eI64 &b) {
 		bool Positive = a.Mantissa > 0;
 		if (Positive == b.Mantissa > 0) {
-			return Positive == (a.Exponent > b.Exponent || (a.Exponent == b.Exponent && a.Mantissa >= b.Mantissa));
+			return Positive == (a.Exponent > b.Exponent || (a.Exponent == b.Exponent && (a.IsZero() || a.Mantissa >= b.Mantissa)));
 		} else {
 			return Positive;
 		}

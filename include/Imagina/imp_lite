@@ -1,0 +1,51 @@
+#pragma once
+
+#include <cstdint>
+#include "floating_point.h"
+
+namespace IMPLite {
+	struct im_export Float {
+		static constexpr int32_t BufferSize = 7 * sizeof(void*) / sizeof(uint32_t) - 2;
+		static_assert(BufferSize > 0);
+
+		union {
+			uint32_t Buffer[BufferSize];
+			uint32_t *Pointer;
+		};
+		int32_t Exponent;
+		union {
+			struct {
+				int32_t Size : 31;
+				int32_t Sign : 1;
+			};
+			int32_t SignSize;
+		};
+
+		static void Init(Float *x, uintptr_t precision);
+		static void InitCopy(Float *x, const Float *src);
+
+		static void Clear(Float *x);
+
+		static uintptr_t GetPrecision(const Float *x);
+		static void SetPrecision(Float *x, uintptr_t precision);
+
+		static void Set(Float *x, const Float *src);
+		static void Copy(Float *x, const Float *src);
+		static void SetDouble(Float *x, double d);
+		static void SetFloatF64eI64(Float *x, Imagina::FloatF64eI64 f);
+
+		static double GetDouble(const Float *x);
+		static Imagina::FloatF64eI64 GetFloatF64eI64(const Float *x);
+
+		static void _Add(Float *result, const Float *x, const Float *y);
+		static void _Sub(Float *result, const Float *x, const Float *y);
+		static void Add(Float *result, const Float *x, const Float *y);
+		static void Sub(Float *result, const Float *x, const Float *y);
+		static void Mul(Float *result, const Float *x, const Float *y);
+		static void Div(Float *result, const Float *x, const Float *y);
+
+		static bool MagnitudeGreater(const Float *x, const Float *y);
+	};
+
+	static_assert(sizeof(Float) <= sizeof(void *) * 7);
+}

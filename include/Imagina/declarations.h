@@ -14,6 +14,8 @@
 
 #ifdef __cplusplus
 #define IM_C_STRUCT_ALIAS(x) struct x
+#define if_likely(...) if (__VA_ARGS__) [[likely]]
+#define if_unlikely(...) if (__VA_ARGS__) [[unlikely]]
 #else
 #define IM_C_STRUCT_ALIAS(x) typedef struct _##x x
 #endif
