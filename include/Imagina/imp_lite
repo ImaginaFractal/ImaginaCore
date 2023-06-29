@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include "multi-precision"
 #include "floating_point.h"
 
-namespace IMPLite {
+namespace Imagina::MPLite {
 	struct im_export Float {
 		static constexpr int32_t BufferSize = 7 * sizeof(void*) / sizeof(uint32_t) - 2;
 		static_assert(BufferSize > 0);
@@ -51,4 +52,8 @@ namespace IMPLite {
 	};
 
 	static_assert(sizeof(Float) <= sizeof(void *) * 7);
+}
+
+namespace Imagina {
+	extern im_export MultiPrecision IMPLite;
 }

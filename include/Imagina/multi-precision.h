@@ -17,29 +17,50 @@ struct MPReal;
 typedef struct _MPReal MPReal;
 #endif
 
+typedef void		(*pMultiPrecision_InitContent)		(MPReal *, MPBCUInt); // Do not use directly, use Init instead.
+typedef void		(*pMultiPrecision_InitContentCopy)	(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
+
+typedef void		(*pMultiPrecision_ClearContent)		(MPReal *); // Do not use directly, use Clear instead.
+
+typedef MPBCUInt	(*pMultiPrecision_GetPrecision)		(const MPReal *);
+typedef void		(*pMultiPrecision_SetPrecision)		(MPReal *, MPBCUInt);
+
+typedef void		(*pMultiPrecision_Set)				(MPReal *, const MPReal *);
+typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
+typedef void		(*pMultiPrecision_SetDouble)		(MPReal *, double);
+typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, FloatF64eI64);
+
+typedef double		(*pMultiPrecision_GetDouble)		(const MPReal *);
+typedef FloatF64eI64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
+
+typedef void		(*pMultiPrecision_Add)				(MPReal *, const MPReal *, const MPReal *);
+typedef void		(*pMultiPrecision_Sub)				(MPReal *, const MPReal *, const MPReal *);
+typedef void		(*pMultiPrecision_Mul)				(MPReal *, const MPReal *, const MPReal *);
+typedef void		(*pMultiPrecision_Div)				(MPReal *, const MPReal *, const MPReal *);
+
 struct _MultiPrecisionMutable {
 	const char *Name;
 
-	void (*InitContent)(MPReal *, MPBCUInt); // Do not use directly, use Init instead.
-	void (*InitContentCopy)(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
+	pMultiPrecision_InitContent		InitContent;
+	pMultiPrecision_InitContentCopy	InitContentCopy;
 
-	void (*ClearContent)(MPReal *); // Do not use directly, use Clear instead.
+	pMultiPrecision_ClearContent	ClearContent;
 
-	MPBCUInt (*GetPrecision)(const MPReal *);
-	void (*SetPrecision)(MPReal *, MPBCUInt);
+	pMultiPrecision_GetPrecision	GetPrecision;
+	pMultiPrecision_SetPrecision	SetPrecision;
 
-	void (*Set)(MPReal *, const MPReal *);
-	void (*Copy)(MPReal *, const MPReal *); // Set value and precision
-	void (*SetDouble)(MPReal *, double);
-	void (*SetFloatF64eI64)(MPReal *, FloatF64eI64);
+	pMultiPrecision_Set				Set;
+	pMultiPrecision_Copy			Copy;
+	pMultiPrecision_SetDouble		SetDouble;
+	pMultiPrecision_SetFloatF64eI64	SetFloatF64eI64;
 
-	double (*GetDouble)(const MPReal *);
-	FloatF64eI64 (*GetFloatF64eI64)(const MPReal *);
+	pMultiPrecision_GetDouble		GetDouble;
+	pMultiPrecision_GetFloatF64eI64	GetFloatF64eI64;
 
-	void (*Add)(MPReal *, const MPReal *, const MPReal *);
-	void (*Sub)(MPReal *, const MPReal *, const MPReal *);
-	void (*Mul)(MPReal *, const MPReal *, const MPReal *);
-	void (*Div)(MPReal *, const MPReal *, const MPReal *);
+	pMultiPrecision_Add				Add;
+	pMultiPrecision_Sub				Sub;
+	pMultiPrecision_Mul				Mul;
+	pMultiPrecision_Div				Div;
 };
 
 #ifndef __cplusplus

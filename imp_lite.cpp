@@ -6,7 +6,7 @@
 #include <utility>
 #include "floating_point"
 
-namespace IMPLite {
+namespace Imagina::MPLite {
 	uint32_t PrecisionToSize(uintptr_t precision) {
 		uint32_t size = (precision + 32) / 32; // ceil((precision + 1) / 32)
 		if (size < 2) size = 2;
@@ -505,5 +505,33 @@ namespace IMPLite {
 		return i > 0;
 	}
 
+
+}
+
+namespace Imagina {
+	MultiPrecision IMPLite{ {
+		.Name = "IMPLite",
+
+		.InitContent		= (pMultiPrecision_InitContent)		MPLite::Float::Init,
+		.InitContentCopy	= (pMultiPrecision_InitContentCopy)	MPLite::Float::InitCopy,
+
+		.ClearContent		= (pMultiPrecision_ClearContent)	MPLite::Float::Clear,
+
+		.GetPrecision		= (pMultiPrecision_GetPrecision)	MPLite::Float::GetPrecision,
+		.SetPrecision		= (pMultiPrecision_SetPrecision)	MPLite::Float::SetPrecision,
+
+		.Set				= (pMultiPrecision_Set)				MPLite::Float::Set,
+		.Copy				= (pMultiPrecision_Copy)			MPLite::Float::Copy,
+		.SetDouble			= (pMultiPrecision_SetDouble)		MPLite::Float::SetDouble,
+		.SetFloatF64eI64	= (pMultiPrecision_SetFloatF64eI64)	MPLite::Float::SetFloatF64eI64,
+
+		.GetDouble			= (pMultiPrecision_GetDouble)		MPLite::Float::GetDouble,
+		.GetFloatF64eI64	= (pMultiPrecision_GetFloatF64eI64)	MPLite::Float::GetFloatF64eI64,
+
+		.Add				= (pMultiPrecision_Add)				MPLite::Float::Add,
+		.Sub				= (pMultiPrecision_Sub)				MPLite::Float::Sub,
+		.Mul				= (pMultiPrecision_Mul)				MPLite::Float::Mul,
+		.Div				= (pMultiPrecision_Div)				MPLite::Float::Div,
+	} };
 
 }
