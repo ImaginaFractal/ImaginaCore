@@ -124,7 +124,7 @@ namespace Imagina::MPLite {
 		x->Exponent = src->Exponent;
 		if_unlikely(src->Exponent == INT32_MIN) return;
 
-		memcpy((size > BufferSize) ? x->Pointer : x->Buffer, (size > BufferSize) ? src->Pointer : src->Buffer, newSize * sizeof(uint32_t));
+		memcpy((newSize > BufferSize) ? x->Pointer : x->Buffer, (newSize > BufferSize) ? src->Pointer : src->Buffer, newSize * sizeof(uint32_t));
 	}
 
 	void Float::SetDouble(Float *x, double d) { // FIXME: Denormal
