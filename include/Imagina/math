@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <concepts>
 #include "floating_point"
 #include "constants"
 #include "complex"
@@ -24,8 +25,44 @@ namespace Imagina {
 		return Result;
 	}
 
+	inline double log(const FloatF64eI64 &n) {
+		constexpr double Ln_2 = 0.693147180559945309417;
+		return std::log(n.Mantissa) + n.Exponent * Ln_2;
+	}
+
+	inline double log2(const FloatF64eI64 &n) {
+		return std::log2(n.Mantissa) + n.Exponent;
+	}
+
+	inline double log10(const FloatF64eI64 &n) {
+		constexpr double Log10_2 = 0.30102999566398119521373889472449;
+		return std::log10(n.Mantissa) + n.Exponent * Log10_2;
+	}
+
 	inline FloatF64eI64 hypot(FloatF64eI64 x, FloatF64eI64 y) {
 		return sqrt(x * x + y * y);
+	}
+
+	inline double atan2(FloatF64eI64 y, FloatF64eI64 x) {
+		double y2, x2;
+		y2 = y.Mantissa;
+		x2 = x.Mantissa;
+
+		int64_t ExponentDifference = x.Exponent - y.Exponent;
+		if (x.Exponent >= y.Exponent) {
+			if (ExponentDifference <= 0x200) {
+				reinterpret_cast<int64_t &>(y) -= ExponentDifference << 52;
+			} else {
+				y = 0.0;
+			}
+		} else {
+			if (ExponentDifference >= -0x200) {
+				reinterpret_cast<int64_t &>(x) += ExponentDifference << 52;
+			} else {
+				x = 0.0;
+			}
+		}
+		return std::atan2(y2, x2);
 	}
 
 	template<typename T> inline T ManhattanHypot(const T &x, const T &y) {
@@ -43,4 +80,29 @@ namespace Imagina {
 	template<typename T> inline T ChebyshevNorm(const Complex<T> &x) {
 		return ChebyshevHypot(x.re, x.im);
 	}
+
+	template<std::floating_point T> inline T abs(const Complex<T> &x) {
+		return std::hypot(x.re, x.im);
+	}
+
+	inline FloatF64eI64 abs(const Complex<FloatF64eI64> &x) {
+		return hypot(x.re, x.im);
+	}
+
+	template<std::floating_point T> inline T arg(const Complex<T> &x) {
+		return std::atan2(x.im, x.re);
+	}
+
+	inline FloatF64eI64 arg(const Complex<FloatF64eI64> &x) {
+		return atan2(x.re, x.im);
+	}
+
+	template<std::floating_point T> inline Complex<T> log(const Complex<T> &x) {
+		return { std::log(abs(x)), std::atan2(x.im, x.re) };
+	}
+
+	inline Complex<double> log(const Complex<FloatF64eI64> &x) {
+		return { log(norm(x)) * Constants::Half, atan2(x.im, x.re) };
+	}
+
 }

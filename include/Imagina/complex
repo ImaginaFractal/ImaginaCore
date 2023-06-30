@@ -72,6 +72,12 @@ namespace Imagina {
 	template<typename Real> constexpr Complex<Real> operator-(Complex<Real> a, const Real &b) { return a -= b; }
 	template<typename Real> constexpr Complex<Real> operator*(Complex<Real> a, const Real &b) { return a *= b; }
 	template<typename Real> constexpr Complex<Real> operator/(Complex<Real> a, const Real &b) { return a /= b; }
+
+	template<typename Real> constexpr Complex<Real> operator+(const Real &a, Complex<Real> b) { return b += a; }
+	template<typename Real> constexpr Complex<Real> operator*(const Real &a, Complex<Real> b) { return b *= a; }
+	template<typename Real> constexpr Complex<Real> operator-(const Real &a, Complex<Real> b) { return Complex<Real>(a) -= b; }
+	template<typename Real> constexpr Complex<Real> operator/(const Real &a, Complex<Real> b) { return Complex<Real>(a) /= b; }
+
 	template<typename Real> constexpr Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) { return a += b; }
 	template<typename Real> constexpr Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) { return a -= b; }
 

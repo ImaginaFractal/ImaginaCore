@@ -16,8 +16,8 @@ namespace Imagina {
 		struct IntegerConstant {
 			//template<typename type> constexpr explicit(!std::is_convertible_v<intmax_t, type>)
 			//	operator type() const { return type(value); }
-			operator double() const { return value; }
-			operator intmax_t() const { return value; }
+			constexpr operator double() const { return value; }
+			constexpr operator intmax_t() const { return value; }
 		};
 
 		template<intmax_t value> constexpr IntegerConstant<value> Integer;
@@ -25,5 +25,14 @@ namespace Imagina {
 		constexpr IntegerConstant<0> Zero;
 		constexpr IntegerConstant<1> One;
 		constexpr IntegerConstant<2> Two;
+
+		template<intmax_t value>
+		struct IntegerRCPConstant {
+			static_assert(value > 1 || value < -1);
+			constexpr operator double() const { return 1.0 / value; }
+		};
+
+		constexpr IntegerRCPConstant<2> Half;
+		constexpr IntegerRCPConstant<3> Third;
 	}
 }
