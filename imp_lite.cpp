@@ -186,6 +186,121 @@ namespace Imagina::MPLite {
 		return Imagina::FloatF64eI64(x->Sign ? -double(Mantissa) : double(Mantissa), x->Exponent - 64);
 	}
 
+	void Float::Add(Float *result, const Float *x, const Float *y) {
+		if (x->Sign == y->Sign) {
+			UnsignedAdd(result, x, y);
+		} else {
+			UnsignedSub(result, x, y);
+		}
+	}
+
+	void Float::Sub(Float *result, const Float *x, const Float *y) {
+		if (x->Sign == y->Sign) {
+			UnsignedSub(result, x, y);
+		} else {
+			UnsignedAdd(result, x, y);
+		}
+	}
+
+	void Float::Mul(Float *result, const Float *x, const Float *y) {
+		if_unlikely(x->Exponent == INT32_MIN || y->Exponent == INT32_MIN) {
+			result->Exponent = INT32_MIN;
+			return;
+		}
+		
+		if (y == result) {
+			std::swap(x, y);
+		}
+
+		uint32_t rsize = result->Size;
+		uint32_t xsize = x->Size;
+		uint32_t ysize = y->Size;
+
+		uint32_t *rdata = (rsize > BufferSize) ? result->Pointer : result->Buffer;
+		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
+		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
+
+		uint32_t rindex = 0;
+
+		if (rsize > xsize) {
+			memset(rdata, 0, rsize - xsize);
+			uint32_t productSize = xsize + ysize;
+			if (rsize > productSize) {
+				rdata += rsize - productSize;
+				rsize = productSize;
+			}
+			rindex = rsize - xsize;
+		} else {
+			xdata += xsize - rsize;
+			xsize = rsize;
+		}
+
+		uint32_t lowWord = 0x8000'0000; // For rounding
+
+		for (uint32_t xindex = 0; xindex < xsize; xindex++, rindex++) {
+			uint32_t i;
+			uint32_t j;
+			uint64_t factor = xdata[xindex];
+			uint64_t product;
+			if (rindex < ysize) {
+				i = 0;
+				j = ysize - rindex;
+				product = lowWord + factor * ydata[j - 1];
+				lowWord = (uint32_t)product;
+				product >>= 32;
+			} else {
+				i = rindex - ysize;
+				j = 0;
+				product = 0;
+			}
+			while (j < ysize) {
+				product += rdata[i] + factor * ydata[j];
+				rdata[i] = product;
+				product >>= 32;
+				i++; j++;
+			}
+			rdata[i] = (uint32_t)product;
+		}
+		result->Sign = x->Sign ^ y->Sign;
+		result->Exponent = x->Exponent + y->Exponent;
+
+		if (!(rdata[rsize - 1] & 0x8000'0000)) {
+			uint32_t loword = 0;
+			for (uint32_t i = 0; i < rsize; i++) {
+				uint32_t hiword = rdata[i];
+				rdata[i] = (hiword << 1) | (loword >> 31);
+				loword = hiword;
+			}
+			result->Exponent--;
+		}
+	}
+
+	void Float::Div(Float *result, const Float *x, const Float *y) {
+		throw ""; // FIXME
+	}
+
+	bool Float::MagnitudeGreater(const Float *x, const Float *y) {
+		if (x->Exponent > y->Exponent) return true;
+		if (x->Exponent < y->Exponent) return false;
+
+		uint32_t xsize = x->Size;
+		uint32_t ysize = y->Size;
+
+		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
+		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
+
+		uint32_t i = xsize, j = ysize;
+		while (i-- > 0 && j-- > 0) {
+			if (xdata[i] > ydata[j]) {
+				return true;
+			} else if (xdata[i] < ydata[j]) {
+				return false;
+			}
+		}
+
+		return i > 0;
+	}
+
 	// Sign of y is ignored
 	void Float::UnsignedAdd(Float *result, const Float *x, const Float *y) {
 		result->Sign = x->Sign;
@@ -388,121 +503,6 @@ namespace Imagina::MPLite {
 			rdata[j] = hiword << lshift;
 		}
 		if (j > 0) memset(rdata, 0, j * sizeof(uint32_t));
-	}
-
-	void Float::Add(Float *result, const Float *x, const Float *y) {
-		if (x->Sign == y->Sign) {
-			UnsignedAdd(result, x, y);
-		} else {
-			UnsignedSub(result, x, y);
-		}
-	}
-
-	void Float::Sub(Float *result, const Float *x, const Float *y) {
-		if (x->Sign == y->Sign) {
-			UnsignedSub(result, x, y);
-		} else {
-			UnsignedAdd(result, x, y);
-		}
-	}
-
-	void Float::Mul(Float *result, const Float *x, const Float *y) {
-		if_unlikely(x->Exponent == INT32_MIN || y->Exponent == INT32_MIN) {
-			result->Exponent = INT32_MIN;
-			return;
-		}
-		
-		if (y == result) {
-			std::swap(x, y);
-		}
-
-		uint32_t rsize = result->Size;
-		uint32_t xsize = x->Size;
-		uint32_t ysize = y->Size;
-
-		uint32_t *rdata = (rsize > BufferSize) ? result->Pointer : result->Buffer;
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
-
-		uint32_t rindex = 0;
-
-		if (rsize > xsize) {
-			memset(rdata, 0, rsize - xsize);
-			uint32_t productSize = xsize + ysize;
-			if (rsize > productSize) {
-				rdata += rsize - productSize;
-				rsize = productSize;
-			}
-			rindex = rsize - xsize;
-		} else {
-			xdata += xsize - rsize;
-			xsize = rsize;
-		}
-
-		uint32_t lowWord = 0x8000'0000; // For rounding
-
-		for (uint32_t xindex = 0; xindex < xsize; xindex++, rindex++) {
-			uint32_t i;
-			uint32_t j;
-			uint64_t factor = xdata[xindex];
-			uint64_t product;
-			if (rindex < ysize) {
-				i = 0;
-				j = ysize - rindex;
-				product = lowWord + factor * ydata[j - 1];
-				lowWord = (uint32_t)product;
-				product >>= 32;
-			} else {
-				i = rindex - ysize;
-				j = 0;
-				product = 0;
-			}
-			while (j < ysize) {
-				product += rdata[i] + factor * ydata[j];
-				rdata[i] = product;
-				product >>= 32;
-				i++; j++;
-			}
-			rdata[i] = (uint32_t)product;
-		}
-		result->Sign = x->Sign ^ y->Sign;
-		result->Exponent = x->Exponent + y->Exponent;
-
-		if (!(rdata[rsize - 1] & 0x8000'0000)) {
-			uint32_t loword = 0;
-			for (uint32_t i = 0; i < rsize; i++) {
-				uint32_t hiword = rdata[i];
-				rdata[i] = (hiword << 1) | (loword >> 31);
-				loword = hiword;
-			}
-			result->Exponent--;
-		}
-	}
-
-	void Float::Div(Float *result, const Float *x, const Float *y) {
-		throw ""; // FIXME
-	}
-
-	bool Float::MagnitudeGreater(const Float *x, const Float *y) {
-		if (x->Exponent > y->Exponent) return true;
-		if (x->Exponent < y->Exponent) return false;
-
-		uint32_t xsize = x->Size;
-		uint32_t ysize = y->Size;
-
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
-
-		uint32_t i = xsize, j = ysize;
-		while (i-- > 0 && j-- > 0) {
-			if (xdata[i] > ydata[j]) {
-				return true;
-			} else if (xdata[i] < ydata[j]) {
-				return false;
-			}
-		}
-
-		return i > 0;
 	}
 
 

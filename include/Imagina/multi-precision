@@ -51,7 +51,7 @@ namespace Imagina {
 	using MultiPrecision = const MultiPrecisionMutable;
 
 	struct MPReal {
-		const void *Content[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
+		const void *PlaceHolder[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
 		MultiPrecision *const MP = nullptr;
 
 		MPReal() = default;
