@@ -74,6 +74,8 @@ namespace Imagina {
 	};
 
 	class im_export TestSimpleEvaluator : public SimpleEvaluator {
+		using real = SRReal;
+		using complex = SRComplex;
 		struct Output {
 			double Value;
 		};
@@ -81,7 +83,7 @@ namespace Imagina {
 		uint64_t referenceLength;
 		//SRComplex reference[1025];
 		//SRComplex *reference = nullptr;
-		HRComplex *reference = nullptr;
+		complex *reference = nullptr;
 		//SRComplex referenceC;
 
 	public:

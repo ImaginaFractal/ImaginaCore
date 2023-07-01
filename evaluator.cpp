@@ -144,19 +144,19 @@ namespace Imagina {
 	void TestSimpleEvaluator::Precompute() {
 		delete[] reference;
 		//reference = new SRComplex[parameters.Iterations + 1];
-		reference = new HRComplex[parameters.Iterations + 1];
+		reference = new complex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
 		//referenceC = SRComplex(SRReal(x), SRReal(y));
 
-		reference[0] = HRReal(0.0);
-		reference[1] = HRComplex(HRReal(x), HRReal(y));
+		reference[0] = real(0.0);
+		reference[1] = complex(real(x), real(y));
 
 		HPComplex Z = C;
 
 		size_t i;
 		for (i = 2; i <= parameters.Iterations; i++) {
 			Z = Z * Z + C;
-			HRComplex z = HRComplex(Z);
+			complex z = complex(Z);
 			reference[i] = z;
 
 			if (norm(z) > 16.0) {
@@ -171,8 +171,8 @@ namespace Imagina {
 	void TestSimpleEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
-			HRComplex dc = { x, y };
-			HRComplex Z = HRReal(0.0), z = HRReal(0.0), dz = HRReal(0.0);
+			complex dc = { real(x), real(y) };
+			complex Z = real(0.0), z = real(0.0), dz = real(0.0);
 
 			ITUInt i = 0, j = 0;
 			while (i < parameters.Iterations) {
@@ -185,7 +185,7 @@ namespace Imagina {
 				if (norm(z) > 4096.0) break;
 
 				if (j == referenceLength || norm(z) < norm(dz)) {
-					Z = HRReal(0.0);
+					Z = real(0.0);
 					dz = z;
 					j = 0;
 				}
