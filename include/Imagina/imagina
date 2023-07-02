@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types"
+#include "module"
 #include "controller"
 #include "pixel_processing"
 #include "pixel_management"

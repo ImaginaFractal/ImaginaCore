@@ -1,0 +1,59 @@
+#pragma once
+
+#include <string_view>
+#include "module.h"
+
+namespace Imagina {
+	enum class ComponentTypeIndex {
+		Evaluator		= IM_CTI_Evaluator,
+		LocationManager	= IM_CTI_LocationManager,
+		PixelProcessor	= IM_CTI_PixelProcessor,
+		PixelManager	= IM_CTI_PixelManager,
+		Controller		= IM_CTI_Controller,
+		MultiPrecision	= IM_CTI_MultiPrecision,
+		ModuleExtension	= IM_CTI_ModuleExtension,
+	};
+
+	enum class ComponentType : uint32_t {
+		Evaluator		= 1u << IM_CTI_Evaluator,
+		LocationManager	= 1u << IM_CTI_LocationManager,
+		PixelProcessor	= 1u << IM_CTI_PixelProcessor,
+		PixelManager	= 1u << IM_CTI_PixelManager,
+		Controller		= 1u << IM_CTI_Controller,
+		MultiPrecision	= 1u << IM_CTI_MultiPrecision,
+		ModuleExtension	= 1u << IM_CTI_ModuleExtension,
+	};
+
+	enum class ComponentFlag : uint32_t {
+		UseCApi = IM_CF_UseCApi,
+	};
+
+	struct Component;
+	struct Module;
+
+	struct Component {
+		ComponentInfo Info;
+		size_t ModuleID;
+		//std::string_view ModuleID;
+		//Module *Module;
+		void *Create() {
+			return Info.Create(Info.Name);
+		}
+	};
+	struct Module {
+		ModuleInfo Info;
+		void *Handle;
+		size_t FirstComponentID;
+		size_t ComponentCount;
+		//Component *Components;
+	};
+
+	im_export bool LoadModule(const char *filename);
+	im_export Component *GetComponent(std::string_view fullName);
+	im_export Component *GetComponent(ComponentTypeIndex type);
+
+	inline void *CreateComponent(ComponentTypeIndex type) {
+		Component *component = GetComponent(type);
+		return component ? component->Create() : nullptr;
+	}
+}

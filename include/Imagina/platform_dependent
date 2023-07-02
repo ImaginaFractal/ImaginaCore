@@ -13,4 +13,9 @@
 #endif
 #endif
 
-void SetWorkerPriority();
+namespace Imagina {
+	void SetWorkerPriority();
+	void *LoadLibrary(const char *filename);
+	bool UnloadLibrary(void *handle);
+	void *GetSymbol(void *handle, const char *name);
+}
