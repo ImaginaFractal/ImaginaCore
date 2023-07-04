@@ -1,41 +1,41 @@
-#include "delegate"
+#include "proxy"
 #include "output_info_helper"
 
 namespace Imagina {
-	LowPrecisionEvaluatorDelegate::~LowPrecisionEvaluatorDelegate() {
+	LowPrecisionEvaluatorProxy::~LowPrecisionEvaluatorProxy() {
 		release(instance);
 	}
-	const PixelDataInfo *LowPrecisionEvaluatorDelegate::GetOutputInfo() {
+	const PixelDataInfo *LowPrecisionEvaluatorProxy::GetOutputInfo() {
 		if (!outputInfo) {
 			outputInfo = (PixelDataInfo *)getOutputInfo(instance);
 		}
 		return outputInfo;
 	}
-	void LowPrecisionEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+	void LowPrecisionEvaluatorProxy::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
 	}
-	void LowPrecisionEvaluatorDelegate::Evaluate(IRasterizingInterface &rasterizingInterface) {
+	void LowPrecisionEvaluatorProxy::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);
 	}
 
 
-	SimpleEvaluatorDelegate::~SimpleEvaluatorDelegate() {
+	SimpleEvaluatorProxy::~SimpleEvaluatorProxy() {
 		release(instance);
 	}
-	const PixelDataInfo *SimpleEvaluatorDelegate::GetOutputInfo() {
+	const PixelDataInfo *SimpleEvaluatorProxy::GetOutputInfo() {
 		if (!outputInfo) {
 			outputInfo = (PixelDataInfo *)getOutputInfo(instance);
 		}
 		return outputInfo;
 	}
-	void SimpleEvaluatorDelegate::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+	void SimpleEvaluatorProxy::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		setEvaluationParameters(instance, (StandardEvaluationParameters *)&parameters);
 		SimpleEvaluator::SetEvaluationParameters(parameters);
 	}
-	void SimpleEvaluatorDelegate::Precompute() {
+	void SimpleEvaluatorProxy::Precompute() {
 		setReferenceLocationAndPrecompute(instance, x, y, radius);
 	}
-	void SimpleEvaluatorDelegate::Evaluate(IRasterizingInterface &rasterizingInterface) {
+	void SimpleEvaluatorProxy::Evaluate(IRasterizingInterface &rasterizingInterface) {
 		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);
 	}
 }

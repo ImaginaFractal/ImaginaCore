@@ -5,7 +5,7 @@
 #include "imagina.h"
 
 namespace Imagina {
-	class im_export LowPrecisionEvaluatorDelegate : public LowPrecisionEvaluator {
+	class im_export LowPrecisionEvaluatorProxy : public LowPrecisionEvaluator {
 		struct Output {
 			double Value;
 		};
@@ -17,7 +17,7 @@ namespace Imagina {
 
 		PixelDataInfo *outputInfo = nullptr;
 	public:
-		LowPrecisionEvaluatorDelegate(
+		LowPrecisionEvaluatorProxy(
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
 			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
@@ -25,7 +25,7 @@ namespace Imagina {
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
 		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), evaluate(evaluate) {}
 
-		virtual ~LowPrecisionEvaluatorDelegate() override;
+		virtual ~LowPrecisionEvaluatorProxy() override;
 
 		virtual const PixelDataInfo *GetOutputInfo() override;
 
@@ -34,7 +34,7 @@ namespace Imagina {
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 
-	class im_export SimpleEvaluatorDelegate : public SimpleEvaluator {
+	class im_export SimpleEvaluatorProxy : public SimpleEvaluator {
 		ImCApi::IEvaluator *instance;
 		ImCApi::pIEvaluator_Release release;
 		ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
@@ -45,7 +45,7 @@ namespace Imagina {
 		PixelDataInfo *outputInfo = nullptr;
 
 	public:
-		SimpleEvaluatorDelegate(
+		SimpleEvaluatorProxy(
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
 			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
@@ -54,7 +54,7 @@ namespace Imagina {
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
 		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), setReferenceLocationAndPrecompute(setReferenceLocationAndPrecompute), evaluate(evaluate) {}
 
-		virtual ~SimpleEvaluatorDelegate() override;
+		virtual ~SimpleEvaluatorProxy() override;
 
 		virtual const PixelDataInfo *GetOutputInfo() override;
 
