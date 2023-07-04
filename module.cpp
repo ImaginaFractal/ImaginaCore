@@ -32,7 +32,7 @@ namespace Imagina {
 	std::unordered_map<std::string_view, size_t> ModuleMap;
 	std::unordered_map<std::string, size_t> ComponentMap;
 
-	std::vector<size_t> ComponentLists[32];
+	std::unordered_map<ComponentType, std::vector<size_t>> ComponentLists;
 	//std::unordered_map<std::string_view, Module> Modules;
 	//std::unordered_map<std::string, Component> Components;
 
@@ -69,10 +69,11 @@ namespace Imagina {
 			ComponentMap.try_emplace(prefix + componentInfo.Name, componentID);
 			Components.push_back({ componentInfo, moduleID });
 
-			for (size_t j = 0; j < 32; j++) {
-				if (!((uint32_t)componentInfo.Type & (1 << j))) continue;
-				ComponentLists[j].push_back(componentID);
-			}
+			//for (size_t j = 0; j < 32; j++) {
+			//	if (!((uint32_t)componentInfo.Type & (1 << j))) continue;
+			//	ComponentLists[j].push_back(componentID);
+			//}
+			ComponentLists[componentInfo.Type].push_back(componentID);
 		}
 
 		//iterator->second.Info = *moduleInfo;
@@ -107,16 +108,16 @@ namespace Imagina {
 		if (iterator == ComponentMap.end()) return nullptr;
 		return &Components[iterator->second];
 	}
-	Component *GetComponent(ComponentTypeIndex type) {
-		assert((uint32_t)type < 32);
-
-		std::vector<size_t> &list = ComponentLists[(uint32_t)type];
+	Component *GetComponent(ComponentType type) {
+		auto iterator = ComponentLists.find(type);
+		if (iterator == ComponentLists.end()) return nullptr;
+		std::vector<size_t> &list = iterator->second;
 		if (list.empty()) return nullptr;
 
 		size_t id = list[list.size() - 1];
 		return &Components[id];
 	}
-	void *CreateComponent(ComponentTypeIndex type) {
+	void *CreateComponent(ComponentType type) {
 		Component *component = GetComponent(type);
 		return component ? component->Create() : nullptr;
 	}

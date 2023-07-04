@@ -25,5 +25,9 @@ namespace Imagina {
 
 	class IFractalContext;
 
+	class IPixelProcessor;
 	class PixelPipeline;
+
+	struct MultiPrecisionMutable;
+	using MultiPrecision = const MultiPrecisionMutable;
 }

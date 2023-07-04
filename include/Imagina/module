@@ -1,32 +1,32 @@
 #pragma once
 
 #include <string_view>
+#include "declarations"
 #include "module.h"
 
 namespace Imagina {
-	enum class ComponentTypeIndex {
-		Evaluator		= IM_CTI_Evaluator,
-		LocationManager	= IM_CTI_LocationManager,
-		PixelProcessor	= IM_CTI_PixelProcessor,
-		PixelManager	= IM_CTI_PixelManager,
-		Controller		= IM_CTI_Controller,
-		MultiPrecision	= IM_CTI_MultiPrecision,
-		ModuleExtension	= IM_CTI_ModuleExtension,
-	};
-
 	enum class ComponentType : uint32_t {
-		Evaluator		= 1u << IM_CTI_Evaluator,
-		LocationManager	= 1u << IM_CTI_LocationManager,
-		PixelProcessor	= 1u << IM_CTI_PixelProcessor,
-		PixelManager	= 1u << IM_CTI_PixelManager,
-		Controller		= 1u << IM_CTI_Controller,
-		MultiPrecision	= 1u << IM_CTI_MultiPrecision,
-		ModuleExtension	= 1u << IM_CTI_ModuleExtension,
+		Evaluator		= IM_CT_Evaluator,
+		LocationManager	= IM_CT_LocationManager,
+		PixelProcessor	= IM_CT_PixelProcessor,
+		PixelManager	= IM_CT_PixelManager,
+		Controller		= IM_CT_Controller,
+		MultiPrecision	= IM_CT_MultiPrecision,
+		ModuleExtension	= IM_CT_ModuleExtension,
 	};
 
 	enum class ComponentFlag : uint32_t {
 		UseCApi = IM_CF_UseCApi,
 	};
+
+	template<typename T> inline constexpr ComponentType TypeToComponentType = ComponentType(0);
+
+	template<> inline constexpr ComponentType TypeToComponentType<IEvaluator> = ComponentType::Evaluator;
+	template<> inline constexpr ComponentType TypeToComponentType<ILocationManager> = ComponentType::LocationManager;
+	template<> inline constexpr ComponentType TypeToComponentType<IPixelProcessor> = ComponentType::PixelProcessor;
+	template<> inline constexpr ComponentType TypeToComponentType<IPixelManager> = ComponentType::PixelManager;
+	template<> inline constexpr ComponentType TypeToComponentType<IController> = ComponentType::Controller;
+	template<> inline constexpr ComponentType TypeToComponentType<MultiPrecision> = ComponentType::MultiPrecision;
 
 	struct Component;
 	struct Module;
@@ -36,5 +36,10 @@ namespace Imagina {
 	//im_export Component *GetComponent(std::string_view fullName);
 	//im_export Component *GetComponent(ComponentTypeIndex type);
 
-	im_export void *CreateComponent(ComponentTypeIndex type);
+	im_export void *CreateComponent(ComponentType type);
+
+	template<typename T>
+	inline T *CreateComponent() {
+		return (T *)CreateComponent(TypeToComponentType<T>);
+	}
 }

@@ -8,24 +8,14 @@
 namespace Imagina {
 #endif
 
-enum _ComponentTypeIndex {
-	IM_CTI_Evaluator		= 1,
-	IM_CTI_LocationManager	= 2,
-	IM_CTI_PixelProcessor	= 3,
-	IM_CTI_PixelManager		= 16,
-	IM_CTI_Controller		= 20,
-	IM_CTI_MultiPrecision	= 28,
-	IM_CTI_ModuleExtension	= 31,
-};
-
 enum _ComponentType {
-	IM_CT_Evaluator			= 1 << IM_CTI_Evaluator,
-	IM_CT_LocationManager	= 1 << IM_CTI_LocationManager,
-	IM_CT_PixelProcessor	= 1 << IM_CTI_PixelProcessor,
-	IM_CT_PixelManager		= 1 << IM_CTI_PixelManager,
-	IM_CT_Controller		= 1 << IM_CTI_Controller,
-	IM_CT_MultiPrecision	= 1 << IM_CTI_MultiPrecision,
-	IM_CT_ModuleExtension	= 1 << IM_CTI_ModuleExtension,
+	IM_CT_Evaluator			= 1,
+	IM_CT_LocationManager	= 2,
+	IM_CT_PixelProcessor	= 3,
+	IM_CT_PixelManager		= 16,
+	IM_CT_Controller		= 20,
+	IM_CT_MultiPrecision	= 28,
+	IM_CT_ModuleExtension	= 31,
 };
 
 enum _ComponentFlag {
