@@ -12,7 +12,7 @@ namespace Imagina {
 		ImCApi::IEvaluator *instance;
 		ImCApi::pIEvaluator_Release release;
 		ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
-		ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters;
+		ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters;
 		ImCApi::pLowPrecisionEvaluator_Evaluate evaluate;
 
 		PixelDataInfo *outputInfo = nullptr;
@@ -21,7 +21,7 @@ namespace Imagina {
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
 			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
-			ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters,
+			ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters,
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
 		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), evaluate(evaluate) {}
 
@@ -38,7 +38,7 @@ namespace Imagina {
 		ImCApi::IEvaluator *instance;
 		ImCApi::pIEvaluator_Release release;
 		ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
-		ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters;
+		ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters;
 		ImCApi::pSimpleEvaluator_SetReferenceLocationAndPrecompute setReferenceLocationAndPrecompute;
 		ImCApi::pSimpleEvaluator_Evaluate evaluate;
 
@@ -49,7 +49,7 @@ namespace Imagina {
 			ImCApi::IEvaluator *instance,
 			ImCApi::pIEvaluator_Release release,
 			ImCApi::pIEvaluator_GetOutputInfo getOutputInfo,
-			ImCApi::pStandardEvaluator_SetEvaluationParameters setEvaluationParameters,
+			ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters,
 			ImCApi::pSimpleEvaluator_SetReferenceLocationAndPrecompute setReferenceLocationAndPrecompute,
 			ImCApi::pLowPrecisionEvaluator_Evaluate evaluate
 		) : instance(instance), release(release), getOutputInfo(getOutputInfo), setEvaluationParameters(setEvaluationParameters), setReferenceLocationAndPrecompute(setReferenceLocationAndPrecompute), evaluate(evaluate) {}

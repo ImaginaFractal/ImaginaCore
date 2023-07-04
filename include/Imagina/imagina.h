@@ -25,7 +25,7 @@ im_export void RasterizingInterface_WriteResults(IRasterizingInterface *rasteriz
 typedef void (*pIEvaluator_Release)(IEvaluator *instance);
 typedef const Imagina::PixelDataInfo *(*pIEvaluator_GetOutputInfo)(IEvaluator *instance);
 
-typedef void (*pStandardEvaluator_SetEvaluationParameters)(IEvaluator *instance, const Imagina::StandardEvaluationParameters *parameters);
+typedef void (*pComplexEvaluator_SetEvaluationParameters)(IEvaluator *instance, const Imagina::StandardEvaluationParameters *parameters);
 
 typedef void (*pSimpleEvaluator_Evaluate)(IEvaluator *instance, IRasterizingInterface *rasterizingInterface);
 typedef void (*pSimpleEvaluator_SetReferenceLocationAndPrecompute)(IEvaluator *instance, const Imagina::HPReal *x, const Imagina::HPReal *y, Imagina::HRReal radius);
