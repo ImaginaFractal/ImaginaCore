@@ -31,11 +31,14 @@ namespace Imagina {
 	struct Component;
 	struct Module;
 
+	im_export void LoadBuiltinComponents();
+
 	im_export bool LoadModule(const char *filename);
 	im_export bool LoadModules(const char *path, const char *extension);
 	//im_export Component *GetComponent(std::string_view fullName);
 	//im_export Component *GetComponent(ComponentTypeIndex type);
 
+	im_export void *CreateComponent(std::string_view fullName);
 	im_export void *CreateComponent(ComponentType type);
 
 	template<typename T>

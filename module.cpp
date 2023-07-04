@@ -7,6 +7,11 @@
 #include <cassert>
 #include <filesystem>
 
+// Builtin modules
+//#include "location_manager"
+#include "basic_pixel_manager"
+#include "imp_lite"
+
 namespace filesystem = std::filesystem;
 
 namespace Imagina {
@@ -36,7 +41,55 @@ namespace Imagina {
 	//std::unordered_map<std::string_view, Module> Modules;
 	//std::unordered_map<std::string, Component> Components;
 
+	ComponentInfo BuiltinComponents[]{
+		{
+			.Name = "BasicPixelManager",
+			.DisplayName = "Basic Pixel Manager",
+			.Create = [](const char *)->void *{ return new BasicPixelManager; },
+			.Type = ComponentType::PixelManager,
+		},
+		{
+			.Name = "IMPLite",
+			.DisplayName = "IMP Lite",
+			.Create = [](const char *)->void *{ return (void *)&IMPLite; },
+			.Type = ComponentType::MultiPrecision,
+		},
+	};
+
+	ModuleInfo BuiltinModule{
+		.Name = "Imagina",
+		.DisplayName = "Imagina",
+		.ComponentCount = 2,
+		.Components = BuiltinComponents,
+	};
+
 	// TODO: Validations
+	bool AddModule(ModuleInfo *moduleInfo, void *handle) {
+		size_t moduleID = Modules.size();
+		bool added = ModuleMap.try_emplace(moduleInfo->Name, moduleID).second;
+
+		if (!added) return false;
+
+		Modules.push_back({ *moduleInfo, handle, Components.size(), moduleInfo->ComponentCount });
+
+		std::string prefix = moduleInfo->Name;
+		prefix += '.';
+		for (size_t i = 0; i < moduleInfo->ComponentCount; i++) {
+			const ComponentInfo &componentInfo = moduleInfo->Components[i];
+			size_t componentID = Components.size();
+			ComponentMap.try_emplace(prefix + componentInfo.Name, componentID);
+			Components.push_back({ componentInfo, moduleID });
+
+			ComponentLists[componentInfo.Type].push_back(componentID);
+		}
+
+		return true;
+	}
+
+	im_export void LoadBuiltinComponents() {
+		AddModule(&BuiltinModule, nullptr);
+	}
+
 	bool LoadModule(void *handle) {
 		if (!handle) return false;
 
@@ -49,38 +102,10 @@ namespace Imagina {
 		pImInit Init = (pImInit)GetSymbol(handle, "ImInit");
 		if (Init) Init();
 
-		bool added;
-		ModuleInfo *moduleInfo = GetModuleInfo();
-		size_t moduleID = Modules.size();
-		std::tie(std::ignore, added) = ModuleMap.try_emplace(moduleInfo->Name, moduleID);
-
-		if (!added) {
+		if (!AddModule(GetModuleInfo(), handle)) {
 			UnloadLibrary(handle);
 			return false;
 		}
-
-		Modules.push_back({ *moduleInfo,handle, Components.size(), moduleInfo->ComponentCount });
-
-		std::string prefix = moduleInfo->Name;
-		prefix += '.';
-		for (size_t i = 0; i < moduleInfo->ComponentCount; i++) {
-			const ComponentInfo &componentInfo = moduleInfo->Components[i];
-			size_t componentID = Components.size();
-			ComponentMap.try_emplace(prefix + componentInfo.Name, componentID);
-			Components.push_back({ componentInfo, moduleID });
-
-			//for (size_t j = 0; j < 32; j++) {
-			//	if (!((uint32_t)componentInfo.Type & (1 << j))) continue;
-			//	ComponentLists[j].push_back(componentID);
-			//}
-			ComponentLists[componentInfo.Type].push_back(componentID);
-		}
-
-		//iterator->second.Info = *moduleInfo;
-		//iterator->second.Handle = handle;
-		//Component *components = new Component[moduleInfo->ComponentCount];
-		//iterator->second.ComponentCount = moduleInfo->ComponentCount;
-		//iterator->second.Components = components;
 		return true;
 	}
 
@@ -116,6 +141,10 @@ namespace Imagina {
 
 		size_t id = list[list.size() - 1];
 		return &Components[id];
+	}
+	void *CreateComponent(std::string_view fullName) {
+		Component *component = GetComponent(fullName);
+		return component ? component->Create() : nullptr;
 	}
 	void *CreateComponent(ComponentType type) {
 		Component *component = GetComponent(type);
