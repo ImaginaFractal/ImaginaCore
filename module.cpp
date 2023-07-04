@@ -5,8 +5,28 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <filesystem>
+
+namespace filesystem = std::filesystem;
 
 namespace Imagina {
+	struct Component {
+		ComponentInfo Info;
+		size_t ModuleID;
+		//std::string_view ModuleID;
+		//Module *Module;
+		void *Create() {
+			return Info.Create(Info.Name);
+		}
+	};
+	struct Module {
+		ModuleInfo Info;
+		void *Handle;
+		size_t FirstComponentID;
+		size_t ComponentCount;
+		//Component *Components;
+	};
+
 	std::vector<Module> Modules = { {} };
 	std::vector<Component> Components = { {} };
 	std::unordered_map<std::string_view, size_t> ModuleMap;
@@ -17,8 +37,7 @@ namespace Imagina {
 	//std::unordered_map<std::string, Component> Components;
 
 	// TODO: Validations
-	bool LoadModule(const char *filename) {
-		void *handle = LoadLibrary(filename);
+	bool LoadModule(void *handle) {
 		if (!handle) return false;
 
 		pImGetModuleInfo GetModuleInfo = (pImGetModuleInfo)GetSymbol(handle, "ImGetModuleInfo");
@@ -63,6 +82,26 @@ namespace Imagina {
 		//iterator->second.Components = components;
 		return true;
 	}
+
+	bool LoadModule(const char *filename) {
+		return LoadModule(LoadLibrary(filename));
+	}
+
+	bool LoadModule(filesystem::path path) {
+		return LoadModule(LoadLibrary(path));
+	}
+
+	bool LoadModules(const char *path, const char *extension) {
+		size_t loadedCount = 0;
+		for (const auto &entry : filesystem::directory_iterator(path)) {
+			if (!entry.is_regular_file() || entry.path().extension() != extension) continue;
+			loadedCount += LoadModule(entry);
+		}
+		return loadedCount != 0;
+	}
+
+
+
 	Component *GetComponent(std::string_view fullName) {
 		auto iterator = ComponentMap.find(std::string(fullName));
 		if (iterator == ComponentMap.end()) return nullptr;
@@ -76,5 +115,9 @@ namespace Imagina {
 
 		size_t id = list[list.size() - 1];
 		return &Components[id];
+	}
+	void *CreateComponent(ComponentTypeIndex type) {
+		Component *component = GetComponent(type);
+		return component ? component->Create() : nullptr;
 	}
 }

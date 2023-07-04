@@ -31,29 +31,10 @@ namespace Imagina {
 	struct Component;
 	struct Module;
 
-	struct Component {
-		ComponentInfo Info;
-		size_t ModuleID;
-		//std::string_view ModuleID;
-		//Module *Module;
-		void *Create() {
-			return Info.Create(Info.Name);
-		}
-	};
-	struct Module {
-		ModuleInfo Info;
-		void *Handle;
-		size_t FirstComponentID;
-		size_t ComponentCount;
-		//Component *Components;
-	};
-
 	im_export bool LoadModule(const char *filename);
-	im_export Component *GetComponent(std::string_view fullName);
-	im_export Component *GetComponent(ComponentTypeIndex type);
+	im_export bool LoadModules(const char *path, const char *extension);
+	//im_export Component *GetComponent(std::string_view fullName);
+	//im_export Component *GetComponent(ComponentTypeIndex type);
 
-	inline void *CreateComponent(ComponentTypeIndex type) {
-		Component *component = GetComponent(type);
-		return component ? component->Create() : nullptr;
-	}
+	im_export void *CreateComponent(ComponentTypeIndex type);
 }

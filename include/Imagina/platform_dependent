@@ -13,9 +13,12 @@
 #endif
 #endif
 
+#include <filesystem>
+
 namespace Imagina {
 	void SetWorkerPriority();
 	void *LoadLibrary(const char *filename);
+	void *LoadLibrary(std::filesystem::path path);
 	bool UnloadLibrary(void *handle);
 	void *GetSymbol(void *handle, const char *name);
 }

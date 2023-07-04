@@ -18,6 +18,18 @@ namespace Imagina {
 		return LoadLibraryA(filename);
 	}
 
+	inline void *_LoadLibrary(LPCSTR filename) {
+		return LoadLibraryA(filename);
+	}
+
+	inline void *_LoadLibrary(LPCWSTR filename) {
+		return LoadLibraryW(filename);
+	}
+
+	void *LoadLibrary(std::filesystem::path path) {
+		return _LoadLibrary(path.c_str());
+	}
+
 	bool UnloadLibrary(void *handle) {
 		return FreeLibrary((HMODULE)handle) != 0;
 	}
@@ -37,6 +49,10 @@ namespace Imagina {
 
 	void *LoadLibrary(const char *filename) {
 		return dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
+	}
+
+	void *LoadLibrary(std::filesystem::path path) {
+		return dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
 	}
 
 	bool UnloadLibrary(void *handle) {
