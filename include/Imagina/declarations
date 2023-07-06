@@ -11,6 +11,8 @@
 #endif
 
 namespace Imagina {
+	class IModuleExtension;
+
 	class IController;
 
 	class IPixelManager;

@@ -32,6 +32,19 @@ typedef void (*pSimpleEvaluator_SetReferenceLocationAndPrecompute)(IEvaluator *i
 
 typedef void (*pLowPrecisionEvaluator_Evaluate)(IEvaluator *instance, IRasterizingInterface *rasterizingInterface);
 
+typedef struct {
+	ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
+	ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters;
+	ImCApi::pLowPrecisionEvaluator_Evaluate evaluate;
+} LowPrecisionEvaluatorFunctionTable;
+
+typedef struct {
+	ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
+	ImCApi::pComplexEvaluator_SetEvaluationParameters setEvaluationParameters;
+	ImCApi::pSimpleEvaluator_SetReferenceLocationAndPrecompute setReferenceLocationAndPrecompute;
+	ImCApi::pSimpleEvaluator_Evaluate evaluate;
+} SimpleEvaluatorFunctionTable;
+
 #ifdef __cplusplus
 }
 #endif

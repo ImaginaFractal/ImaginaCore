@@ -7,6 +7,10 @@
 #include <cassert>
 #include <filesystem>
 
+#include "imagina.h"
+#include "proxy"
+#include "module_extension"
+
 // Builtin modules
 //#include "location_manager"
 #include "basic_pixel_manager"
@@ -20,9 +24,7 @@ namespace Imagina {
 		size_t ModuleID;
 		//std::string_view ModuleID;
 		//Module *Module;
-		void *Create() {
-			return Info.Create(Info.Name);
-		}
+		void *Create();
 	};
 	struct Module {
 		ModuleInfo Info;
@@ -40,6 +42,25 @@ namespace Imagina {
 	std::unordered_map<ComponentType, std::vector<size_t>> ComponentLists;
 	//std::unordered_map<std::string_view, Module> Modules;
 	//std::unordered_map<std::string, Component> Components;
+
+	void *Component::Create() {
+		if (Info.Flags & ComponentFlag::UseCApi) {
+			if (!Info.FunctionTable) return nullptr;
+			switch (Info.ProxyType) {
+				case ProxyType::LowPrecisionEvaluator: {
+					auto functionTable = (ImCApi::LowPrecisionEvaluatorFunctionTable *)Info.FunctionTable;
+					return new LowPrecisionEvaluatorProxy((ImCApi::IEvaluator *)Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->evaluate);
+				}
+				case ProxyType::SimpleEvaluator: {
+					auto functionTable = (ImCApi::SimpleEvaluatorFunctionTable *)Info.FunctionTable;
+					return new SimpleEvaluatorProxy((ImCApi::IEvaluator *)Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->setReferenceLocationAndPrecompute, functionTable->evaluate);
+				}
+				default: return nullptr;
+			}
+		} else {
+			return Info.Create(Info.Name);
+		}
+	}
 
 	ComponentInfo BuiltinComponents[]{
 		{
@@ -64,7 +85,7 @@ namespace Imagina {
 	};
 
 	// TODO: Validations
-	bool AddModule(ModuleInfo *moduleInfo, void *handle) {
+	bool AddModule(const ModuleInfo *moduleInfo, void *handle) {
 		size_t moduleID = Modules.size();
 		bool added = ModuleMap.try_emplace(moduleInfo->Name, moduleID).second;
 
@@ -123,7 +144,22 @@ namespace Imagina {
 			if (!entry.is_regular_file() || entry.path().extension() != extension) continue;
 			loadedCount += LoadModule(entry);
 		}
-		return loadedCount != 0;
+
+		if (loadedCount == 0) return false;
+
+		auto iterator = ComponentLists.find(ComponentType::ModuleExtension);
+		if (iterator == ComponentLists.end()) return true;
+
+		const std::vector<size_t> &ModuleExtensionList = iterator->second;
+		for (size_t i = 0; i < ModuleExtensionList.size(); i++) {
+			size_t id = ModuleExtensionList[i];
+
+			IModuleExtension *moduleExtension = (IModuleExtension *)Components[id].Create(); // FIXME: release
+			while (const ModuleInfo *info = moduleExtension->GetNextModule()) {
+				AddModule(info, nullptr);
+			}
+		}
+		return true;
 	}
 
 

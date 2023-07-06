@@ -19,6 +19,13 @@ namespace Imagina {
 		UseCApi = IM_CF_UseCApi,
 	};
 
+	inline uint32_t operator&(ComponentFlag a, ComponentFlag b) { return uint32_t(a) & uint32_t(b); }
+
+	enum class ProxyType : uint32_t {
+		LowPrecisionEvaluator = IM_PT_LowPrecisionEvaluator,
+		SimpleEvaluator = IM_PT_SimpleEvaluator,
+	};
+
 	template<typename T> inline constexpr ComponentType TypeToComponentType = ComponentType(0);
 
 	template<> inline constexpr ComponentType TypeToComponentType<IEvaluator> = ComponentType::Evaluator;
@@ -33,6 +40,7 @@ namespace Imagina {
 
 	im_export void LoadBuiltinComponents();
 
+	im_export bool AddModule(const ModuleInfo *moduleInfo, void *handle); // TEMPORARY
 	im_export bool LoadModule(const char *filename);
 	im_export bool LoadModules(const char *path, const char *extension);
 	//im_export Component *GetComponent(std::string_view fullName);
