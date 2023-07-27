@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("ImaginaCore")
 
+add_subdirectory ("interface")
+
 add_library (ImaginaCommon INTERFACE)
 if (NOT MSVC)
 	target_compile_options(ImaginaCommon INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Werror=array-bounds -Werror=return-type -Werror=implicit-fallthrough -Werror=shift-count-overflow>)
