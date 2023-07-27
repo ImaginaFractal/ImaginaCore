@@ -164,26 +164,42 @@ namespace Imagina {
 
 
 
-	Component *GetComponent(std::string_view fullName) {
-		auto iterator = ComponentMap.find(std::string(fullName));
-		if (iterator == ComponentMap.end()) return nullptr;
-		return &Components[iterator->second];
-	}
-	Component *GetComponent(ComponentType type) {
+	const std::vector<size_t> *GetComponentList(ComponentType type) {
 		auto iterator = ComponentLists.find(type);
 		if (iterator == ComponentLists.end()) return nullptr;
-		std::vector<size_t> &list = iterator->second;
-		if (list.empty()) return nullptr;
+		return &iterator->second;
+	}
+	const size_t *GetComponentList(ComponentType type, size_t &count) {
+		const std::vector<size_t> *list = GetComponentList(type);
+		if (!list) {
+			count = 0;
+			return nullptr;
+		}
+		count = list->size();
+		return list->data();
+	}
 
-		size_t id = list[list.size() - 1];
-		return &Components[id];
+	size_t GetComponent(std::string_view fullName) {
+		auto iterator = ComponentMap.find(std::string(fullName));
+		if (iterator == ComponentMap.end()) return 0;
+		return iterator->second;
 	}
-	void *CreateComponent(std::string_view fullName) {
-		Component *component = GetComponent(fullName);
-		return component ? component->Create() : nullptr;
+	size_t GetComponent(ComponentType type) {
+		const std::vector<size_t> *list = GetComponentList(type);
+		if (!list || list->empty()) return 0;
+
+		return (*list)[list->size() - 1];
 	}
-	void *CreateComponent(ComponentType type) {
-		Component *component = GetComponent(type);
-		return component ? component->Create() : nullptr;
+
+	const ComponentInfo &GetComponentInfo(size_t id) {
+		assert(id != 0 && id < Components.size());
+		return Components[id].Info;
 	}
+
+	void *CreateComponent(size_t id) {
+		assert(id != 0 && id < Components.size());
+		return Components[id].Create();
+	}
+	void *CreateComponent(std::string_view fullName)	{ return CreateComponent(GetComponent(fullName)); }
+	void *CreateComponent(ComponentType type)			{ return CreateComponent(GetComponent(type)); }
 }

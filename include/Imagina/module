@@ -43,9 +43,16 @@ namespace Imagina {
 	im_export bool AddModule(const ModuleInfo *moduleInfo, void *handle); // TEMPORARY
 	im_export bool LoadModule(const char *filename);
 	im_export bool LoadModules(const char *path, const char *extension);
-	//im_export Component *GetComponent(std::string_view fullName);
-	//im_export Component *GetComponent(ComponentTypeIndex type);
 
+	// Return value is invalidated when new a component is added
+	im_export const size_t *GetComponentList(ComponentType type, size_t &count);
+
+	im_export size_t GetComponent(std::string_view fullName);
+	im_export size_t GetComponent(ComponentType type);
+
+	im_export const ComponentInfo &GetComponentInfo(size_t id);
+
+	im_export void *CreateComponent(size_t id);
 	im_export void *CreateComponent(std::string_view fullName);
 	im_export void *CreateComponent(ComponentType type);
 
