@@ -51,13 +51,13 @@ namespace Imagina {
 		int64_t ExponentDifference = x.Exponent - y.Exponent;
 		if (x.Exponent >= y.Exponent) {
 			if (ExponentDifference <= 0x200) {
-				reinterpret_cast<int64_t &>(y) -= ExponentDifference << 52;
+				reinterpret_cast<int64_t &>(y2) -= ExponentDifference << 52;
 			} else {
 				y = 0.0;
 			}
 		} else {
 			if (ExponentDifference >= -0x200) {
-				reinterpret_cast<int64_t &>(x) += ExponentDifference << 52;
+				reinterpret_cast<int64_t &>(x2) += ExponentDifference << 52;
 			} else {
 				x = 0.0;
 			}
@@ -94,7 +94,7 @@ namespace Imagina {
 	}
 
 	inline FloatF64eI64 arg(const Complex<FloatF64eI64> &x) {
-		return atan2(x.re, x.im);
+		return atan2(x.im, x.re);
 	}
 
 	template<std::floating_point T> inline Complex<T> log(const Complex<T> &x) {
