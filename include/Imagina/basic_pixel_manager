@@ -75,6 +75,8 @@ namespace Imagina {
 
 	public:
 		virtual bool GetPixel(HRReal &x, HRReal &y) override;
+		virtual void GetDdx(HRReal &x, HRReal &y) override;
+		virtual void GetDdy(HRReal &x, HRReal &y) override;
 		virtual void WriteResults(void *value) override;
 	};
 }

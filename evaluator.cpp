@@ -84,6 +84,8 @@ namespace Imagina {
 			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
 
 		virtual bool GetPixel(HRReal &x, HRReal &y) override;
+		virtual void GetDdx(HRReal &x, HRReal &y) override;
+		virtual void GetDdy(HRReal &x, HRReal &y) override;
 		virtual void WriteResults(void *value) override;
 	};
 
@@ -92,6 +94,12 @@ namespace Imagina {
 		x += referenceX;
 		y += referenceY;
 		return result;
+	}
+	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdx(HRReal &x, HRReal &y) {
+		rasterizingInterface.GetDdx(x, y);
+	}
+	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdy(HRReal &x, HRReal &y) {
+		rasterizingInterface.GetDdy(x, y);
 	}
 	void LowPrecisionEvaluator::LPRasterizingInterface::WriteResults(void *value) {
 		rasterizingInterface.WriteResults(value);

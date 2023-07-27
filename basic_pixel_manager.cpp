@@ -202,6 +202,16 @@ namespace Imagina {
 		return true;
 	}
 
+	void BasicRasterizingInterface::GetDdx(HRReal &x, HRReal &y) {
+		x = pixelManager->location.Height() / pixelManager->height;
+		y = 0.0;
+	}
+
+	void BasicRasterizingInterface::GetDdy(HRReal &x, HRReal &y) {
+		x = 0.0;
+		y = pixelManager->location.Height() / pixelManager->height;
+	}
+
 	void BasicRasterizingInterface::WriteResults(void *value) {
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelPipeline->PreprocessedDataSize()];
