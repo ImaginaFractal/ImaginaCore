@@ -41,7 +41,7 @@ namespace Imagina {
 		explicit(!std::is_convertible_v<real2, real>)
 			Circle(const Circle<real2> &circle) : X(circle.X), Y(circle.Y), Radius(circle.Radius) {}
 
-		real Diameter() const { return MulInt<2>(Radius); }
+		real Diameter() const { return Radius * Constants::Two; }
 	};
 
 	template <typename real>
@@ -56,8 +56,8 @@ namespace Imagina {
 		explicit(!std::is_convertible_v<real2, real>)
 		Rectangle(const Rectangle<real2> &rectangle) : X(rectangle.X), Y(rectangle.Y), HalfWidth(rectangle.HalfWidth), HalfHeight(rectangle.HalfHeight) {}
 
-		real Width()	const { return MulInt<2>(HalfWidth); }
-		real Height()	const { return MulInt<2>(HalfWidth); }
+		real Width()	const { return HalfWidth * Constants::Two; }
+		real Height()	const { return HalfHeight * Constants::Two; }
 		real MinX()		const { return X - HalfWidth; }
 		real MinY()		const { return Y - HalfHeight; }
 		real MaxX()		const { return X + HalfWidth; }
@@ -105,12 +105,12 @@ namespace Imagina {
 		explicit(!std::is_convertible_v<real2, real>)
 		Location(const Location<real2> &rectangle) : X(rectangle.X), Y(rectangle.Y), HalfHeight(rectangle.HalfHeight) {}
 
-		real Height()	const { return MulInt<2>(HalfHeight); }
+		real Height()	const { return HalfHeight * Constants::Two; }
 		real MinY()		const { return Y - HalfHeight; }
 		real MaxY()		const { return Y + HalfHeight; }
 
 		real HalfWidth(real aspectRatio)	const { return HalfHeight * aspectRatio; }
-		real Width(real aspectRatio)		const { return MulInt<2>(HalfHeight) * aspectRatio; }
+		real Width(real aspectRatio)		const { return Height() * aspectRatio; }
 		real MinX(real aspectRatio)			const { return X - HalfWidth(aspectRatio); }
 		real MaxX(real aspectRatio)			const { return X + HalfWidth(aspectRatio); }
 
