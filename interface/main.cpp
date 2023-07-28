@@ -73,6 +73,9 @@ Function ParseFunction(std::string_view declaration) {
 	result.Name = identifier.Name;
 	result.Type = identifier.Type;
 
+	parameterList = TrimWhitespace(parameterList);
+	if (parameterList.size() == 0) return result; 
+
 	size_t begin = 0;
 	for (size_t i = 0; i < parameterList.size(); i++) {
 		if (parameterList[i] == ',') {
@@ -80,26 +83,56 @@ Function ParseFunction(std::string_view declaration) {
 			begin = i + 1;
 		}
 	}
-	result.Parameters.push_back(ParseDeclaration(parameterList.substr(begin, parameterList.size() - begin)));
+ 	result.Parameters.push_back(ParseDeclaration(parameterList.substr(begin, parameterList.size() - begin)));
 
 	return result;
 }
 
+std::string_view source = R"(Interface {
+	float func(int a, float b);
+	void func2();
+};
+)";
+
+
 int main() {
-	std::string_view declaration = "const int* func(int a, const float &b)";
+	size_t begin = 0, i = 1;
 
-	Function result = ParseFunction(declaration);
+	if (begin >= source.size() || !IsLetterOrUnderscore(source[begin])) return 1;
+	while (i < source.size() && IsAlphaNumeric(source[i])) i++;
 
-	std::cout << result.Type << '\t';
-	std::cout << result.Name << '\n';
+	std::string_view name = source.substr(begin, i - begin);
+	begin = i;
 
-	for (const Identifier &identifier : result.Parameters) {
-		std::cout << identifier.Type << '\t';
-		std::cout << identifier.Name << '\n';
+	while (i < source.size() && IsWhitespace(source[i])) i++;
+	if (i >= source.size() || source[i] != '{') return 1;
+	i++;
+	
+	std::vector<Function> functions;
+
+	while (true) {
+		begin = i;
+		while (i < source.size() && IsWhitespace(source[i])) i++;
+		if (i >= source.size()) return 1;
+		if (source[i] == '}') break;
+
+		while (i < source.size() && source[i] != ';' && source[i] != '}') i++;
+		if (i >= source.size() || source[i] == '}') return 1;
+
+		functions.push_back(ParseFunction(source.substr(begin, i - begin)));
+		i++;
 	}
 
+	std::cout << name << '\n';
+	for (const Function &function : functions) {
+		std::cout << function.Type << '\t';
+		std::cout << function.Name << '\n';
 
-
+		for (const Identifier &identifier : function.Parameters) {
+			std::cout << '\t' << identifier.Type << '\t';
+			std::cout << '\t' << identifier.Name << '\n';
+		}
+	}
 
 	return 0;
 }
