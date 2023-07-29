@@ -1,3 +1,4 @@
+#if false
 #include "proxy"
 #include "output_info_helper"
 
@@ -39,3 +40,4 @@ namespace Imagina {
 		evaluate(instance, (ImCApi::IRasterizingInterface *)&rasterizingInterface);
 	}
 }
+#endif

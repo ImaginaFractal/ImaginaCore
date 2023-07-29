@@ -1,5 +1,6 @@
 #pragma once
 
+#if false
 #include "declarations"
 #include "evaluator"
 #include "imagina.h"
@@ -64,3 +65,4 @@ namespace Imagina {
 		virtual void Evaluate(IRasterizingInterface &rasterizingInterface) override;
 	};
 }
+#endif

@@ -44,6 +44,7 @@ namespace Imagina {
 	//std::unordered_map<std::string, Component> Components;
 
 	void *Component::Create() {
+#if false
 		if (Info.Flags & ComponentFlag::UseCApi) {
 			if (!Info.FunctionTable) return nullptr;
 			switch (Info.ProxyType) {
@@ -60,6 +61,8 @@ namespace Imagina {
 		} else {
 			return Info.Create(Info.Name);
 		}
+#endif
+		return Info.Create(Info.Name);
 	}
 
 	ComponentInfo BuiltinComponents[]{
