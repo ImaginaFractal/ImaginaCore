@@ -61,10 +61,10 @@ namespace Imagina {
 
 		virtual void Cancel() override;
 		void CancelAndWait();
-		virtual IRasterizingInterface &GetRasterizingInterface() override;
+		virtual IRasterizingInterface GetRasterizingInterface() override;
 	};
 
-	class BasicRasterizingInterface : public IRasterizingInterface {
+	class BasicRasterizingInterface {
 		friend class BasicPixelManager;
 
 		BasicPixelManager *pixelManager;
@@ -74,9 +74,9 @@ namespace Imagina {
 		int pixelX, pixelY;
 
 	public:
-		virtual bool GetPixel(HRReal &x, HRReal &y) override;
-		virtual void GetDdx(HRReal &x, HRReal &y) override;
-		virtual void GetDdy(HRReal &x, HRReal &y) override;
-		virtual void WriteResults(void *value) override;
+		bool GetPixel(HRReal &x, HRReal &y);
+		void GetDdx(HRReal &x, HRReal &y);
+		void GetDdy(HRReal &x, HRReal &y);
+		void WriteResults(void *value);
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace Imagina {
 	void IRasterizer::Cancel() {}
-	void IRasterizer::FreeRasterizingInterface(IRasterizingInterface &Interface) {
-		delete &Interface;
+	void IRasterizer::FreeRasterizingInterface(IRasterizingInterface Interface) {
+		Interface.Release();
 	}
 }

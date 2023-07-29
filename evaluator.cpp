@@ -20,7 +20,7 @@ namespace Imagina {
 	};
 
 	void SimpleEvaluator::EvaluationTask::Execute() {
-		IRasterizingInterface &rasterizingInterface = rasterizer->GetRasterizingInterface();
+		IRasterizingInterface rasterizingInterface = rasterizer->GetRasterizingInterface();
 		evaluator->Evaluate(rasterizingInterface);
 		rasterizer->FreeRasterizingInterface(rasterizingInterface);
 	}
@@ -75,19 +75,22 @@ namespace Imagina {
 		}
 	}
 
-	class LowPrecisionEvaluator::LPRasterizingInterface : public IRasterizingInterface {
-		IRasterizingInterface &rasterizingInterface;
+	class LowPrecisionEvaluator::LPRasterizingInterface {
+		IRasterizingInterface rasterizingInterface;
 		SRReal referenceX, referenceY;
 
 	public:
-		LPRasterizingInterface(IRasterizingInterface &rasterizingInterface, SRReal referenceX, SRReal referenceY)
+		LPRasterizingInterface(IRasterizingInterface rasterizingInterface, SRReal referenceX, SRReal referenceY)
 			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
 
-		virtual bool GetPixel(HRReal &x, HRReal &y) override;
-		virtual void GetDdx(HRReal &x, HRReal &y) override;
-		virtual void GetDdy(HRReal &x, HRReal &y) override;
-		virtual void WriteResults(void *value) override;
+		bool GetPixel(HRReal &x, HRReal &y);
+		void GetDdx(HRReal &x, HRReal &y);
+		void GetDdy(HRReal &x, HRReal &y);
+		void WriteResults(void *value);
 	};
+
+	template<>
+	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<LowPrecisionEvaluator::LPRasterizingInterface> = IRasterizingInterfaceVTable::OfType<LowPrecisionEvaluator::LPRasterizingInterface>();
 
 	bool LowPrecisionEvaluator::LPRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
 		bool result = rasterizingInterface.GetPixel(x, y);
@@ -119,7 +122,7 @@ namespace Imagina {
 	};
 
 	void LowPrecisionEvaluator::EvaluationTask::Execute() {
-		IRasterizingInterface &rasterizingInterface = rasterizer->GetRasterizingInterface();
+		IRasterizingInterface rasterizingInterface = rasterizer->GetRasterizingInterface();
 		LPRasterizingInterface lpRasterizingInterface(rasterizingInterface, referenceX, referenceY);
 		evaluator->Evaluate(lpRasterizingInterface);
 		rasterizer->FreeRasterizingInterface(rasterizingInterface);
@@ -176,7 +179,7 @@ namespace Imagina {
 		referenceLength = i - 1;
 	}
 
-	void TestSimpleEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
+	void TestSimpleEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
 			complex dc = { real(x), real(y) };
@@ -229,18 +232,18 @@ namespace Imagina {
 		IM_GET_OUTPUT_INFO_IMPL(Output, Iterations, FinalZ);
 	}
 
-	void TestEvaluator::Evaluate(IRasterizingInterface &rasterizingInterface) {
+	void TestEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
 		HRReal x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
 			SRComplex c = { SRReal(x), SRReal(y) };
 			SRComplex z = 0.0;
-	
+
 			ITUInt i;
 			for (i = 0; i < parameters.Iterations; i++) {
 				z = z * z + c;
 				if (norm(z) > 4096.0) break;
 			}
-			
+
 			//double result = i;
 			Output output;
 			output.Iterations = i;

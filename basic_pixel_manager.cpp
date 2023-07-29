@@ -177,9 +177,12 @@ namespace Imagina {
 			executionContext = nullptr;
 		}
 	}
-	IRasterizingInterface &BasicPixelManager::GetRasterizingInterface() {
+	IRasterizingInterface BasicPixelManager::GetRasterizingInterface() {
 		return *new BasicRasterizingInterface(this);
 	}
+
+	template<>
+	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<BasicRasterizingInterface> = IRasterizingInterfaceVTable::OfType<BasicRasterizingInterface>();
 
 	bool BasicRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
 		size_t i = pixelManager->i++;
@@ -197,7 +200,7 @@ namespace Imagina {
 		//x = (double)(pixelX - 256) / 128;
 		//y = (double)(pixelY - 128) / 128;
 
-		
+
 
 		return true;
 	}

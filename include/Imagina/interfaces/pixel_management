@@ -1,0 +1,103 @@
+#include <concepts>
+#include "../types"
+
+namespace Imagina {
+	class IRasterizingInterface;
+
+	template<typename T>
+	concept IRasterizingInterfaceImpl = requires {
+		{&T::GetPixel}->std::same_as<bool (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::GetDdx}->std::same_as<void (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::GetDdy}->std::same_as<void (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::WriteResults}->std::same_as<void (T:: *)(void *value)>;
+		requires !std::is_same_v<T, IRasterizingInterface>;
+	};
+
+	template<IRasterizingInterfaceImpl T>
+	bool _IIG_IRasterizingInterface_GetPixel(void *instance, HRReal &x, HRReal &y) {
+		return ((T *)instance)->T::GetPixel(x, y);
+	}
+
+	template<IRasterizingInterfaceImpl T>
+	void _IIG_IRasterizingInterface_GetDdx(void *instance, HRReal &x, HRReal &y) {
+		return ((T *)instance)->T::GetDdx(x, y);
+	}
+
+	template<IRasterizingInterfaceImpl T>
+	void _IIG_IRasterizingInterface_GetDdy(void *instance, HRReal &x, HRReal &y) {
+		return ((T *)instance)->T::GetDdy(x, y);
+	}
+
+	template<IRasterizingInterfaceImpl T>
+	void _IIG_IRasterizingInterface_WriteResults(void *instance, void *value) {
+		return ((T *)instance)->T::WriteResults(value);
+	}
+
+	template<IRasterizingInterfaceImpl T>
+	void _IIG_IRasterizingInterface_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	struct IRasterizingInterfaceVTable {
+		void *reserved; // Must be zero
+		bool (*GetPixel)(void *instance, HRReal &x, HRReal &y);
+		void (*GetDdx)(void *instance, HRReal &x, HRReal &y);
+		void (*GetDdy)(void *instance, HRReal &x, HRReal &y);
+		void (*WriteResults)(void *instance, void *value);
+
+		void (*Release)(void *instance);
+
+		template<IRasterizingInterfaceImpl T>
+		static IRasterizingInterfaceVTable OfType() {
+			IRasterizingInterfaceVTable result;
+			result.GetPixel = _IIG_IRasterizingInterface_GetPixel<T>;
+			result.GetDdx = _IIG_IRasterizingInterface_GetDdx<T>;
+			result.GetDdy = _IIG_IRasterizingInterface_GetDdy<T>;
+			result.WriteResults = _IIG_IRasterizingInterface_WriteResults<T>;
+			result.Release = _IIG_IRasterizingInterface_Release<T>;
+			return result;
+		}
+
+		template<IRasterizingInterfaceImpl T>
+		static IRasterizingInterfaceVTable value;
+	};
+
+	class IRasterizingInterface {
+		void *instance;
+		const IRasterizingInterfaceVTable *vTable;
+
+	public:
+		IRasterizingInterface() = default;
+		IRasterizingInterface(const IRasterizingInterface &) = default;
+		IRasterizingInterface(IRasterizingInterface &&) = default;
+
+		template<IRasterizingInterfaceImpl T>
+		IRasterizingInterface(T &instance) : instance(&instance), vTable(&IRasterizingInterfaceVTable::value<T>) {}
+
+		IRasterizingInterface &operator=(const IRasterizingInterface &) = default;
+		IRasterizingInterface &operator=(IRasterizingInterface &&) = default;
+
+		template<IRasterizingInterfaceImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		bool GetPixel(HRReal &x, HRReal &y) {
+			return vTable->GetPixel(instance, x, y);
+		}
+
+		void GetDdx(HRReal &x, HRReal &y) {
+			return vTable->GetDdx(instance, x, y);
+		}
+
+		void GetDdy(HRReal &x, HRReal &y) {
+			return vTable->GetDdy(instance, x, y);
+		}
+
+		void WriteResults(void *value) {
+			return vTable->WriteResults(instance, value);
+		}
+
+		void Release() {
+			vTable->Release(instance);
+		}
+	};
+}
