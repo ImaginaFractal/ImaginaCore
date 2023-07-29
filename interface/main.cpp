@@ -91,84 +91,92 @@ Function ParseFunction(std::string_view declaration) {
 	return result;
 }
 
-void GenerateCode(std::ostream &stream, std::string_view name, const std::vector<Function> &functions) {
+void GenerateCode(std::ostream &stream, std::string_view indentation, std::string_view name, const std::vector<Function> &functions) {
 	std::string ImplName = std::string(name) + "Impl";
 	std::string VTableName = std::string(name) + "VTable";
 
 	stream << "class " << name << ";\n\n";
 
 	// Concept
-	stream << "template<typename T>\nconcept " << ImplName << " = requires {\n";
+	stream << indentation << "template<typename T>\n";
+	stream << indentation << "concept " << ImplName << " = requires {\n";
 	for (const Function &function : functions) {
-		stream << "\t{&T::" << function.Name << "}->std::same_as<";
-		stream << function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
+		stream << indentation << "\t{&T::" << function.Name << "}->std::same_as<"
+			<< function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
 	}
-	stream << "\trequires !std::is_same_v<T, " << name << ">;\n};\n\n";
+	stream << indentation << "\trequires !std::is_same_v<T, " << name << ">;\n";
+	stream << indentation << "};\n\n";
 
 	// Wrappers
 	for (const Function &function : functions) {
-		stream << "template<" << ImplName << " T>\n";
-		stream << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
+		stream << indentation << "template<" << ImplName << " T>\n";
+		stream << indentation << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
 		if (!function.Parameters.empty()) stream << ", ";
 		stream << function.ParameterList << ") {\n";
-		stream << "\treturn ((T *)instance)->T::" << function.Name << '(';
+		stream << indentation << "\treturn ((T *)instance)->T::" << function.Name << '(';
 		if (!function.ParameterList.empty()) for (auto iterator = function.Parameters.begin();;) {
 			stream << iterator->Name;
 			if (++iterator == function.Parameters.end()) break;
 			stream << ", ";
 		}
-		stream << ");\n}\n\n";
+		stream << ");\n";
+		stream << indentation << "}\n\n";
 	}
 
 	// VTable
-	stream << "struct " << VTableName << " {\n";
-	stream << "\tvoid *reserved; // Must be zero\n";
+	stream << indentation << "struct " << VTableName << " {\n";
+	stream << indentation << "\tvoid *reserved; // Must be zero\n";
 	for (const Function &function : functions) {
-		stream << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
+		stream << indentation << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
 		if (!function.Parameters.empty()) stream << ", ";
 		stream << function.ParameterList << ");\n";
 	}
 
-	stream << "\n\ttemplate<" << ImplName << " T>\n";
-	stream << "\tstatic " << VTableName << " OfType() {\n";
-	stream << "\t\t" << VTableName << " result;\n";
+	stream << '\n';
+	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
+	stream << indentation << "\tstatic " << VTableName << " OfType() {\n";
+	stream << indentation << "\t\t" << VTableName << " result;\n";
 	for (const Function &function : functions) {
-		stream << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
+		stream << indentation << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
 	}
-	stream << "\t\treturn result;\n\t}\n\n";
+	stream << indentation << "\t\treturn result;\n";
+	stream << indentation << "\t}\n\n";
 
-	stream << "\ttemplate<" << ImplName << " T>\n";
-	stream << "\tstatic " << VTableName << " value;\n};\n\n";
+	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
+	stream << indentation << "\tstatic " << VTableName << " value;\n";
+	stream << indentation << "};\n\n";
 
 	// Interface
-	stream << "class " << name << " {\n";
-	stream << "\tvoid *instance;\n";
-	stream << "\tconst " << VTableName << " *vTable;\n";
+	stream << indentation << "class " << name << " {\n";
+	stream << indentation << "\tvoid *instance;\n";
+	stream << indentation << "\tconst " << VTableName << " *vTable;\n\n";
 
-	stream << "\npublic:\n";
-	stream << '\t' << name << "() = default;\n";
-	stream << '\t' << name << "(const " << name << " &) = default;\n";
-	stream << '\t' << name << '(' << name << " &&) = default;\n";
+	stream << indentation << "public:\n";
+	stream << indentation << '\t' << name << "() = default;\n";
+	stream << indentation << '\t' << name << "(const " << name << " &) = default;\n";
+	stream << indentation << '\t' << name << '(' << name << " &&) = default;\n\n";
 
-	stream << "\n\ttemplate<" << ImplName << " T>\n";
-	stream << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
+	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
+	stream << indentation << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
 
-	stream << "\t" << name << " &operator=(const " << name << " &) = default;\n";
-	stream << "\t" << name << " &operator=(" << name << " &&) = default;\n";
+	stream << indentation << "\t" << name << " &operator=(const " << name << " &) = default;\n";
+	stream << indentation << "\t" << name << " &operator=(" << name << " &&) = default;\n\n";
 
-	stream << "\n\ttemplate<" << ImplName << " T>\n";
-	stream << "\texplicit operator T *() { return (T *)instance; }\n";
+	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
+	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n";
 
 	for (const Function &function : functions) {
-		stream << "\n\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
-		stream << "\t\treturn vTable->" << function.Name << "(instance";
+		stream << "\n";
+		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
+		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", " << parameter.Name;
 		}
-		stream << ");\n\t}\n";
+		stream << ");\n";
+		stream << indentation << "\t}\n";
 	}
 
-	stream << "};";
+	stream << indentation << "};";
 
 }
 
@@ -214,7 +222,7 @@ int main(int argc, char **argv) {
 
 	std::ofstream fstream(argv[1], std::ios::out);
 
-	GenerateCode(fstream, name, functions);
+	GenerateCode(fstream, "", name, functions);
 
 	fstream.close();
 
