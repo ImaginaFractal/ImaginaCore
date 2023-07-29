@@ -94,6 +94,8 @@ void GenerateCode(std::ostream &stream, std::string_view name, const std::vector
 	std::string ImplName = std::string(name) + "Impl";
 	std::string VTableName = std::string(name) + "VTable";
 
+	stream << "class " << name << ";\n\n";
+
 	// Concept
 	stream << "template<typename T>\nconcept " << ImplName << " = requires {\n";
 	for (const Function &function : functions) {
