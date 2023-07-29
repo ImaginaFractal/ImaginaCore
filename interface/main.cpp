@@ -180,6 +180,43 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 
 }
 
+size_t ProcessInterface(std::ostream &output, std::string_view source, size_t begin, std::string_view indentation) {
+	while (begin < source.size() && IsWhitespace(source[begin])) begin++;
+
+	size_t i = begin + 1;
+
+	if (begin >= source.size() || !IsLetterOrUnderscore(source[begin])) throw std::invalid_argument("source");
+	while (i < source.size() && IsAlphaNumeric(source[i])) i++;
+
+	std::string_view name = source.substr(begin, i - begin);
+	begin = i;
+
+	while (i < source.size() && IsWhitespace(source[i])) i++;
+	if (i >= source.size() || source[i] != '{') throw std::invalid_argument("source");
+	i++;
+
+	std::vector<Function> functions;
+
+	while (true) {
+		begin = i;
+		while (i < source.size() && IsWhitespace(source[i])) i++;
+		if (i >= source.size()) throw std::invalid_argument("source");
+		if (source[i] == '}') break;
+
+		while (i < source.size() && source[i] != ';' && source[i] != '}') i++;
+		if (i >= source.size() || source[i] == '}') throw std::invalid_argument("source");
+
+		functions.push_back(ParseFunction(source.substr(begin, i - begin)));
+		i++;
+	}
+	i++;
+	while (i < source.size() && IsWhitespace(source[i])) i++;
+	if (i >= source.size() || source[i] != ';') throw std::invalid_argument("source");
+
+	GenerateCode(output, indentation, name, functions);
+	return i;
+}
+
 int main(int argc, char **argv) {
 	if (argc < 3) return 1;
 
@@ -192,37 +229,27 @@ int main(int argc, char **argv) {
 	size = sourceFile.gcount();
 
 	std::string_view source(data, size);
-
-	size_t begin = 0, i = 1;
-
-	if (begin >= source.size() || !IsLetterOrUnderscore(source[begin])) return 1;
-	while (i < source.size() && IsAlphaNumeric(source[i])) i++;
-
-	std::string_view name = source.substr(begin, i - begin);
-	begin = i;
-
-	while (i < source.size() && IsWhitespace(source[i])) i++;
-	if (i >= source.size() || source[i] != '{') return 1;
-	i++;
-	
-	std::vector<Function> functions;
-
-	while (true) {
-		begin = i;
-		while (i < source.size() && IsWhitespace(source[i])) i++;
-		if (i >= source.size()) return 1;
-		if (source[i] == '}') break;
-
-		while (i < source.size() && source[i] != ';' && source[i] != '}') i++;
-		if (i >= source.size() || source[i] == '}') return 1;
-
-		functions.push_back(ParseFunction(source.substr(begin, i - begin)));
-		i++;
-	}
-
 	std::ofstream fstream(argv[1], std::ios::out);
 
-	GenerateCode(fstream, "", name, functions);
+	size_t lineBegin = 0;
+
+	for (size_t i = 0; i < source.size(); i++) {
+		if (source[i] == '\r' || source[i] == '\n') lineBegin = i + 1;
+
+		constexpr size_t letterCount = sizeof("interface") / sizeof(char) - 1;
+		if (source[i] == 'i' &&
+			i + letterCount < source.size() &&
+			IsWhitespace(source[i + letterCount]) &&
+			source.substr(i, letterCount) == "interface") {
+			i += letterCount + 1;
+			size_t indentationEnd = lineBegin;
+			while (source[indentationEnd] == ' ' || source[indentationEnd] == '\t') indentationEnd++;
+			i = ProcessInterface(fstream, source, i, source.substr(lineBegin, indentationEnd - lineBegin));
+			continue;
+		}
+
+		fstream.put(source[i]);
+	}
 
 	fstream.close();
 
