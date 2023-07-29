@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string_view>
 #include <vector>
+#include <fstream>
 
 bool IsWhitespace(char c) {
 	return c == ' ' || c == '\t' || c == '\r' || c == '\n';
@@ -171,15 +172,19 @@ void GenerateCode(std::ostream &stream, std::string_view name, const std::vector
 
 }
 
-std::string_view source = R"(Interface {
-	float func(int a, float b);
-	void func2();
-	int &func3(float *a, const int &b);
-};
-)";
+int main(int argc, char **argv) {
+	if (argc < 3) return 1;
 
+	std::ifstream sourceFile(argv[2], std::ios::in);
+	sourceFile.seekg(0, std::ios::end);
+	size_t size = sourceFile.tellg();
+	char *data = (char *)malloc(size);
+	sourceFile.seekg(0, std::ios::beg);
+	sourceFile.read(data, size);
+	size = sourceFile.gcount();
 
-int main() {
+	std::string_view source(data, size);
+
 	size_t begin = 0, i = 1;
 
 	if (begin >= source.size() || !IsLetterOrUnderscore(source[begin])) return 1;
@@ -207,7 +212,11 @@ int main() {
 		i++;
 	}
 
-	GenerateCode(std::cout, name, functions);
+	std::ofstream fstream(argv[1], std::ios::out);
+
+	GenerateCode(fstream, name, functions);
+
+	fstream.close();
 
 	return 0;
 }
