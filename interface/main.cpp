@@ -123,6 +123,11 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 		stream << indentation << "}\n\n";
 	}
 
+	stream << indentation << "template<" << ImplName << " T>\n";
+	stream << indentation << "void _IIG_" << name << "_Release(void *instance) {\n";
+	stream << indentation << "\tdelete (T *)instance;\n";
+	stream << indentation << "}\n\n";
+
 	// VTable
 	stream << indentation << "struct " << VTableName << " {\n";
 	stream << indentation << "\tvoid *reserved; // Must be zero\n";
@@ -131,14 +136,17 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 		if (!function.Parameters.empty()) stream << ", ";
 		stream << function.ParameterList << ");\n";
 	}
-
 	stream << '\n';
+
+	stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
+
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\tstatic " << VTableName << " OfType() {\n";
 	stream << indentation << "\t\t" << VTableName << " result;\n";
 	for (const Function &function : functions) {
 		stream << indentation << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
 	}
+	stream << indentation << "\t\tresult.Release" << " = _IIG_" << name << "_Release<T>;\n";
 	stream << indentation << "\t\treturn result;\n";
 	stream << indentation << "\t}\n\n";
 
@@ -163,18 +171,21 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	stream << indentation << "\t" << name << " &operator=(" << name << " &&) = default;\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
-	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n";
+	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
 
 	for (const Function &function : functions) {
-		stream << "\n";
 		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
 		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", " << parameter.Name;
 		}
 		stream << ");\n";
-		stream << indentation << "\t}\n";
+		stream << indentation << "\t}\n\n";
 	}
+
+	stream << indentation << "\tvoid Release() {\n";
+	stream << indentation << "\t\tvTable->Release(instance);\n";
+	stream << indentation << "\t}\n";
 
 	stream << indentation << "};";
 
