@@ -90,6 +90,85 @@ Function ParseFunction(std::string_view declaration) {
 	return result;
 }
 
+void GenerateCode(std::ostream &stream, std::string_view name, const std::vector<Function> &functions) {
+	std::string ImplName = std::string(name) + "Impl";
+	std::string VTableName = std::string(name) + "VTable";
+
+	// Concept
+	stream << "template<typename T>\nconcept " << ImplName << " = requires {\n";
+	for (const Function &function : functions) {
+		stream << "\t{&T::" << function.Name << "}->std::same_as<";
+		stream << function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
+	}
+	stream << "\trequires !std::is_same_v<T, " << name << ">;\n};\n\n";
+
+	// Wrappers
+	for (const Function &function : functions) {
+		stream << "template<" << ImplName << " T>\n";
+		stream << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
+		if (!function.Parameters.empty()) stream << ", ";
+		stream << function.ParameterList << ") {\n";
+		stream << "\treturn ((T *)instance)->T::" << function.Name << '(';
+		if (!function.ParameterList.empty()) for (auto iterator = function.Parameters.begin();;) {
+			stream << iterator->Name;
+			if (++iterator == function.Parameters.end()) break;
+			stream << ", ";
+		}
+		stream << ");\n}\n\n";
+	}
+
+	// VTable
+	stream << "struct " << VTableName << " {\n";
+	stream << "\tvoid *reserved; // Must be zero\n";
+	for (const Function &function : functions) {
+		stream << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
+		if (!function.Parameters.empty()) stream << ", ";
+		stream << function.ParameterList << ");\n";
+	}
+
+	stream << "\n\ttemplate<" << ImplName << " T>\n";
+	stream << "\tstatic " << VTableName << " OfType() {\n";
+	stream << "\t\t" << VTableName << " result;\n";
+	for (const Function &function : functions) {
+		stream << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
+	}
+	stream << "\t\treturn result;\n\t}\n\n";
+
+	stream << "\ttemplate<" << ImplName << " T>\n";
+	stream << "\tstatic " << VTableName << " value;\n};\n\n";
+
+	// Interface
+	stream << "class " << name << " {\n";
+	stream << "\tvoid *instance;\n";
+	stream << "\tconst " << VTableName << " *vTable;\n";
+
+	stream << "\npublic:\n";
+	stream << '\t' << name << "() = default;\n";
+	stream << '\t' << name << "(const " << name << " &) = default;\n";
+	stream << '\t' << name << '(' << name << " &&) = default;\n";
+
+	stream << "\n\ttemplate<" << ImplName << " T>\n";
+	stream << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
+
+	stream << "\t" << name << " &operator=(const " << name << " &) = default;\n";
+	stream << "\t" << name << " &operator=(" << name << " &&) = default;\n";
+
+	stream << "\n\ttemplate<" << ImplName << " T>\n";
+	stream << "\texplicit operator T *() { return (T *)instance; }\n";
+
+	for (const Function &function : functions) {
+		stream << "\n\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
+		stream << "\t\treturn vTable->" << function.Name << "(instance";
+		for (const Identifier &parameter : function.Parameters) {
+			stream << ", " << parameter.Name;
+		}
+		stream << ");\n\t}\n";
+	}
+
+	stream << "};";
+
+}
+
 std::string_view source = R"(Interface {
 	float func(int a, float b);
 	void func2();
@@ -126,81 +205,7 @@ int main() {
 		i++;
 	}
 
-	std::string ImplName = std::string(name) + "Impl";
-	std::string VTableName = std::string(name) + "VTable";
-
-	// Concept
-	std::cout << "template<typename T>\nconcept " << ImplName << " = requires {\n";
-	for (const Function &function : functions) {
-		std::cout << "\t{&T::" << function.Name << "}->std::same_as<";
-		std::cout << function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
-	}
-	std::cout << "\trequires !std::is_same_v<T, " << name << ">;\n};\n\n";
-
-	// Wrappers
-	for (const Function &function : functions) {
-		std::cout << "template<" << ImplName << " T>\n";
-		std::cout << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
-		if (!function.Parameters.empty()) std::cout << ", ";
-		std::cout << function.ParameterList << ") {\n";
-		std::cout << "\treturn ((T *)instance)->T::" << function.Name << '(';
-		if (!function.ParameterList.empty()) for (auto iterator = function.Parameters.begin();;) {
-			std::cout << iterator->Name;
-			if (++iterator == function.Parameters.end()) break;
-			std::cout << ", ";
-		}
-		std::cout << ");\n}\n\n";
-	}
-
-	// VTable
-	std::cout << "struct " << VTableName << " {\n";
-	std::cout << "\tvoid *reserved; // Must be zero\n";
-	for (const Function &function : functions) {
-		std::cout << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
-		if (!function.Parameters.empty()) std::cout << ", ";
-		std::cout << function.ParameterList << ");\n";
-	}
-
-	std::cout << "\n\ttemplate<" << ImplName << " T>\n";
-	std::cout << "\tstatic " << VTableName << " OfType() {\n";
-	std::cout << "\t\t" << VTableName << " result;\n";
-	for (const Function &function : functions) {
-		std::cout << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
-	}
-	std::cout << "\t\treturn result;\n\t}\n\n";
-
-	std::cout << "\ttemplate<" << ImplName << " T>\n";
-	std::cout << "\tstatic " << VTableName << " value;\n};\n\n";
-
-	// Interface
-	std::cout << "class " << name << " {\n";
-	std::cout << "\tvoid *instance;\n";
-	std::cout << "\tconst " << VTableName << " *vTable;\n";
-
-	std::cout << "\npublic:\n";
-	std::cout << '\t' << name << "() = default;\n";
-	std::cout << '\t' << name << "(const " << name << " &) = default;\n";
-	std::cout << '\t' << name << '(' << name << " &&) = default;\n";
-
-	std::cout << "\n\ttemplate<" << ImplName << " T>\n";
-	std::cout << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
-
-	std::cout << "\t" << name << " &operator=(const " << name << " &) = default;\n";
-	std::cout << "\t" << name << " &operator=(" << name << " &&) = default;\n";
-
-	std::cout << "\n\ttemplate<" << ImplName << " T>\n";
-	std::cout << "\texplicit operator T *() { return (T *)instance; }\n";
-
-	for (const Function &function : functions) {
-		std::cout << "\n\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
-		std::cout << "\t\treturn vTable->" << function.Name << "(instance";
-		for (const Identifier &parameter : function.Parameters) {
-			std::cout << ", " << parameter.Name;
-		}
-		std::cout << ");\n\t}\n";
-	}
-
-	std::cout << "};";
+	GenerateCode(std::cout, name, functions);
 
 	return 0;
 }
