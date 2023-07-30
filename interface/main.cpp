@@ -101,13 +101,18 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	stream << indentation << "template<typename T>\n";
 	stream << indentation << "concept " << ImplName << " = requires {\n";
 	for (const Function &function : functions) {
-		stream << indentation << "\t{&T::" << function.Name << "}->std::same_as<"
+		stream << indentation << "\t{&T::" << function.Name << "}->std::convertible_to<"
 			<< function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
 	}
 	stream << indentation << "\trequires !std::is_same_v<T, " << name << ">;\n";
 	stream << indentation << "};\n\n";
 
 	// Wrappers
+	stream << indentation << "template<" << ImplName << " T>\n";
+	stream << indentation << "void _IIG_" << name << "_Release(void *instance) {\n";
+	stream << indentation << "\tdelete (T *)instance;\n";
+	stream << indentation << "}\n\n";
+
 	for (const Function &function : functions) {
 		stream << indentation << "template<" << ImplName << " T>\n";
 		stream << indentation << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
@@ -123,14 +128,11 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 		stream << indentation << "}\n\n";
 	}
 
-	stream << indentation << "template<" << ImplName << " T>\n";
-	stream << indentation << "void _IIG_" << name << "_Release(void *instance) {\n";
-	stream << indentation << "\tdelete (T *)instance;\n";
-	stream << indentation << "}\n\n";
-
 	// VTable
 	stream << indentation << "struct " << VTableName << " {\n";
 	stream << indentation << "\tvoid *reserved; // Must be zero\n";
+	stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
+
 	for (const Function &function : functions) {
 		stream << indentation << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
 		if (!function.Parameters.empty()) stream << ", ";
@@ -138,15 +140,13 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	}
 	stream << '\n';
 
-	stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
-
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\tstatic " << VTableName << " OfType() {\n";
 	stream << indentation << "\t\t" << VTableName << " result;\n";
+	stream << indentation << "\t\tresult.Release" << " = _IIG_" << name << "_Release<T>;\n";
 	for (const Function &function : functions) {
 		stream << indentation << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
 	}
-	stream << indentation << "\t\tresult.Release" << " = _IIG_" << name << "_Release<T>;\n";
 	stream << indentation << "\t\treturn result;\n";
 	stream << indentation << "\t}\n\n";
 
@@ -178,19 +178,20 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
 
+	stream << indentation << "\tvoid Release() {\n";
+	stream << indentation << "\t\tvTable->Release(instance);\n";
+	stream << indentation << "\t}\n";
+
 	for (const Function &function : functions) {
+		stream << '\n';
 		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
 		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", " << parameter.Name;
 		}
 		stream << ");\n";
-		stream << indentation << "\t}\n\n";
+		stream << indentation << "\t}\n";
 	}
-
-	stream << indentation << "\tvoid Release() {\n";
-	stream << indentation << "\t\tvTable->Release(instance);\n";
-	stream << indentation << "\t}\n";
 
 	stream << indentation << "};";
 
