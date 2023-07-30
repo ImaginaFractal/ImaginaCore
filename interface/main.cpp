@@ -3,6 +3,12 @@
 #include <vector>
 #include <fstream>
 
+class SyntaxError : std::exception {
+	virtual char const *what() const {
+		return "Syntax error";
+	}
+};
+
 bool IsWhitespace(char c) {
 	return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
@@ -228,15 +234,17 @@ public:
 	Token Get() {
 		SkipWhitespace();
 		Token token;
+		token.begin = i;
+
 		if (Eof()) {
+			token.end = i;
+			token.content = std::string_view();
 			token.eof = true;
 			return token;
 		}
 		token.eof = false;
 
 		if (IsAlphaNumeric(content[i])) {
-			token.begin = i;
-
 			while (i < content.size() && IsAlphaNumeric(content[i])) i++;
 
 			token.end = i;
@@ -244,11 +252,38 @@ public:
 			token.content = content.substr(token.begin, token.end - token.begin);
 			return token;
 		}
-		token.begin = i;
 		i++;
 		token.end = i;
 		token.content = content.substr(token.begin, 1);
 		return token;
+	}
+
+	Token GetUntil(char delimiter) {
+		SkipWhitespace();
+		Token token;
+		token.begin = i;
+
+		if (Eof()) {
+			token.end = i;
+			token.content = std::string_view();
+			token.eof = true;
+			return token;
+		}
+		token.eof = false;
+
+		while (i < content.size() && content[i] != delimiter) i++;
+
+		token.end = i;
+
+		token.content = content.substr(token.begin, token.end - token.begin);
+		return token;
+	}
+
+	char Peek() {
+		SkipWhitespace();
+		if (Eof()) return '\0';
+
+		return content[i];
 	}
 
 	std::string_view LineIndentation() {
@@ -258,42 +293,28 @@ public:
 	}
 };
 
-size_t ProcessInterface(std::ostream &output, std::string_view source, size_t begin, std::string_view indentation) {
-	while (begin < source.size() && IsWhitespace(source[begin])) begin++;
+void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
+	std::string_view indentation = tokenizer.LineIndentation();
 
-	size_t i = begin + 1;
+	Token token = tokenizer.Get();
+	if (!token || !IsLetterOrUnderscore(token.content[0])) throw SyntaxError();
 
-	if (begin >= source.size() || !IsLetterOrUnderscore(source[begin])) throw std::invalid_argument("source");
-	while (i < source.size() && IsAlphaNumeric(source[i])) i++;
+	std::string_view name = token.content;
 
-	std::string_view name = source.substr(begin, i - begin);
-	begin = i;
-
-	while (i < source.size() && IsWhitespace(source[i])) i++;
-	if (i >= source.size() || source[i] != '{') throw std::invalid_argument("source");
-	i++;
+	if (tokenizer.Get().content != "{") throw SyntaxError();
 
 	std::vector<Function> functions;
 
 	while (true) {
-		begin = i;
-		while (i < source.size() && IsWhitespace(source[i])) i++;
-		if (i >= source.size()) throw std::invalid_argument("source");
-		if (source[i] == '}') break;
-
-		while (i < source.size() && source[i] != ';' && source[i] != '}') i++;
-		if (i >= source.size() || source[i] == '}') throw std::invalid_argument("source");
-
-		functions.push_back(ParseFunction(source.substr(begin, i - begin)));
-		i++;
+		if (tokenizer.Peek() == '}') break;
+		token = tokenizer.GetUntil(';');
+		if (tokenizer.Get().content != ";") throw SyntaxError();
+		functions.push_back(ParseFunction(token.content));
 	}
-	i++;
-	while (i < source.size() && IsWhitespace(source[i])) i++;
-	if (i >= source.size() || source[i] != ';') throw std::invalid_argument("source");
-	i++;
+	tokenizer.Get();
+	if (tokenizer.Get().content != ";") throw SyntaxError();
 
 	GenerateCode(output, indentation, name, functions);
-	return i;
 }
 
 int main(int argc, char **argv) {
@@ -316,7 +337,7 @@ int main(int argc, char **argv) {
 	while (Token token = tokenizer.Get()) {
 		if (token.content == "interface") {
 			fstream << source.substr(unprocessedBegin, token.begin - unprocessedBegin);
-			tokenizer.i = ProcessInterface(fstream, source, tokenizer.i, tokenizer.LineIndentation());
+			ProcessInterface(fstream, tokenizer);
 			unprocessedBegin = tokenizer.i;
 		}
 	}
