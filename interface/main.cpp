@@ -197,6 +197,67 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 
 }
 
+struct Token {
+	std::string_view content;
+	size_t begin, end;
+	bool eof;
+
+	operator bool() { return !eof; }
+};
+
+class Tokenizer {
+	std::string_view content;
+	std::size_t lineBegin = 0;
+
+public:
+	std::size_t i = 0;
+
+private:
+	void SkipWhitespace() {
+		while (i < content.size() && IsWhitespace(content[i])) {
+			if (content[i] == '\r' || content[i] == '\n') lineBegin = i + 1;
+			i++;
+		}
+	}
+
+public:
+	Tokenizer(std::string_view content) : content(content) {};
+
+	bool Eof() { return i >= content.size(); }
+
+	Token Get() {
+		SkipWhitespace();
+		Token token;
+		if (Eof()) {
+			token.eof = true;
+			return token;
+		}
+		token.eof = false;
+
+		if (IsAlphaNumeric(content[i])) {
+			token.begin = i;
+
+			while (i < content.size() && IsAlphaNumeric(content[i])) i++;
+
+			token.end = i;
+
+			token.content = content.substr(token.begin, token.end - token.begin);
+			return token;
+		}
+		token.begin = i;
+		i++;
+		token.end = i;
+		token.content = content.substr(token.begin, 1);
+		return token;
+	}
+
+	std::string_view LineIndentation() {
+		size_t indentationEnd = lineBegin;
+		while (indentationEnd < content.size() && (content[indentationEnd] == ' ' || content[indentationEnd] == '\t')) indentationEnd++;
+		return content.substr(lineBegin, indentationEnd - lineBegin);
+	}
+};
+
 size_t ProcessInterface(std::ostream &output, std::string_view source, size_t begin, std::string_view indentation) {
 	while (begin < source.size() && IsWhitespace(source[begin])) begin++;
 
@@ -229,6 +290,7 @@ size_t ProcessInterface(std::ostream &output, std::string_view source, size_t be
 	i++;
 	while (i < source.size() && IsWhitespace(source[i])) i++;
 	if (i >= source.size() || source[i] != ';') throw std::invalid_argument("source");
+	i++;
 
 	GenerateCode(output, indentation, name, functions);
 	return i;
@@ -248,25 +310,18 @@ int main(int argc, char **argv) {
 	std::string_view source(data, size);
 	std::ofstream fstream(argv[1], std::ios::out);
 
-	size_t lineBegin = 0;
+	Tokenizer tokenizer(source);
 
-	for (size_t i = 0; i < source.size(); i++) {
-		if (source[i] == '\r' || source[i] == '\n') lineBegin = i + 1;
-
-		constexpr size_t letterCount = sizeof("interface") / sizeof(char) - 1;
-		if (source[i] == 'i' &&
-			i + letterCount < source.size() &&
-			IsWhitespace(source[i + letterCount]) &&
-			source.substr(i, letterCount) == "interface") {
-			i += letterCount + 1;
-			size_t indentationEnd = lineBegin;
-			while (source[indentationEnd] == ' ' || source[indentationEnd] == '\t') indentationEnd++;
-			i = ProcessInterface(fstream, source, i, source.substr(lineBegin, indentationEnd - lineBegin));
-			continue;
+	size_t unprocessedBegin = 0;
+	while (Token token = tokenizer.Get()) {
+		if (token.content == "interface") {
+			fstream << source.substr(unprocessedBegin, token.begin - unprocessedBegin);
+			tokenizer.i = ProcessInterface(fstream, source, tokenizer.i, tokenizer.LineIndentation());
+			unprocessedBegin = tokenizer.i;
 		}
-
-		fstream.put(source[i]);
 	}
+
+	fstream << source.substr(unprocessedBegin, tokenizer.i - unprocessedBegin);
 
 	fstream.close();
 
