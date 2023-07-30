@@ -164,8 +164,13 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	stream << indentation << '\t' << name << "(const " << name << " &) = default;\n";
 	stream << indentation << '\t' << name << '(' << name << " &&) = default;\n\n";
 
+	stream << indentation << '\t' << name << "(void *instance, const " << VTableName << " *vTable) : instance(instance), vTable(vTable) {}\n\n";
+
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
+
+	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
+	stream << indentation << '\t' << name << "(T *instance) : instance(instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
 
 	stream << indentation << "\t" << name << " &operator=(const " << name << " &) = default;\n";
 	stream << indentation << "\t" << name << " &operator=(" << name << " &&) = default;\n\n";
