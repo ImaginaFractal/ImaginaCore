@@ -100,4 +100,91 @@ namespace Imagina {
 			vTable->Release(instance);
 		}
 	};
+
+	class IRasterizer;
+
+	template<typename T>
+	concept IRasterizerImpl = requires {
+		{&T::Cancel}->std::same_as<void (T:: *)()>;
+		{&T::GetRasterizingInterface}->std::same_as<IRasterizingInterface (T:: *)()>;
+		{&T::FreeRasterizingInterface}->std::same_as<void (T:: *)(IRasterizingInterface Interface)>;
+		requires !std::is_same_v<T, IRasterizer>;
+	};
+
+	template<IRasterizerImpl T>
+	void _IIG_IRasterizer_Cancel(void *instance) {
+		return ((T *)instance)->T::Cancel();
+	}
+
+	template<IRasterizerImpl T>
+	IRasterizingInterface _IIG_IRasterizer_GetRasterizingInterface(void *instance) {
+		return ((T *)instance)->T::GetRasterizingInterface();
+	}
+
+	template<IRasterizerImpl T>
+	void _IIG_IRasterizer_FreeRasterizingInterface(void *instance, IRasterizingInterface Interface) {
+		return ((T *)instance)->T::FreeRasterizingInterface(Interface);
+	}
+
+	template<IRasterizerImpl T>
+	void _IIG_IRasterizer_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	struct IRasterizerVTable {
+		void *reserved; // Must be zero
+		void (*Cancel)(void *instance);
+		IRasterizingInterface (*GetRasterizingInterface)(void *instance);
+		void (*FreeRasterizingInterface)(void *instance, IRasterizingInterface Interface);
+
+		void (*Release)(void *instance);
+
+		template<IRasterizerImpl T>
+		static IRasterizerVTable OfType() {
+			IRasterizerVTable result;
+			result.Cancel = _IIG_IRasterizer_Cancel<T>;
+			result.GetRasterizingInterface = _IIG_IRasterizer_GetRasterizingInterface<T>;
+			result.FreeRasterizingInterface = _IIG_IRasterizer_FreeRasterizingInterface<T>;
+			result.Release = _IIG_IRasterizer_Release<T>;
+			return result;
+		}
+
+		template<IRasterizerImpl T>
+		static IRasterizerVTable value;
+	};
+
+	class IRasterizer {
+		void *instance;
+		const IRasterizerVTable *vTable;
+
+	public:
+		IRasterizer() = default;
+		IRasterizer(const IRasterizer &) = default;
+		IRasterizer(IRasterizer &&) = default;
+
+		template<IRasterizerImpl T>
+		IRasterizer(T &instance) : instance(&instance), vTable(&IRasterizerVTable::value<T>) {}
+
+		IRasterizer &operator=(const IRasterizer &) = default;
+		IRasterizer &operator=(IRasterizer &&) = default;
+
+		template<IRasterizerImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Cancel() {
+			return vTable->Cancel(instance);
+		}
+
+		IRasterizingInterface GetRasterizingInterface() {
+			return vTable->GetRasterizingInterface(instance);
+		}
+
+		void FreeRasterizingInterface(IRasterizingInterface Interface) {
+			return vTable->FreeRasterizingInterface(instance, Interface);
+		}
+
+		void Release() {
+			vTable->Release(instance);
+		}
+	};
 }

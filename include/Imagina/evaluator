@@ -14,8 +14,8 @@ namespace Imagina {
 		virtual const PixelDataInfo *GetOutputInfo() = 0;
 
 		virtual bool Ready();
-		//virtual void Evaluate(IRasterizer &rasterizer) = 0;
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) = 0;
+		//virtual void Evaluate(IRasterizer rasterizer) = 0;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) = 0;
 	};
 
 	struct StandardEvaluationParameters : _StandardEvaluationParameters {
@@ -47,7 +47,7 @@ namespace Imagina {
 
 	public:
 		virtual bool Ready() override final;
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) override final;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
 
@@ -67,7 +67,7 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer *rasterizer) override final;
+		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) override final;
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
 		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
 

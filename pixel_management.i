@@ -8,4 +8,11 @@ namespace Imagina {
 		void GetDdy(HRReal &x, HRReal &y);
 		void WriteResults(void *value);
 	};
+
+	interface IRasterizer {
+		void Cancel();
+
+		IRasterizingInterface GetRasterizingInterface();
+		void FreeRasterizingInterface(IRasterizingInterface Interface);
+	};
 }

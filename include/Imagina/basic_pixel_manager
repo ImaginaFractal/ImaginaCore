@@ -9,7 +9,7 @@
 
 namespace Imagina {
 	class BasicRasterizingInterface;
-	class im_export BasicPixelManager : public IGpuPixelManager, public IRasterizer {
+	class im_export BasicPixelManager : public IGpuPixelManager {
 		friend class BasicRasterizingInterface;
 		GRInt width = 0, height = 0;
 		size_t pixelCount;
@@ -59,9 +59,10 @@ namespace Imagina {
 
 		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
 
-		virtual void Cancel() override;
+		void Cancel();
 		void CancelAndWait();
-		virtual IRasterizingInterface GetRasterizingInterface() override;
+		IRasterizingInterface GetRasterizingInterface();
+		void FreeRasterizingInterface(IRasterizingInterface Interface);
 	};
 
 	class BasicRasterizingInterface {

@@ -140,7 +140,7 @@ namespace Imagina {
 			if (evaluator->Ready()) {
 				i = 0;
 				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-				executionContext = evaluator->RunEvaluation(location.ToRectangle((SRReal)width / height).Circumcircle(), this);
+				executionContext = evaluator->RunEvaluation(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
 
 				valid = true;
 			}
@@ -180,6 +180,12 @@ namespace Imagina {
 	IRasterizingInterface BasicPixelManager::GetRasterizingInterface() {
 		return *new BasicRasterizingInterface(this);
 	}
+	void BasicPixelManager::FreeRasterizingInterface(IRasterizingInterface Interface) {
+		delete (BasicRasterizingInterface *)Interface;
+	}
+
+	template<>
+	IRasterizerVTable IRasterizerVTable::value<BasicPixelManager> = IRasterizerVTable::OfType<BasicPixelManager>();
 
 	template<>
 	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<BasicRasterizingInterface> = IRasterizingInterfaceVTable::OfType<BasicRasterizingInterface>();

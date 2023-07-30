@@ -61,7 +61,7 @@ namespace Imagina {
 
 	class IGpuPixelManager : public IPixelManager, public IGpuTextureManager {};
 
-	class im_export IRasterizer {
+	/*class im_export IRasterizer {
 	public:
 		virtual ~IRasterizer() = default;
 
@@ -69,5 +69,5 @@ namespace Imagina {
 
 		virtual IRasterizingInterface GetRasterizingInterface() = 0;
 		virtual void FreeRasterizingInterface(IRasterizingInterface Interface);
-	};
+	};*/
 }
