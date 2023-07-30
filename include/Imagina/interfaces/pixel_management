@@ -6,12 +6,17 @@ namespace Imagina {
 
 	template<typename T>
 	concept IRasterizingInterfaceImpl = requires {
-		{&T::GetPixel}->std::same_as<bool (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::GetDdx}->std::same_as<void (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::GetDdy}->std::same_as<void (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::WriteResults}->std::same_as<void (T:: *)(void *value)>;
+		{&T::GetPixel}->std::convertible_to<bool (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::GetDdx}->std::convertible_to<void (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::GetDdy}->std::convertible_to<void (T:: *)(HRReal &x, HRReal &y)>;
+		{&T::WriteResults}->std::convertible_to<void (T:: *)(void *value)>;
 		requires !std::is_same_v<T, IRasterizingInterface>;
 	};
+
+	template<IRasterizingInterfaceImpl T>
+	void _IIG_IRasterizingInterface_Release(void *instance) {
+		delete (T *)instance;
+	}
 
 	template<IRasterizingInterfaceImpl T>
 	bool _IIG_IRasterizingInterface_GetPixel(void *instance, HRReal &x, HRReal &y) {
@@ -33,28 +38,23 @@ namespace Imagina {
 		return ((T *)instance)->T::WriteResults(value);
 	}
 
-	template<IRasterizingInterfaceImpl T>
-	void _IIG_IRasterizingInterface_Release(void *instance) {
-		delete (T *)instance;
-	}
-
 	struct IRasterizingInterfaceVTable {
 		void *reserved; // Must be zero
+		void (*Release)(void *instance);
+
 		bool (*GetPixel)(void *instance, HRReal &x, HRReal &y);
 		void (*GetDdx)(void *instance, HRReal &x, HRReal &y);
 		void (*GetDdy)(void *instance, HRReal &x, HRReal &y);
 		void (*WriteResults)(void *instance, void *value);
 
-		void (*Release)(void *instance);
-
 		template<IRasterizingInterfaceImpl T>
 		static IRasterizingInterfaceVTable OfType() {
 			IRasterizingInterfaceVTable result;
+			result.Release = _IIG_IRasterizingInterface_Release<T>;
 			result.GetPixel = _IIG_IRasterizingInterface_GetPixel<T>;
 			result.GetDdx = _IIG_IRasterizingInterface_GetDdx<T>;
 			result.GetDdy = _IIG_IRasterizingInterface_GetDdy<T>;
 			result.WriteResults = _IIG_IRasterizingInterface_WriteResults<T>;
-			result.Release = _IIG_IRasterizingInterface_Release<T>;
 			return result;
 		}
 
@@ -71,14 +71,23 @@ namespace Imagina {
 		IRasterizingInterface(const IRasterizingInterface &) = default;
 		IRasterizingInterface(IRasterizingInterface &&) = default;
 
+		IRasterizingInterface(void *instance, const IRasterizingInterfaceVTable *vTable) : instance(instance), vTable(vTable) {}
+
 		template<IRasterizingInterfaceImpl T>
 		IRasterizingInterface(T &instance) : instance(&instance), vTable(&IRasterizingInterfaceVTable::value<T>) {}
+
+		template<IRasterizingInterfaceImpl T>
+		IRasterizingInterface(T *instance) : instance(instance), vTable(&IRasterizingInterfaceVTable::value<T>) {}
 
 		IRasterizingInterface &operator=(const IRasterizingInterface &) = default;
 		IRasterizingInterface &operator=(IRasterizingInterface &&) = default;
 
 		template<IRasterizingInterfaceImpl T>
 		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
 
 		bool GetPixel(HRReal &x, HRReal &y) {
 			return vTable->GetPixel(instance, x, y);
@@ -95,21 +104,22 @@ namespace Imagina {
 		void WriteResults(void *value) {
 			return vTable->WriteResults(instance, value);
 		}
-
-		void Release() {
-			vTable->Release(instance);
-		}
 	};
 
 	class IRasterizer;
 
 	template<typename T>
 	concept IRasterizerImpl = requires {
-		{&T::Cancel}->std::same_as<void (T:: *)()>;
-		{&T::GetRasterizingInterface}->std::same_as<IRasterizingInterface (T:: *)()>;
-		{&T::FreeRasterizingInterface}->std::same_as<void (T:: *)(IRasterizingInterface Interface)>;
+		{&T::Cancel}->std::convertible_to<void (T:: *)()>;
+		{&T::GetRasterizingInterface}->std::convertible_to<IRasterizingInterface (T:: *)()>;
+		{&T::FreeRasterizingInterface}->std::convertible_to<void (T:: *)(IRasterizingInterface Interface)>;
 		requires !std::is_same_v<T, IRasterizer>;
 	};
+
+	template<IRasterizerImpl T>
+	void _IIG_IRasterizer_Release(void *instance) {
+		delete (T *)instance;
+	}
 
 	template<IRasterizerImpl T>
 	void _IIG_IRasterizer_Cancel(void *instance) {
@@ -126,26 +136,21 @@ namespace Imagina {
 		return ((T *)instance)->T::FreeRasterizingInterface(Interface);
 	}
 
-	template<IRasterizerImpl T>
-	void _IIG_IRasterizer_Release(void *instance) {
-		delete (T *)instance;
-	}
-
 	struct IRasterizerVTable {
 		void *reserved; // Must be zero
+		void (*Release)(void *instance);
+
 		void (*Cancel)(void *instance);
 		IRasterizingInterface (*GetRasterizingInterface)(void *instance);
 		void (*FreeRasterizingInterface)(void *instance, IRasterizingInterface Interface);
 
-		void (*Release)(void *instance);
-
 		template<IRasterizerImpl T>
 		static IRasterizerVTable OfType() {
 			IRasterizerVTable result;
+			result.Release = _IIG_IRasterizer_Release<T>;
 			result.Cancel = _IIG_IRasterizer_Cancel<T>;
 			result.GetRasterizingInterface = _IIG_IRasterizer_GetRasterizingInterface<T>;
 			result.FreeRasterizingInterface = _IIG_IRasterizer_FreeRasterizingInterface<T>;
-			result.Release = _IIG_IRasterizer_Release<T>;
 			return result;
 		}
 
@@ -162,14 +167,23 @@ namespace Imagina {
 		IRasterizer(const IRasterizer &) = default;
 		IRasterizer(IRasterizer &&) = default;
 
+		IRasterizer(void *instance, const IRasterizerVTable *vTable) : instance(instance), vTable(vTable) {}
+
 		template<IRasterizerImpl T>
 		IRasterizer(T &instance) : instance(&instance), vTable(&IRasterizerVTable::value<T>) {}
+
+		template<IRasterizerImpl T>
+		IRasterizer(T *instance) : instance(instance), vTable(&IRasterizerVTable::value<T>) {}
 
 		IRasterizer &operator=(const IRasterizer &) = default;
 		IRasterizer &operator=(IRasterizer &&) = default;
 
 		template<IRasterizerImpl T>
 		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
 
 		void Cancel() {
 			return vTable->Cancel(instance);
@@ -181,10 +195,6 @@ namespace Imagina {
 
 		void FreeRasterizingInterface(IRasterizingInterface Interface) {
 			return vTable->FreeRasterizingInterface(instance, Interface);
-		}
-
-		void Release() {
-			vTable->Release(instance);
 		}
 	};
 }
