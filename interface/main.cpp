@@ -2,6 +2,8 @@
 #include <string_view>
 #include <vector>
 #include <fstream>
+#include <unordered_set>
+#include <unordered_map>
 
 class SyntaxError : std::exception {
 	virtual char const *what() const {
@@ -97,15 +99,32 @@ Function ParseFunction(std::string_view declaration) {
 	return result;
 }
 
-void GenerateCode(std::ostream &stream, std::string_view indentation, std::string_view name, const std::vector<Function> &functions) {
+struct Interface {
+	std::string_view name;
+	std::vector<std::string_view> DirectBases;
+	std::unordered_set<std::string_view> Bases;
+	std::vector<Function> functions;
+};
+
+std::unordered_map<std::string_view, Interface> Interfaces;
+
+void GenerateCode(std::ostream &stream, std::string_view indentation, Interface interface) { //, std::string_view name, const std::vector<Function> &functions) {
+	std::string_view name = interface.name;
+	const std::vector<Function> &functions = interface.functions;
 	std::string ImplName = std::string(name) + "Impl";
 	std::string VTableName = std::string(name) + "VTable";
+	bool isDerived = !interface.DirectBases.empty();
+	std::string_view firstBase = isDerived ? interface.DirectBases.front() : std::string_view();
 
 	stream << "class " << name << ";\n\n";
 
 	// Concept
 	stream << indentation << "template<typename T>\n";
-	stream << indentation << "concept " << ImplName << " = requires {\n";
+	stream << indentation << "concept " << ImplName << " = ";
+	for (std::string_view base : interface.DirectBases) {
+		stream << base << "Impl<T> && ";
+	}
+	stream << "requires {\n";
 	for (const Function &function : functions) {
 		stream << indentation << "\t{&T::" << function.Name << "}->std::convertible_to<"
 			<< function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
@@ -135,9 +154,14 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	}
 
 	// VTable
-	stream << indentation << "struct " << VTableName << " {\n";
-	stream << indentation << "\tvoid *reserved; // Must be zero\n";
-	stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
+	stream << indentation << "struct " << VTableName;
+	if (isDerived) {
+		stream << " : " << firstBase << "VTable {\n";
+	} else {
+		stream << " {\n";
+		stream << indentation << "\tvoid *reserved; // Must be zero\n";
+		stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
+	}
 
 	for (const Function &function : functions) {
 		stream << indentation << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
@@ -149,10 +173,15 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, std::strin
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\tstatic " << VTableName << " OfType() {\n";
 	stream << indentation << "\t\t" << VTableName << " result;\n";
+	if (isDerived) {
+		stream << indentation << "\t\t(" << firstBase << "VTable &)result = " << firstBase << "VTable::OfType<T>();\n";
+	}
+	stream << '\n';
 	stream << indentation << "\t\tresult.Release" << " = _IIG_" << name << "_Release<T>;\n";
 	for (const Function &function : functions) {
 		stream << indentation << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
 	}
+	stream << '\n';
 	stream << indentation << "\t\treturn result;\n";
 	stream << indentation << "\t}\n\n";
 
@@ -299,22 +328,39 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 	Token token = tokenizer.Get();
 	if (!token || !IsLetterOrUnderscore(token.content[0])) throw SyntaxError();
 
-	std::string_view name = token.content;
+	Interface interface;
+	interface.name = token.content;
+	//std::string_view name = token.content;
 
-	if (tokenizer.Get().content != "{") throw SyntaxError();
+	//if (tokenizer.Get().content != "{") throw SyntaxError();
+	token = tokenizer.Get();
+	if (token.content == ":") do {
+		token = tokenizer.Get();
+		if (!token || !IsLetterOrUnderscore(token.content[0])) throw SyntaxError();
+		if (Interfaces.find(token.content) == Interfaces.end()) throw SyntaxError(); // FIXME: Exception type
 
-	std::vector<Function> functions;
+		interface.DirectBases.push_back(token.content);
+
+		token = tokenizer.Get();
+	} while (token.content == ",");
+
+	if (token.content != "{") throw SyntaxError();
+
+	//std::vector<Function> functions;
 
 	while (true) {
 		if (tokenizer.Peek() == '}') break;
 		token = tokenizer.GetUntil(';');
 		if (tokenizer.Get().content != ";") throw SyntaxError();
-		functions.push_back(ParseFunction(token.content));
+		interface.functions.push_back(ParseFunction(token.content));
+		//functions.push_back(ParseFunction(token.content));
 	}
 	tokenizer.Get();
 	if (tokenizer.Get().content != ";") throw SyntaxError();
 
-	GenerateCode(output, indentation, name, functions);
+	Interfaces.emplace(interface.name, interface);
+
+	GenerateCode(output, indentation, interface);
 }
 
 int main(int argc, char **argv) {
