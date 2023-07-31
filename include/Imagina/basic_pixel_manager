@@ -15,8 +15,8 @@ namespace Imagina {
 		size_t pixelCount;
 		static_assert(sizeof(std::atomic_size_t) == sizeof(size_t));
 		std::atomic_size_t i = 0;
-		IGpuTextureCreater *gpuTextureCreater = nullptr;
-		IGpuTexture *gpuTexture = nullptr;
+		IGraphics *graphics = nullptr;
+		GpuTexture gpuTexture = nullptr;
 		PixelPipeline::Stage gpuTextureUploadPoint = PixelPipeline::Stage::None;
 		IEvaluator *evaluator = nullptr;
 
@@ -40,7 +40,7 @@ namespace Imagina {
 		void Initialize();
 
 	public:
-		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) override;
+		virtual void ActivateGpu(IGraphics *graphics) override;
 		virtual void DeactivateGpu(bool cleanup = true) override;
 
 		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;

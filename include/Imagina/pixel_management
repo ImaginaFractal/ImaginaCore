@@ -8,24 +8,22 @@
 #include "../../interfaces/pixel_management"
 
 namespace Imagina {
-	class IGpuTexture {
+	struct _GpuTexture;
+	using GpuTexture = _GpuTexture *;
+
+	class IGraphics {
 	public:
-		virtual ~IGpuTexture() = default;
+		virtual ~IGraphics() = default;
 
-		virtual void SetImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
-		virtual void UpdateImage(size_t width, size_t height, float *pixels) = 0; // TEMPORARY
-	};
+		virtual GpuTexture CreateTexture() = 0;
+		virtual void DeleteTexture(GpuTexture texture) = 0;
 
-	class IGpuTextureCreater {
-	public:
-		virtual ~IGpuTextureCreater() = default;
-
-		virtual IGpuTexture *CreateTexture() = 0;
-		virtual void DeleteTexture(IGpuTexture *texture) = 0;
+		virtual void SetTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) = 0; // TEMPORARY
+		virtual void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) = 0; // TEMPORARY
 	};
 
 	struct TextureMapping {
-		IGpuTexture *Texture;
+		GpuTexture Texture;
 		GRRectangle TextureRectangle;
 		HRRectangle FractalRectangle;
 	};
@@ -51,7 +49,7 @@ namespace Imagina {
 	public:
 		virtual ~IGpuTextureManager() = default;
 
-		virtual void ActivateGpu(IGpuTextureCreater *gpuTextureCreater) = 0;
+		virtual void ActivateGpu(IGraphics *graphics) = 0;
 		virtual void DeactivateGpu(bool cleanup = true) = 0;
 
 		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) = 0;
