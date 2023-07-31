@@ -5,7 +5,7 @@
 #include "declarations"
 #include "types"
 #include "pixel_processing"
-#include "interfaces/pixel_management"
+#include "../../interfaces/pixel_management"
 
 namespace Imagina {
 	class IGpuTexture {

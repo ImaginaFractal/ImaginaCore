@@ -1,5 +1,5 @@
 #include <concepts>
-#include "../types"
+#include <Imagina/types>
 
 namespace Imagina {
 	class IRasterizingInterface;
@@ -48,13 +48,14 @@ namespace Imagina {
 		void (*WriteResults)(void *instance, void *value);
 
 		template<IRasterizingInterfaceImpl T>
-		static IRasterizingInterfaceVTable OfType() {
+		static IRasterizingInterfaceVTable OfType(void (*release)(void *instance) = _IIG_IRasterizingInterface_Release<T>) {
 			IRasterizingInterfaceVTable result;
-			result.Release = _IIG_IRasterizingInterface_Release<T>;
+			result.Release = release;
 			result.GetPixel = _IIG_IRasterizingInterface_GetPixel<T>;
 			result.GetDdx = _IIG_IRasterizingInterface_GetDdx<T>;
 			result.GetDdy = _IIG_IRasterizingInterface_GetDdy<T>;
 			result.WriteResults = _IIG_IRasterizingInterface_WriteResults<T>;
+
 			return result;
 		}
 
@@ -145,12 +146,13 @@ namespace Imagina {
 		void (*FreeRasterizingInterface)(void *instance, IRasterizingInterface Interface);
 
 		template<IRasterizerImpl T>
-		static IRasterizerVTable OfType() {
+		static IRasterizerVTable OfType(void (*release)(void *instance) = _IIG_IRasterizer_Release<T>) {
 			IRasterizerVTable result;
-			result.Release = _IIG_IRasterizer_Release<T>;
+			result.Release = release;
 			result.Cancel = _IIG_IRasterizer_Cancel<T>;
 			result.GetRasterizingInterface = _IIG_IRasterizer_GetRasterizingInterface<T>;
 			result.FreeRasterizingInterface = _IIG_IRasterizer_FreeRasterizingInterface<T>;
+
 			return result;
 		}
 

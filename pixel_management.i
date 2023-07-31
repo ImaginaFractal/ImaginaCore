@@ -1,5 +1,5 @@
 #include <concepts>
-#include "../types"
+#include <Imagina/types>
 
 namespace Imagina {
 	interface IRasterizingInterface {
