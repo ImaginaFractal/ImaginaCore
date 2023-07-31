@@ -101,53 +101,96 @@ Function ParseFunction(std::string_view declaration) {
 
 struct Interface {
 	std::string_view name;
-	std::vector<std::string_view> DirectBases;
-	std::unordered_set<std::string_view> Bases;
+	std::vector<Interface *> Bases;
 	std::vector<Function> functions;
-
-	void ProcessInheritance();
 };
 
 std::unordered_map<std::string_view, Interface> Interfaces;
 
-void Interface::ProcessInheritance() {
-	Bases.insert(DirectBases.begin(), DirectBases.end());
-	for (auto &directBaseName : DirectBases) {
-		const Interface &directBase = Interfaces.at(directBaseName);
+void GenerateSecondaryUpcasts(std::ostream &stream, std::string_view indentation, std::string_view vTable, const Interface &interface, std::unordered_set<std::string_view> &visitedBases) {
+	bool inserted = visitedBases.insert(interface.name).second;
+	if (!inserted) return; // Already visited
+	const std::vector<Interface *> &bases = interface.Bases;
 
-		Bases.insert(directBase.Bases.begin(), directBase.Bases.end());
+	if (!bases.empty()) {
+		GenerateSecondaryUpcasts(stream, indentation, vTable, *bases.front(), visitedBases);
+
+		std::string vTableString(vTable);
+		vTableString += '.';
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			vTableString.resize(vTable.size() + 1);
+			vTableString += base->name;
+			vTableString += "vTable";
+			GenerateSecondaryUpcasts(stream, indentation, vTableString, *base, visitedBases);
+		}
 	}
+
+	stream << indentation << "\toperator " << interface.name << "() { return " << interface.name << "(instance, &vTable->" << vTable << "); }\n";
 }
 
-void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation, const std::vector<Function> &functions) {
-	for (const Function &function : functions) {
+void GenerateUpcasts(std::ostream &stream, std::string_view indentation, const Interface &interface, std::unordered_set<std::string_view> &visitedBases) {
+	bool inserted = visitedBases.insert(interface.name).second;
+	if (!inserted) return; // Already visited
+	const std::vector<Interface *> &bases = interface.Bases;
+
+	if (!bases.empty()) {
+		GenerateUpcasts(stream, indentation, *bases.front(), visitedBases);
+
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			GenerateSecondaryUpcasts(stream, indentation, std::string(base->name) + "vTable", *base, visitedBases);
+		}
+	}
+
+	stream << indentation << "\toperator " << interface.name << "() { return " << interface.name << "(instance, vTable); }\n";
+}
+
+void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation, std::string_view vTable, const Interface &interface, std::unordered_set<std::string_view> &visitedBases) {
+	bool inserted = visitedBases.insert(interface.name).second;
+	if (!inserted) return; // Already visited
+	const std::vector<Interface *> &bases = interface.Bases;
+
+	if (!bases.empty()) {
+		GenerateMemberFunctions(stream, indentation, vTable, *bases.front(), visitedBases);
+
+		std::string vTableString(vTable);
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			vTableString.resize(vTable.size());
+			vTableString += base->name;
+			vTableString += "vTable.";
+			GenerateMemberFunctions(stream, indentation, vTableString, *base, visitedBases);
+		}
+	}
+	for (const Function &function : interface.functions) {
 		stream << '\n';
 		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
-		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
+		stream << indentation << "\t\treturn vTable->" << vTable << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", " << parameter.Name;
 		}
 		stream << ");\n";
 		stream << indentation << "\t}\n";
 	}
-
 }
 
-void GenerateCode(std::ostream &stream, std::string_view indentation, Interface interface) { //, std::string_view name, const std::vector<Function> &functions) {
+void GenerateCode(std::ostream &stream, std::string_view indentation, const Interface &interface) { //, std::string_view name, const std::vector<Function> &functions) {
 	std::string_view name = interface.name;
 	const std::vector<Function> &functions = interface.functions;
 	std::string ImplName = std::string(name) + "Impl";
 	std::string VTableName = std::string(name) + "VTable";
-	bool isDerived = !interface.DirectBases.empty();
-	std::string_view firstBase = isDerived ? interface.DirectBases.front() : std::string_view();
+	bool isDerived = !interface.Bases.empty();
+	const std::vector<Interface *> &bases = interface.Bases;
+	//std::string_view firstBase = isDerived ? interface.DirectBases.front() : std::string_view();
 
 	stream << "class " << name << ";\n\n";
 
 	// Concept
 	stream << indentation << "template<typename T>\n";
 	stream << indentation << "concept " << ImplName << " = ";
-	for (std::string_view base : interface.DirectBases) {
-		stream << base << "Impl<T> && ";
+	for (Interface *base : interface.Bases) {
+		stream << base->name << "Impl<T> && ";
 	}
 	stream << "requires {\n";
 	for (const Function &function : functions) {
@@ -181,7 +224,12 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, Interface 
 	// VTable
 	stream << indentation << "struct " << VTableName;
 	if (isDerived) {
-		stream << " : " << firstBase << "VTable {\n";
+		stream << " : " << bases.front()->name << "VTable {\n";
+
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			stream << indentation << '\t' << base->name << "VTable " << base->name << "vTable;\n";
+		}
 	} else {
 		stream << " {\n";
 		stream << indentation << "\tvoid *reserved; // Must be zero\n";
@@ -196,13 +244,18 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, Interface 
 	stream << '\n';
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
-	stream << indentation << "\tstatic " << VTableName << " OfType() {\n";
+	stream << indentation << "\tstatic " << VTableName << " OfType(void (*release)(void *instance) = _IIG_" << name << "_Release<T>) {\n";
 	stream << indentation << "\t\t" << VTableName << " result;\n";
 	if (isDerived) {
-		stream << indentation << "\t\t(" << firstBase << "VTable &)result = " << firstBase << "VTable::OfType<T>();\n";
+		stream << indentation << "\t\t(" << bases.front()->name << "VTable &)result = " << bases.front()->name << "VTable::OfType<T>(release);\n";
+
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			stream << indentation << "\t\tresult." << base->name << "vTable = " << base->name << "VTable::OfType<T>(release);\n";
+		}
+	} else {
+		stream << indentation << "\t\tresult.Release = release;\n";
 	}
-	stream << '\n';
-	stream << indentation << "\t\tresult.Release" << " = _IIG_" << name << "_Release<T>;\n";
 	for (const Function &function : functions) {
 		stream << indentation << "\t\tresult." << function.Name << " = _IIG_" << name << '_' << function.Name << "<T>;\n";
 	}
@@ -238,10 +291,15 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, Interface 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
 
-	for (std::string_view base : interface.Bases) {
-		stream << indentation << "\toperator " << base << "() { return " << base << "(instance, vTable); }\n";
-	}
 	if (isDerived) {
+		std::unordered_set<std::string_view> visitedBases;
+		GenerateUpcasts(stream, indentation, *bases.front(), visitedBases);
+		
+		for (auto iterator = bases.begin() + 1; iterator != bases.end(); ++iterator) {
+			Interface *base = *iterator;
+			GenerateSecondaryUpcasts(stream, indentation, std::string(base->name) + "vTable", *base, visitedBases);
+		}
+
 		stream << '\n';
 	}
 
@@ -249,12 +307,10 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, Interface 
 	stream << indentation << "\t\tvTable->Release(instance);\n";
 	stream << indentation << "\t}\n";
 
-	for (std::string_view base : interface.Bases) {
-		GenerateMemberFunctions(stream, indentation, Interfaces.at(base).functions);
+	{
+		std::unordered_set<std::string_view> visitedBases;
+		GenerateMemberFunctions(stream, indentation, "", interface, visitedBases);
 	}
-
-	GenerateMemberFunctions(stream, indentation, functions);
-
 	stream << indentation << "};";
 
 }
@@ -362,9 +418,10 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 	if (token.content == ":") do {
 		token = tokenizer.Get();
 		if (!token || !IsLetterOrUnderscore(token.content[0])) throw SyntaxError();
-		if (Interfaces.find(token.content) == Interfaces.end()) throw SyntaxError(); // FIXME: Exception type
+		auto iterator = Interfaces.find(token.content);
+		if (iterator == Interfaces.end()) throw SyntaxError(); // FIXME: Exception type
 
-		interface.DirectBases.push_back(token.content);
+		interface.Bases.push_back(&iterator->second);
 
 		token = tokenizer.Get();
 	} while (token.content == ",");
@@ -379,8 +436,6 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 	}
 	tokenizer.Get();
 	if (tokenizer.Get().content != ";") throw SyntaxError();
-
-	interface.ProcessInheritance();
 
 	Interfaces.emplace(interface.name, interface);
 
