@@ -104,9 +104,34 @@ struct Interface {
 	std::vector<std::string_view> DirectBases;
 	std::unordered_set<std::string_view> Bases;
 	std::vector<Function> functions;
+
+	void ProcessInheritance();
 };
 
 std::unordered_map<std::string_view, Interface> Interfaces;
+
+void Interface::ProcessInheritance() {
+	Bases.insert(DirectBases.begin(), DirectBases.end());
+	for (auto &directBaseName : DirectBases) {
+		const Interface &directBase = Interfaces.at(directBaseName);
+
+		Bases.insert(directBase.Bases.begin(), directBase.Bases.end());
+	}
+}
+
+void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation, const std::vector<Function> &functions) {
+	for (const Function &function : functions) {
+		stream << '\n';
+		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
+		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
+		for (const Identifier &parameter : function.Parameters) {
+			stream << ", " << parameter.Name;
+		}
+		stream << ");\n";
+		stream << indentation << "\t}\n";
+	}
+
+}
 
 void GenerateCode(std::ostream &stream, std::string_view indentation, Interface interface) { //, std::string_view name, const std::vector<Function> &functions) {
 	std::string_view name = interface.name;
@@ -213,20 +238,22 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, Interface 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
 
+	for (std::string_view base : interface.Bases) {
+		stream << indentation << "\toperator " << base << "() { return " << base << "(instance, vTable); }\n";
+	}
+	if (isDerived) {
+		stream << '\n';
+	}
+
 	stream << indentation << "\tvoid Release() {\n";
 	stream << indentation << "\t\tvTable->Release(instance);\n";
 	stream << indentation << "\t}\n";
 
-	for (const Function &function : functions) {
-		stream << '\n';
-		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
-		stream << indentation << "\t\treturn vTable->" << function.Name << "(instance";
-		for (const Identifier &parameter : function.Parameters) {
-			stream << ", " << parameter.Name;
-		}
-		stream << ");\n";
-		stream << indentation << "\t}\n";
+	for (std::string_view base : interface.Bases) {
+		GenerateMemberFunctions(stream, indentation, Interfaces.at(base).functions);
 	}
+
+	GenerateMemberFunctions(stream, indentation, functions);
 
 	stream << indentation << "};";
 
@@ -330,9 +357,7 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 
 	Interface interface;
 	interface.name = token.content;
-	//std::string_view name = token.content;
 
-	//if (tokenizer.Get().content != "{") throw SyntaxError();
 	token = tokenizer.Get();
 	if (token.content == ":") do {
 		token = tokenizer.Get();
@@ -346,17 +371,16 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 
 	if (token.content != "{") throw SyntaxError();
 
-	//std::vector<Function> functions;
-
 	while (true) {
 		if (tokenizer.Peek() == '}') break;
 		token = tokenizer.GetUntil(';');
 		if (tokenizer.Get().content != ";") throw SyntaxError();
 		interface.functions.push_back(ParseFunction(token.content));
-		//functions.push_back(ParseFunction(token.content));
 	}
 	tokenizer.Get();
 	if (tokenizer.Get().content != ";") throw SyntaxError();
+
+	interface.ProcessInheritance();
 
 	Interfaces.emplace(interface.name, interface);
 
