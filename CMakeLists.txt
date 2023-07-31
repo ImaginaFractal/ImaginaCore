@@ -10,8 +10,8 @@ if (NOT MSVC)
 endif ()
 
 add_custom_command(
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/pixel_management.i"
-	DEPENDS InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/pixel_management.i"
+	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
+	DEPENDS InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
 	OUTPUT "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
 )
 
