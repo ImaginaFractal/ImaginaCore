@@ -331,10 +331,27 @@ public:
 	std::size_t i = 0;
 
 private:
-	void SkipWhitespace() {
-		while (i < content.size() && IsWhitespace(content[i])) {
-			if (content[i] == '\r' || content[i] == '\n') lineBegin = i + 1;
-			i++;
+	void SkipWhitespaceAndComments() {
+		while (i < content.size()) switch (content[i]) {
+			case '\r':
+			case '\n':
+				lineBegin = i + 1;
+				[[fallthrough]];
+			case ' ':
+			case '\t':
+				i++;
+				continue;
+			case '/': {
+				if (i + 1 < content.size() && content[i + 1] == '/') {
+					i += 2;
+					while (i < content.size() && content[i] != '\r' && content[i] != '\n') i++;
+					continue;
+				} else {
+					return;
+				}
+			}
+			default:
+				return;
 		}
 	}
 
@@ -344,7 +361,7 @@ public:
 	bool Eof() { return i >= content.size(); }
 
 	Token Get() {
-		SkipWhitespace();
+		SkipWhitespaceAndComments();
 		Token token;
 		token.begin = i;
 
@@ -371,7 +388,7 @@ public:
 	}
 
 	Token GetUntil(char delimiter) {
-		SkipWhitespace();
+		SkipWhitespaceAndComments();
 		Token token;
 		token.begin = i;
 
@@ -392,7 +409,7 @@ public:
 	}
 
 	char Peek() {
-		SkipWhitespace();
+		SkipWhitespaceAndComments();
 		if (Eof()) return '\0';
 
 		return content[i];
