@@ -232,7 +232,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 		}
 	} else {
 		stream << " {\n";
-		stream << indentation << "\tvoid *reserved; // Must be zero\n";
+		stream << indentation << "\tvoid *reserved = nullptr; // Must be null\n";
 		stream << indentation << "\tvoid (*Release)(void *instance);\n\n";
 	}
 

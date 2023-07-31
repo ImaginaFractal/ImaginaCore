@@ -39,7 +39,7 @@ namespace Imagina {
 	}
 
 	struct IRasterizingInterfaceVTable {
-		void *reserved; // Must be zero
+		void *reserved = nullptr; // Must be null
 		void (*Release)(void *instance);
 
 		bool (*GetPixel)(void *instance, HRReal &x, HRReal &y);
@@ -138,7 +138,7 @@ namespace Imagina {
 	}
 
 	struct IRasterizerVTable {
-		void *reserved; // Must be zero
+		void *reserved = nullptr; // Must be null
 		void (*Release)(void *instance);
 
 		void (*Cancel)(void *instance);
