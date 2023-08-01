@@ -17,7 +17,7 @@ namespace Imagina {
 		std::atomic_size_t i = 0;
 		IGraphics graphics = nullptr;
 		GpuTexture gpuTexture = nullptr;
-		PixelPipeline::Stage gpuTextureUploadPoint = PixelPipeline::Stage::None;
+		PixelPipeline::Stage gpuTextureUploadPoint = PixelPipeline::Stage::Colorized;
 		IEvaluator *evaluator = nullptr;
 
 		HRLocation location;
