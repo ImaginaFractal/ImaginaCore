@@ -3,7 +3,7 @@
 #include "location_manager"
 
 namespace Imagina {
-	void FractalContext::UseController(IController *controller) {
+	void FractalContext::UseController(IController controller) {
 		Controller = controller;
 	}
 	void FractalContext::UsePixelManager(IPixelManager pixelManager) {
@@ -25,8 +25,8 @@ namespace Imagina {
 		assert(Evaluator);
 		assert(LocationManager);
 
-		Controller->SetPixelManager(PixelManager);
-		Controller->SetLocationManager(LocationManager);
+		Controller.SetPixelManager(PixelManager);
+		Controller.SetLocationManager(LocationManager);
 		PixelManager.SetEvaluator(Evaluator);
 		LocationManager->SetEvaluator(Evaluator);
 		LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinates, this);
@@ -37,13 +37,13 @@ namespace Imagina {
 	//}
 
 	void FractalContext::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
-		Controller->UpdateRelativeCoordinates(differenceX, differenceY);
+		Controller.UpdateRelativeCoordinates(differenceX, differenceY);
 		PixelManager.UpdateRelativeCoordinates(differenceX, differenceY);
 		if (OnReferenceChange) OnReferenceChange(differenceX, differenceY);
 	}
 
 	void FractalContext::Update(SRReal deltaTime) {
-		Controller->Update(deltaTime);
+		Controller.Update(deltaTime);
 		PixelManager.Update();
 	}
 }

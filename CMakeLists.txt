@@ -11,11 +11,12 @@ endif ()
 
 add_custom_command(
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
-	DEPENDS InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
-	OUTPUT "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
+	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
+	DEPENDS InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
+	OUTPUT "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
 )
 
-add_custom_target(Interfaces DEPENDS "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management")
+add_custom_target(Interfaces DEPENDS "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller")
 
 FILE (GLOB SourceFiles "*.cpp")
 add_library (ImaginaCore SHARED ${SourceFiles} "interfaces/pixel_management")
