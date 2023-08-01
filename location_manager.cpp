@@ -10,6 +10,7 @@ namespace Imagina {
 
 	void StandardLocationManager::SetEvaluator(IEvaluator *evaluator) {
 		this->evaluator = evaluator;
+		static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, 2.0); // TEMPORARY
 	}
 
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {

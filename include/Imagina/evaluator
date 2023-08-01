@@ -12,6 +12,7 @@ namespace Imagina {
 		virtual ~IEvaluator() = default;
 
 		virtual const PixelDataInfo *GetOutputInfo() = 0;
+		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) = 0; // TEMPORARY
 
 		virtual bool Ready();
 		//virtual void Evaluate(IRasterizer rasterizer) = 0;
@@ -29,7 +30,6 @@ namespace Imagina {
 	class StandardEvaluator : public IEvaluator {
 	public:
 		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) = 0; // TEMPORARY
-		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) = 0; // TEMPORARY
 	};
 
 	class im_export SimpleEvaluator : public StandardEvaluator {
