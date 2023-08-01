@@ -71,6 +71,7 @@ namespace Imagina {
 		IRasterizingInterface() = default;
 		IRasterizingInterface(const IRasterizingInterface &) = default;
 		IRasterizingInterface(IRasterizingInterface &&) = default;
+		IRasterizingInterface(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IRasterizingInterface(void *instance, const IRasterizingInterfaceVTable *vTable) : instance(instance), vTable(vTable) {}
 
@@ -82,6 +83,12 @@ namespace Imagina {
 
 		IRasterizingInterface &operator=(const IRasterizingInterface &) = default;
 		IRasterizingInterface &operator=(IRasterizingInterface &&) = default;
+
+		IRasterizingInterface &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
 
 		template<IRasterizingInterfaceImpl T>
 		explicit operator T *() { return (T *)instance; }
@@ -168,6 +175,7 @@ namespace Imagina {
 		IRasterizer() = default;
 		IRasterizer(const IRasterizer &) = default;
 		IRasterizer(IRasterizer &&) = default;
+		IRasterizer(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IRasterizer(void *instance, const IRasterizerVTable *vTable) : instance(instance), vTable(vTable) {}
 
@@ -179,6 +187,12 @@ namespace Imagina {
 
 		IRasterizer &operator=(const IRasterizer &) = default;
 		IRasterizer &operator=(IRasterizer &&) = default;
+
+		IRasterizer &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
 
 		template<IRasterizerImpl T>
 		explicit operator T *() { return (T *)instance; }

@@ -275,7 +275,8 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "public:\n";
 	stream << indentation << '\t' << name << "() = default;\n";
 	stream << indentation << '\t' << name << "(const " << name << " &) = default;\n";
-	stream << indentation << '\t' << name << '(' << name << " &&) = default;\n\n";
+	stream << indentation << '\t' << name << '(' << name << " &&) = default;\n";
+	stream << indentation << '\t' << name << "(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}\n\n";
 
 	stream << indentation << '\t' << name << "(void *instance, const " << VTableName << " *vTable) : instance(instance), vTable(vTable) {}\n\n";
 
@@ -285,8 +286,14 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << '\t' << name << "(T *instance) : instance(instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
 
-	stream << indentation << "\t" << name << " &operator=(const " << name << " &) = default;\n";
-	stream << indentation << "\t" << name << " &operator=(" << name << " &&) = default;\n\n";
+	stream << indentation << '\t' << name << " &operator=(const " << name << " &) = default;\n";
+	stream << indentation << '\t' << name << " &operator=(" << name << " &&) = default;\n\n";
+
+	stream << indentation << "\t" << name << " &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }\n";
+	stream << indentation << "\tbool operator==(std::nullptr_t) { return instance == nullptr; }\n";
+	stream << indentation << "\tbool operator!=(std::nullptr_t) { return instance != nullptr; }\n\n";
+
+	stream << indentation << "\toperator bool() { return instance != nullptr; }\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
