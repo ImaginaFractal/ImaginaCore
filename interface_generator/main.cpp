@@ -380,6 +380,11 @@ private:
 					return;
 				}
 			}
+			case '#': {
+				i++;
+				while (i < content.size() && content[i] != '\r' && content[i] != '\n') i++;
+				continue;
+			}
 			default:
 				return;
 		}
@@ -506,6 +511,7 @@ int main(int argc, char **argv) {
 	Tokenizer tokenizer(source);
 
 	fstream << "#pragma once\n";
+	fstream << "#include <concepts>\n";
 	fstream << "#include <Imagina/interface>\n";
 
 	size_t unprocessedBegin = 0;
