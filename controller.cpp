@@ -10,7 +10,7 @@ namespace Imagina {
 		this->pixelManager = pixelManager;
 		pixelManager.SetImmediateTarget(immediateTarget);
 	}
-    void NavigationController::SetLocationManager(ILocationManager *locationManager) {
+    void NavigationController::SetLocationManager(ILocationManager locationManager) {
 		this->locationManager = locationManager;
     }
 	void NavigationController::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
@@ -84,7 +84,7 @@ namespace Imagina {
 			if (pixelManager) pixelManager.SetImmediateTarget(immediateTarget);
 			if (locationManager) {
 				//if (immediateTarget.HalfHeight > ) TODO
-				locationManager->LocationChanged(immediateTarget);
+				locationManager.LocationChanged(immediateTarget);
 			}
 		}
 	}

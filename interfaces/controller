@@ -12,7 +12,7 @@ namespace Imagina {
 	concept IControllerImpl = !Imagina::IsInterface<T> && requires {
 		static_cast<HRLocation (T:: *)()>(&T::GetRenderLocation);
 		static_cast<void (T:: *)(IPixelManager pixelManager)>(&T::SetPixelManager);
-		static_cast<void (T:: *)(ILocationManager *locationManager)>(&T::SetLocationManager);
+		static_cast<void (T:: *)(ILocationManager locationManager)>(&T::SetLocationManager);
 		static_cast<void (T:: *)(HRReal differenceX, HRReal differenceY)>(&T::UpdateRelativeCoordinates);
 		static_cast<void (T:: *)(SRReal deltaTime)>(&T::Update);
 	};
@@ -33,7 +33,7 @@ namespace Imagina {
 	}
 
 	template<IControllerImpl T>
-	void _IIG_IController_SetLocationManager(void *instance, ILocationManager *locationManager) {
+	void _IIG_IController_SetLocationManager(void *instance, ILocationManager locationManager) {
 		return ((T *)instance)->T::SetLocationManager(locationManager);
 	}
 
@@ -53,7 +53,7 @@ namespace Imagina {
 
 		HRLocation (*GetRenderLocation)(void *instance);
 		void (*SetPixelManager)(void *instance, IPixelManager pixelManager);
-		void (*SetLocationManager)(void *instance, ILocationManager *locationManager);
+		void (*SetLocationManager)(void *instance, ILocationManager locationManager);
 		void (*UpdateRelativeCoordinates)(void *instance, HRReal differenceX, HRReal differenceY);
 		void (*Update)(void *instance, SRReal deltaTime);
 
@@ -116,7 +116,7 @@ namespace Imagina {
 			return vTable->SetPixelManager(instance, pixelManager);
 		}
 
-		void SetLocationManager(ILocationManager *locationManager) {
+		void SetLocationManager(ILocationManager locationManager) {
 			return vTable->SetLocationManager(instance, locationManager);
 		}
 

@@ -12,9 +12,9 @@ namespace Imagina {
 		Controller.SetPixelManager(PixelManager);
 		Controller.SetLocationManager(LocationManager);
 		PixelManager.SetEvaluator(Evaluator);
-		LocationManager->SetEvaluator(Evaluator);
+		LocationManager.SetEvaluator(Evaluator);
 		//LocationManager->OnReferenceChange = std::bind_front(&FractalContext::UpdateRelativeCoordinates, this);
-		LocationManager->SetCoordinateUpdateCallback([](void *data, HRReal x, HRReal y) { ((FractalContext *)data)->UpdateRelativeCoordinates(x, y); }, this);
+		LocationManager.SetCoordinateUpdateCallback([](void *data, HRReal x, HRReal y) { ((FractalContext *)data)->UpdateRelativeCoordinates(x, y); }, this);
 	}
 	//void FractalContext::SetImmediateTarget(const HRLocation &location) {
 	//	PixelManager->SetImmediateTarget(location);

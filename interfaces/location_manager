@@ -1,0 +1,110 @@
+#pragma once
+#include <concepts>
+#include <Imagina/interface>
+#include <Imagina/types>
+#include <Imagina/declarations>
+
+namespace Imagina {
+	using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
+
+	class ILocationManager;
+
+	template<typename T>
+	concept ILocationManagerImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<void (T:: *)(pCoordinateUpdateCallback callback, void *data)>(&T::SetCoordinateUpdateCallback);
+		static_cast<void (T:: *)(IEvaluator *evaluator)>(&T::SetEvaluator);
+		static_cast<void (T:: *)(const HRLocation &location)>(&T::LocationChanged);
+	};
+
+	template<ILocationManagerImpl T>
+	void _IIG_ILocationManager_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<ILocationManagerImpl T>
+	void _IIG_ILocationManager_SetCoordinateUpdateCallback(void *instance, pCoordinateUpdateCallback callback, void *data = nullptr) {
+		return ((T *)instance)->T::SetCoordinateUpdateCallback(callback, data);
+	}
+
+	template<ILocationManagerImpl T>
+	void _IIG_ILocationManager_SetEvaluator(void *instance, IEvaluator *evaluator) {
+		return ((T *)instance)->T::SetEvaluator(evaluator);
+	}
+
+	template<ILocationManagerImpl T>
+	void _IIG_ILocationManager_LocationChanged(void *instance, const HRLocation &location) {
+		return ((T *)instance)->T::LocationChanged(location);
+	}
+
+	struct ILocationManagerVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
+		void (*SetCoordinateUpdateCallback)(void *instance, pCoordinateUpdateCallback callback, void *data);
+		void (*SetEvaluator)(void *instance, IEvaluator *evaluator);
+		void (*LocationChanged)(void *instance, const HRLocation &location);
+
+		template<ILocationManagerImpl T>
+		static ILocationManagerVTable OfType(void (*release)(void *instance) = _IIG_ILocationManager_Release<T>) {
+			ILocationManagerVTable result;
+			result.Release = release;
+			result.SetCoordinateUpdateCallback = _IIG_ILocationManager_SetCoordinateUpdateCallback<T>;
+			result.SetEvaluator = _IIG_ILocationManager_SetEvaluator<T>;
+			result.LocationChanged = _IIG_ILocationManager_LocationChanged<T>;
+
+			return result;
+		}
+
+		template<ILocationManagerImpl T>
+		static ILocationManagerVTable value;
+	};
+
+	class ILocationManager final {
+		void *instance;
+		const ILocationManagerVTable *vTable;
+
+	public:
+		ILocationManager() = default;
+		ILocationManager(const ILocationManager &) = default;
+		ILocationManager(ILocationManager &&) = default;
+		ILocationManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		ILocationManager(void *instance, const ILocationManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<ILocationManagerImpl T>
+		ILocationManager(T &instance) : instance(&instance), vTable(&ILocationManagerVTable::value<T>) {}
+
+		template<ILocationManagerImpl T>
+		ILocationManager(T *instance) : instance(instance), vTable(&ILocationManagerVTable::value<T>) {}
+
+		ILocationManager &operator=(const ILocationManager &) = default;
+		ILocationManager &operator=(ILocationManager &&) = default;
+
+		ILocationManager &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<ILocationManagerImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) {
+			return vTable->SetCoordinateUpdateCallback(instance, callback, data);
+		}
+
+		void SetEvaluator(IEvaluator *evaluator) {
+			return vTable->SetEvaluator(instance, evaluator);
+		}
+
+		void LocationChanged(const HRLocation &location) {
+			return vTable->LocationChanged(instance, location);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+}

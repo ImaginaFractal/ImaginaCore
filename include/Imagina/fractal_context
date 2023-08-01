@@ -11,7 +11,7 @@ namespace Imagina {
 		IPixelManager PixelManager = nullptr;
 		IGpuTextureManager GpuTextureManager = nullptr;
 		IEvaluator *Evaluator = nullptr;
-		ILocationManager *LocationManager = nullptr;
+		ILocationManager LocationManager = nullptr;
 
 		std::function<void(HRReal, HRReal)> OnReferenceChange;
 

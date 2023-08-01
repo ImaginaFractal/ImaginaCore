@@ -2,6 +2,7 @@
 #include "types"
 #include "declarations"
 #include "pixel_management"
+#include "location_manager"
 #include "../../interfaces/controller"
 
 namespace Imagina {
@@ -12,7 +13,7 @@ namespace Imagina {
 		HRLocation immediateTarget = HRLocation(0.0, 0.0, 2.0);
 
 		IPixelManager pixelManager = nullptr;
-		ILocationManager *locationManager = nullptr;
+		ILocationManager locationManager = nullptr;
 
 		bool zooming = false;
 		SRReal remainingZoomTime = 0.0;
@@ -21,7 +22,7 @@ namespace Imagina {
 		HRLocation GetRenderLocation();
 
 		void SetPixelManager(IPixelManager pixelManager);
-		void SetLocationManager(ILocationManager *locationManager);
+		void SetLocationManager(ILocationManager locationManager);
 
 		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
 

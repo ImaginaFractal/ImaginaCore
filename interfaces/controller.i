@@ -7,7 +7,7 @@ namespace Imagina {
 		HRLocation GetRenderLocation();
 
 		void SetPixelManager(IPixelManager pixelManager);
-		void SetLocationManager(ILocationManager *locationManager);
+		void SetLocationManager(ILocationManager locationManager);
 
 		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
 
