@@ -3,10 +3,6 @@
 #include "output_info_helper"
 
 namespace Imagina {
-	bool IEvaluator::Ready() {
-		return true;
-	}
-
 	class SimpleEvaluator::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {
 		SimpleEvaluator *evaluator;
 		IRasterizer rasterizer;
@@ -128,6 +124,10 @@ namespace Imagina {
 		rasterizer.FreeRasterizingInterface(rasterizingInterface);
 	}
 
+
+	bool LowPrecisionEvaluator::Ready() {
+		return true;
+	}
 
 	ExecutionContext *LowPrecisionEvaluator::RunEvaluation(const HRCircle &, IRasterizer rasterizer) {
 		if (currentExecutionContext) currentExecutionContext->WaitAndRelease();
