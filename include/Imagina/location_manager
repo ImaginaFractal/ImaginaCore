@@ -5,10 +5,11 @@
 #include <functional>
 
 namespace Imagina {
+	using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
+
 	class ILocationManager {
 	public:
-		std::function<void(HRReal, HRReal)> OnReferenceChange;
-
+		virtual void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) = 0;
 		virtual void SetEvaluator(IEvaluator *evaluator) = 0;
 		virtual void LocationChanged(const HRLocation &location) = 0;
 	};
@@ -17,10 +18,13 @@ namespace Imagina {
 		IEvaluator *evaluator = nullptr;
 		[[maybe_unused]] MultiPrecision &mp;
 		HPReal referenceX, referenceY;
+		pCoordinateUpdateCallback coordinateUpdateCallback = nullptr;
+		void *callbackData;
 
 	public:
 		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(0.0, mp), referenceY(0.0, mp) {}
 
+		virtual void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) override;
 		virtual void SetEvaluator(IEvaluator *evaluator) override;
 		virtual void LocationChanged(const HRLocation &location) override;
 	};
