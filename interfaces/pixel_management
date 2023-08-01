@@ -1,7 +1,14 @@
 #pragma once
-#include <Imagina/interface>
 #include <concepts>
+#include <Imagina/interface>
+#include <stdint.h>
+#include <vector>
 #include <Imagina/types>
+#include <Imagina/pixel_processing>
+
+#ifdef __INTELLISENSE__
+#define interface class
+#endif
 
 namespace Imagina {
 	struct _GpuTexture;
@@ -120,6 +127,400 @@ namespace Imagina {
 		using _IIG_IsInterface = void;
 	};
 	
+	struct TextureMapping {
+		GpuTexture Texture;
+		GRRectangle TextureRectangle;
+		HRRectangle FractalRectangle;
+	};
+
+	class IPixelManager;
+
+	template<typename T>
+	concept IPixelManagerImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<void (T:: *)(IEvaluator *evaluator)>(&T::SetEvaluator);
+		static_cast<void (T:: *)(PixelPipeline *pipeline)>(&T::UsePixelPipeline);
+		static_cast<void (T:: *)(void *data, PixelPipeline::Stage stage)>(&T::GetPixelData);
+		static_cast<void (T:: *)(const HRLocation &location)>(&T::SetImmediateTarget);
+		static_cast<void (T:: *)(GRInt width, GRInt height)>(&T::SetResolution);
+		static_cast<void (T:: *)()>(&T::InvalidatePixels);
+		static_cast<void (T:: *)(HRReal differenceX, HRReal differenceY)>(&T::UpdateRelativeCoordinates);
+		static_cast<void (T:: *)()>(&T::Update);
+	};
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_SetEvaluator(void *instance, IEvaluator *evaluator) {
+		return ((T *)instance)->T::SetEvaluator(evaluator);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_UsePixelPipeline(void *instance, PixelPipeline *pipeline) {
+		return ((T *)instance)->T::UsePixelPipeline(pipeline);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_GetPixelData(void *instance, void *data, PixelPipeline::Stage stage) {
+		return ((T *)instance)->T::GetPixelData(data, stage);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_SetImmediateTarget(void *instance, const HRLocation &location) {
+		return ((T *)instance)->T::SetImmediateTarget(location);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_SetResolution(void *instance, GRInt width, GRInt height) {
+		return ((T *)instance)->T::SetResolution(width, height);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_InvalidatePixels(void *instance) {
+		return ((T *)instance)->T::InvalidatePixels();
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_UpdateRelativeCoordinates(void *instance, HRReal differenceX, HRReal differenceY) {
+		return ((T *)instance)->T::UpdateRelativeCoordinates(differenceX, differenceY);
+	}
+
+	template<IPixelManagerImpl T>
+	void _IIG_IPixelManager_Update(void *instance) {
+		return ((T *)instance)->T::Update();
+	}
+
+	struct IPixelManagerVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
+		void (*SetEvaluator)(void *instance, IEvaluator *evaluator);
+		void (*UsePixelPipeline)(void *instance, PixelPipeline *pipeline);
+		void (*GetPixelData)(void *instance, void *data, PixelPipeline::Stage stage);
+		void (*SetImmediateTarget)(void *instance, const HRLocation &location);
+		void (*SetResolution)(void *instance, GRInt width, GRInt height);
+		void (*InvalidatePixels)(void *instance);
+		void (*UpdateRelativeCoordinates)(void *instance, HRReal differenceX, HRReal differenceY);
+		void (*Update)(void *instance);
+
+		template<IPixelManagerImpl T>
+		static IPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IPixelManager_Release<T>) {
+			IPixelManagerVTable result;
+			result.Release = release;
+			result.SetEvaluator = _IIG_IPixelManager_SetEvaluator<T>;
+			result.UsePixelPipeline = _IIG_IPixelManager_UsePixelPipeline<T>;
+			result.GetPixelData = _IIG_IPixelManager_GetPixelData<T>;
+			result.SetImmediateTarget = _IIG_IPixelManager_SetImmediateTarget<T>;
+			result.SetResolution = _IIG_IPixelManager_SetResolution<T>;
+			result.InvalidatePixels = _IIG_IPixelManager_InvalidatePixels<T>;
+			result.UpdateRelativeCoordinates = _IIG_IPixelManager_UpdateRelativeCoordinates<T>;
+			result.Update = _IIG_IPixelManager_Update<T>;
+
+			return result;
+		}
+
+		template<IPixelManagerImpl T>
+		static IPixelManagerVTable value;
+	};
+
+	class IPixelManager final {
+		void *instance;
+		const IPixelManagerVTable *vTable;
+
+	public:
+		IPixelManager() = default;
+		IPixelManager(const IPixelManager &) = default;
+		IPixelManager(IPixelManager &&) = default;
+		IPixelManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		IPixelManager(void *instance, const IPixelManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<IPixelManagerImpl T>
+		IPixelManager(T &instance) : instance(&instance), vTable(&IPixelManagerVTable::value<T>) {}
+
+		template<IPixelManagerImpl T>
+		IPixelManager(T *instance) : instance(instance), vTable(&IPixelManagerVTable::value<T>) {}
+
+		IPixelManager &operator=(const IPixelManager &) = default;
+		IPixelManager &operator=(IPixelManager &&) = default;
+
+		IPixelManager &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<IPixelManagerImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		void SetEvaluator(IEvaluator *evaluator) {
+			return vTable->SetEvaluator(instance, evaluator);
+		}
+
+		void UsePixelPipeline(PixelPipeline *pipeline) {
+			return vTable->UsePixelPipeline(instance, pipeline);
+		}
+
+		void GetPixelData(void *data, PixelPipeline::Stage stage) {
+			return vTable->GetPixelData(instance, data, stage);
+		}
+
+		void SetImmediateTarget(const HRLocation &location) {
+			return vTable->SetImmediateTarget(instance, location);
+		}
+
+		void SetResolution(GRInt width, GRInt height) {
+			return vTable->SetResolution(instance, width, height);
+		}
+
+		void InvalidatePixels() {
+			return vTable->InvalidatePixels(instance);
+		}
+
+		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
+			return vTable->UpdateRelativeCoordinates(instance, differenceX, differenceY);
+		}
+
+		void Update() {
+			return vTable->Update(instance);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+
+	class IGpuTextureManager;
+
+	template<typename T>
+	concept IGpuTextureManagerImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<void (T:: *)(IGraphics graphics)>(&T::ActivateGpu);
+		static_cast<void (T:: *)(bool cleanup)>(&T::DeactivateGpu);
+		static_cast<void (T:: *)(PixelPipeline::Stage uploadPoint)>(&T::SetTextureUploadPoint);
+		static_cast<std::vector<TextureMapping> (T:: *)(const HRRectangle &location)>(&T::GetTextureMappings);
+	};
+
+	template<IGpuTextureManagerImpl T>
+	void _IIG_IGpuTextureManager_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<IGpuTextureManagerImpl T>
+	void _IIG_IGpuTextureManager_ActivateGpu(void *instance, IGraphics graphics) {
+		return ((T *)instance)->T::ActivateGpu(graphics);
+	}
+
+	template<IGpuTextureManagerImpl T>
+	void _IIG_IGpuTextureManager_DeactivateGpu(void *instance, bool cleanup = true) {
+		return ((T *)instance)->T::DeactivateGpu(cleanup);
+	}
+
+	template<IGpuTextureManagerImpl T>
+	void _IIG_IGpuTextureManager_SetTextureUploadPoint(void *instance, PixelPipeline::Stage uploadPoint) {
+		return ((T *)instance)->T::SetTextureUploadPoint(uploadPoint);
+	}
+
+	template<IGpuTextureManagerImpl T>
+	std::vector<TextureMapping> _IIG_IGpuTextureManager_GetTextureMappings(void *instance, const HRRectangle &location) {
+		return ((T *)instance)->T::GetTextureMappings(location);
+	}
+
+	struct IGpuTextureManagerVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
+		void (*ActivateGpu)(void *instance, IGraphics graphics);
+		void (*DeactivateGpu)(void *instance, bool cleanup);
+		void (*SetTextureUploadPoint)(void *instance, PixelPipeline::Stage uploadPoint);
+		std::vector<TextureMapping> (*GetTextureMappings)(void *instance, const HRRectangle &location);
+
+		template<IGpuTextureManagerImpl T>
+		static IGpuTextureManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuTextureManager_Release<T>) {
+			IGpuTextureManagerVTable result;
+			result.Release = release;
+			result.ActivateGpu = _IIG_IGpuTextureManager_ActivateGpu<T>;
+			result.DeactivateGpu = _IIG_IGpuTextureManager_DeactivateGpu<T>;
+			result.SetTextureUploadPoint = _IIG_IGpuTextureManager_SetTextureUploadPoint<T>;
+			result.GetTextureMappings = _IIG_IGpuTextureManager_GetTextureMappings<T>;
+
+			return result;
+		}
+
+		template<IGpuTextureManagerImpl T>
+		static IGpuTextureManagerVTable value;
+	};
+
+	class IGpuTextureManager final {
+		void *instance;
+		const IGpuTextureManagerVTable *vTable;
+
+	public:
+		IGpuTextureManager() = default;
+		IGpuTextureManager(const IGpuTextureManager &) = default;
+		IGpuTextureManager(IGpuTextureManager &&) = default;
+		IGpuTextureManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		IGpuTextureManager(void *instance, const IGpuTextureManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<IGpuTextureManagerImpl T>
+		IGpuTextureManager(T &instance) : instance(&instance), vTable(&IGpuTextureManagerVTable::value<T>) {}
+
+		template<IGpuTextureManagerImpl T>
+		IGpuTextureManager(T *instance) : instance(instance), vTable(&IGpuTextureManagerVTable::value<T>) {}
+
+		IGpuTextureManager &operator=(const IGpuTextureManager &) = default;
+		IGpuTextureManager &operator=(IGpuTextureManager &&) = default;
+
+		IGpuTextureManager &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<IGpuTextureManagerImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		void ActivateGpu(IGraphics graphics) {
+			return vTable->ActivateGpu(instance, graphics);
+		}
+
+		void DeactivateGpu(bool cleanup = true) {
+			return vTable->DeactivateGpu(instance, cleanup);
+		}
+
+		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
+			return vTable->SetTextureUploadPoint(instance, uploadPoint);
+		}
+
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) {
+			return vTable->GetTextureMappings(instance, location);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+
+	class IGpuPixelManager;
+
+	template<typename T>
+	concept IGpuPixelManagerImpl = !Imagina::IsInterface<T> && IPixelManagerImpl<T> && IGpuTextureManagerImpl<T>;
+
+	template<IGpuPixelManagerImpl T>
+	void _IIG_IGpuPixelManager_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	struct IGpuPixelManagerVTable : IPixelManagerVTable {
+		IGpuTextureManagerVTable IGpuTextureManagervTable;
+
+		template<IGpuPixelManagerImpl T>
+		static IGpuPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuPixelManager_Release<T>) {
+			IGpuPixelManagerVTable result;
+			(IPixelManagerVTable &)result = IPixelManagerVTable::OfType<T>(release);
+			result.IGpuTextureManagervTable = IGpuTextureManagerVTable::OfType<T>(release);
+
+			return result;
+		}
+
+		template<IGpuPixelManagerImpl T>
+		static IGpuPixelManagerVTable value;
+	};
+
+	class IGpuPixelManager final {
+		void *instance;
+		const IGpuPixelManagerVTable *vTable;
+
+	public:
+		IGpuPixelManager() = default;
+		IGpuPixelManager(const IGpuPixelManager &) = default;
+		IGpuPixelManager(IGpuPixelManager &&) = default;
+		IGpuPixelManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		IGpuPixelManager(void *instance, const IGpuPixelManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<IGpuPixelManagerImpl T>
+		IGpuPixelManager(T &instance) : instance(&instance), vTable(&IGpuPixelManagerVTable::value<T>) {}
+
+		template<IGpuPixelManagerImpl T>
+		IGpuPixelManager(T *instance) : instance(instance), vTable(&IGpuPixelManagerVTable::value<T>) {}
+
+		IGpuPixelManager &operator=(const IGpuPixelManager &) = default;
+		IGpuPixelManager &operator=(IGpuPixelManager &&) = default;
+
+		IGpuPixelManager &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<IGpuPixelManagerImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		operator IPixelManager() { return IPixelManager(instance, vTable); }
+		operator IGpuTextureManager() { return IGpuTextureManager(instance, &vTable->IGpuTextureManagervTable); }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		void SetEvaluator(IEvaluator *evaluator) {
+			return vTable->SetEvaluator(instance, evaluator);
+		}
+
+		void UsePixelPipeline(PixelPipeline *pipeline) {
+			return vTable->UsePixelPipeline(instance, pipeline);
+		}
+
+		void GetPixelData(void *data, PixelPipeline::Stage stage) {
+			return vTable->GetPixelData(instance, data, stage);
+		}
+
+		void SetImmediateTarget(const HRLocation &location) {
+			return vTable->SetImmediateTarget(instance, location);
+		}
+
+		void SetResolution(GRInt width, GRInt height) {
+			return vTable->SetResolution(instance, width, height);
+		}
+
+		void InvalidatePixels() {
+			return vTable->InvalidatePixels(instance);
+		}
+
+		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
+			return vTable->UpdateRelativeCoordinates(instance, differenceX, differenceY);
+		}
+
+		void Update() {
+			return vTable->Update(instance);
+		}
+
+		void ActivateGpu(IGraphics graphics) {
+			return vTable->IGpuTextureManagervTable.ActivateGpu(instance, graphics);
+		}
+
+		void DeactivateGpu(bool cleanup = true) {
+			return vTable->IGpuTextureManagervTable.DeactivateGpu(instance, cleanup);
+		}
+
+		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) {
+			return vTable->IGpuTextureManagervTable.SetTextureUploadPoint(instance, uploadPoint);
+		}
+
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) {
+			return vTable->IGpuTextureManagervTable.GetTextureMappings(instance, location);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+
 	class IRasterizingInterface;
 
 	template<typename T>
@@ -334,3 +735,7 @@ namespace Imagina {
 		using _IIG_IsInterface = void;
 	};
 }
+
+#ifdef __INTELLISENSE__
+#undef interface
+#endif

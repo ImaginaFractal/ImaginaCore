@@ -6,9 +6,9 @@ namespace Imagina {
 	HRLocation NavigationController::GetRenderLocation() {
 		return renderLocation;
 	}
-	void NavigationController::SetPixelManager(IPixelManager *pixelManager) {
+	void NavigationController::SetPixelManager(IPixelManager pixelManager) {
 		this->pixelManager = pixelManager;
-		pixelManager->SetImmediateTarget(immediateTarget);
+		pixelManager.SetImmediateTarget(immediateTarget);
 	}
     void NavigationController::SetLocationManager(ILocationManager *locationManager) {
 		this->locationManager = locationManager;
@@ -81,7 +81,7 @@ namespace Imagina {
 			}
 		}
 		if (immediateTargetChanged) {
-			if (pixelManager) pixelManager->SetImmediateTarget(immediateTarget);
+			if (pixelManager) pixelManager.SetImmediateTarget(immediateTarget);
 			if (locationManager) {
 				//if (immediateTarget.HalfHeight > ) TODO
 				locationManager->LocationChanged(immediateTarget);

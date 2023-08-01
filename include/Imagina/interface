@@ -1,0 +1,8 @@
+#pragma once
+
+namespace Imagina {
+	template <typename T>
+	concept IsInterface = requires {
+		typename T::_IIG_IsInterface;
+	};
+}

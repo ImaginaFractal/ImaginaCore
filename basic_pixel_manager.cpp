@@ -184,12 +184,6 @@ namespace Imagina {
 		delete (BasicRasterizingInterface *)Interface;
 	}
 
-	template<>
-	IRasterizerVTable IRasterizerVTable::value<BasicPixelManager> = IRasterizerVTable::OfType<BasicPixelManager>();
-
-	template<>
-	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<BasicRasterizingInterface> = IRasterizingInterfaceVTable::OfType<BasicRasterizingInterface>();
-
 	bool BasicRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
 		size_t i = pixelManager->i++;
 		if (i >= pixelManager->pixelCount) return false;
@@ -233,4 +227,13 @@ namespace Imagina {
 
 		pixelManager->finalProcessor->Process(finalOutput, preprocessedOutput);
 	}
+
+	template<>
+	IGpuPixelManagerVTable IGpuPixelManagerVTable::value<BasicPixelManager> = IGpuPixelManagerVTable::OfType<BasicPixelManager>();
+
+	template<>
+	IRasterizerVTable IRasterizerVTable::value<BasicPixelManager> = IRasterizerVTable::OfType<BasicPixelManager>();
+
+	template<>
+	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<BasicRasterizingInterface> = IRasterizingInterfaceVTable::OfType<BasicRasterizingInterface>();
 }

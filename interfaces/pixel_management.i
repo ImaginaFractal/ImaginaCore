@@ -1,5 +1,11 @@
-#include <concepts>
+#include <stdint.h>
+#include <vector>
 #include <Imagina/types>
+#include <Imagina/pixel_processing>
+
+#ifdef __INTELLISENSE__
+#define interface class
+#endif
 
 namespace Imagina {
 	struct _GpuTexture;
@@ -12,6 +18,38 @@ namespace Imagina {
 		void SetTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels);
 		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels);
 	};
+	
+	struct TextureMapping {
+		GpuTexture Texture;
+		GRRectangle TextureRectangle;
+		HRRectangle FractalRectangle;
+	};
+
+	interface IPixelManager {
+		void SetEvaluator(IEvaluator *evaluator);
+		void UsePixelPipeline(PixelPipeline *pipeline);
+		void GetPixelData(void *data, PixelPipeline::Stage stage); // TODO: Add invertY
+		// Interface generator doesn't support overloading yet
+		//void GetPixelData(void *data, PixelPipeline::Stage stage, const char *field); // TODO: Add invertY
+
+		void SetImmediateTarget(const HRLocation &location);
+		void SetResolution(GRInt width, GRInt height);
+		void InvalidatePixels();
+
+		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void Update();
+	};
+
+	interface IGpuTextureManager {
+		void ActivateGpu(IGraphics graphics);
+		void DeactivateGpu(bool cleanup = true);
+
+		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
+
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location); // Return type may change
+	};
+
+	interface IGpuPixelManager : IPixelManager, IGpuTextureManager {};
 
 	interface IRasterizingInterface {
 		bool GetPixel(HRReal &x, HRReal &y);
@@ -27,3 +65,7 @@ namespace Imagina {
 		void FreeRasterizingInterface(IRasterizingInterface Interface);
 	};
 }
+
+#ifdef __INTELLISENSE__
+#undef interface
+#endif

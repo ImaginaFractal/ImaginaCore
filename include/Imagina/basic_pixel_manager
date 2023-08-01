@@ -9,7 +9,7 @@
 
 namespace Imagina {
 	class BasicRasterizingInterface;
-	class im_export BasicPixelManager : public IGpuPixelManager {
+	class BasicPixelManager {
 		friend class BasicRasterizingInterface;
 		GRInt width = 0, height = 0;
 		size_t pixelCount;
@@ -40,24 +40,24 @@ namespace Imagina {
 		void Initialize();
 
 	public:
-		virtual void ActivateGpu(IGraphics graphics) override;
-		virtual void DeactivateGpu(bool cleanup = true) override;
+		void ActivateGpu(IGraphics graphics);
+		void DeactivateGpu(bool cleanup = true);
 
-		virtual void UsePixelPipeline(PixelPipeline *pipeline) override;
-		virtual void GetPixelData(void *data, PixelPipeline::Stage stage) override;
-		virtual void GetPixelData(void *data, PixelPipeline::Stage stage, const char *field) override;
+		void UsePixelPipeline(PixelPipeline *pipeline);
+		void GetPixelData(void *data, PixelPipeline::Stage stage);
+		void GetPixelData(void *data, PixelPipeline::Stage stage, const char *field);
 
-		virtual void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint) override;
+		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
 
-		virtual void SetEvaluator(IEvaluator *evaluator) override;
-		virtual void SetImmediateTarget(const HRLocation &location) override;
-		virtual void SetResolution(GRInt width, GRInt height) override;
-		virtual void InvalidatePixels() override;
+		void SetEvaluator(IEvaluator *evaluator);
+		void SetImmediateTarget(const HRLocation &location);
+		void SetResolution(GRInt width, GRInt height);
+		void InvalidatePixels();
 
-		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) override;
-		virtual void Update() override;
+		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void Update();
 
-		virtual std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location) override;
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
 
 		void Cancel();
 		void CancelAndWait();

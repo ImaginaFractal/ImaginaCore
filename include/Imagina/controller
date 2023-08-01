@@ -1,13 +1,14 @@
 #pragma once
 #include "types"
 #include "declarations"
+#include "pixel_management"
 
 namespace Imagina {
 	class IController {
 	public:
 		virtual HRLocation GetRenderLocation() = 0;
 
-		virtual void SetPixelManager(IPixelManager *pixelManager) = 0;
+		virtual void SetPixelManager(IPixelManager pixelManager) = 0;
 		virtual void SetLocationManager(ILocationManager *locationManager) = 0;
 
 		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) = 0;
@@ -21,7 +22,7 @@ namespace Imagina {
 		HRLocation renderLocation = HRLocation(0.0, 0.0, 2.0);
 		HRLocation immediateTarget = HRLocation(0.0, 0.0, 2.0);
 
-		IPixelManager *pixelManager = nullptr;
+		IPixelManager pixelManager = nullptr;
 		ILocationManager *locationManager = nullptr;
 
 		bool zooming = false;
@@ -30,7 +31,7 @@ namespace Imagina {
 	public:
 		virtual HRLocation GetRenderLocation() override;
 
-		virtual void SetPixelManager(IPixelManager *pixelManager) override;
+		virtual void SetPixelManager(IPixelManager pixelManager) override;
 		virtual void SetLocationManager(ILocationManager *locationManager) override;
 
 		virtual void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) override;

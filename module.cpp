@@ -69,7 +69,7 @@ namespace Imagina {
 		{
 			.Name = "BasicPixelManager",
 			.DisplayName = "Basic Pixel Manager",
-			.Create = [](const char *)->void *{ return new BasicPixelManager; },
+			.Create = [](const char *)->void *{ return new IGpuPixelManager(*new BasicPixelManager); }, // FIXME
 			.Type = ComponentType::PixelManager,
 		},
 		{
