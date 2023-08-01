@@ -2,6 +2,121 @@
 #include <Imagina/types>
 
 namespace Imagina {
+	struct _GpuTexture;
+	using GpuTexture = _GpuTexture *;
+
+	class IGraphics;
+
+	template<typename T>
+	concept IGraphicsImpl = requires {
+		{&T::CreateTexture}->std::convertible_to<GpuTexture (T:: *)()>;
+		{&T::DeleteTexture}->std::convertible_to<void (T:: *)(GpuTexture texture)>;
+		{&T::SetTextureImage}->std::convertible_to<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>;
+		{&T::UpdateTextureImage}->std::convertible_to<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>;
+		requires !std::is_same_v<T, IGraphics>;
+	};
+
+	template<IGraphicsImpl T>
+	void _IIG_IGraphics_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<IGraphicsImpl T>
+	GpuTexture _IIG_IGraphics_CreateTexture(void *instance) {
+		return ((T *)instance)->T::CreateTexture();
+	}
+
+	template<IGraphicsImpl T>
+	void _IIG_IGraphics_DeleteTexture(void *instance, GpuTexture texture) {
+		return ((T *)instance)->T::DeleteTexture(texture);
+	}
+
+	template<IGraphicsImpl T>
+	void _IIG_IGraphics_SetTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels) {
+		return ((T *)instance)->T::SetTextureImage(texture, width, height, pixels);
+	}
+
+	template<IGraphicsImpl T>
+	void _IIG_IGraphics_UpdateTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels) {
+		return ((T *)instance)->T::UpdateTextureImage(texture, width, height, pixels);
+	}
+
+	struct IGraphicsVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
+		GpuTexture (*CreateTexture)(void *instance);
+		void (*DeleteTexture)(void *instance, GpuTexture texture);
+		void (*SetTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels);
+		void (*UpdateTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels);
+
+		template<IGraphicsImpl T>
+		static IGraphicsVTable OfType(void (*release)(void *instance) = _IIG_IGraphics_Release<T>) {
+			IGraphicsVTable result;
+			result.Release = release;
+			result.CreateTexture = _IIG_IGraphics_CreateTexture<T>;
+			result.DeleteTexture = _IIG_IGraphics_DeleteTexture<T>;
+			result.SetTextureImage = _IIG_IGraphics_SetTextureImage<T>;
+			result.UpdateTextureImage = _IIG_IGraphics_UpdateTextureImage<T>;
+
+			return result;
+		}
+
+		template<IGraphicsImpl T>
+		static IGraphicsVTable value;
+	};
+
+	class IGraphics {
+		void *instance;
+		const IGraphicsVTable *vTable;
+
+	public:
+		IGraphics() = default;
+		IGraphics(const IGraphics &) = default;
+		IGraphics(IGraphics &&) = default;
+		IGraphics(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		IGraphics(void *instance, const IGraphicsVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<IGraphicsImpl T>
+		IGraphics(T &instance) : instance(&instance), vTable(&IGraphicsVTable::value<T>) {}
+
+		template<IGraphicsImpl T>
+		IGraphics(T *instance) : instance(instance), vTable(&IGraphicsVTable::value<T>) {}
+
+		IGraphics &operator=(const IGraphics &) = default;
+		IGraphics &operator=(IGraphics &&) = default;
+
+		IGraphics &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<IGraphicsImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		GpuTexture CreateTexture() {
+			return vTable->CreateTexture(instance);
+		}
+
+		void DeleteTexture(GpuTexture texture) {
+			return vTable->DeleteTexture(instance, texture);
+		}
+
+		void SetTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) {
+			return vTable->SetTextureImage(instance, texture, width, height, pixels);
+		}
+
+		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) {
+			return vTable->UpdateTextureImage(instance, texture, width, height, pixels);
+		}
+	};
+
 	class IRasterizingInterface;
 
 	template<typename T>

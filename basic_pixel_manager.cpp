@@ -51,15 +51,15 @@ namespace Imagina {
 		initialized = true;
 	}
 
-	void BasicPixelManager::ActivateGpu(IGraphics *graphics) {
+	void BasicPixelManager::ActivateGpu(IGraphics graphics) {
 		this->graphics = graphics;
 
-		gpuTexture = graphics->CreateTexture();
+		gpuTexture = graphics.CreateTexture();
 	}
 
 	void BasicPixelManager::DeactivateGpu(bool cleanup) {
 		if (cleanup && graphics) {
-			graphics->DeleteTexture(gpuTexture);
+			graphics.DeleteTexture(gpuTexture);
 		}
 
 		graphics = nullptr;
@@ -146,7 +146,7 @@ namespace Imagina {
 			}
 		}
 		if (gpuTexture && gpuTextureUploadPoint != PixelPipeline::None) {
-			graphics->SetTextureImage(gpuTexture, width, height, finalPixels);
+			graphics.SetTextureImage(gpuTexture, width, height, finalPixels);
 		}
 	}
 
