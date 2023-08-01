@@ -40,12 +40,20 @@ std::string_view TrimWhitespace(std::string_view string) {
 struct Identifier {
 	std::string_view Type;
 	std::string_view Name;
+	std::string_view Value;
 };
 
 Identifier ParseDeclaration(std::string_view declaration) {
 	Identifier result;
 
+	size_t equalSignPos = declaration.find('=');
+	if (equalSignPos != std::string_view::npos) {
+		result.Value = TrimWhitespace(declaration.substr(equalSignPos + 1));
+		declaration = declaration.substr(0, equalSignPos);
+	}
+
 	declaration = TrimWhitespace(declaration);
+
 	size_t nameBegin = declaration.size();
 	while (nameBegin > 0 && IsAlphaNumeric(declaration[nameBegin - 1])) nameBegin--;
 
@@ -194,8 +202,17 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	}
 	stream << "requires {\n";
 	for (const Function &function : functions) {
-		stream << indentation << "\t{&T::" << function.Name << "}->std::convertible_to<"
-			<< function.ReturnType << "(T:: *)(" << function.ParameterList << ")>;\n";
+		stream << indentation << "\t{&T::" << function.Name << "}->std::convertible_to<" << function.ReturnType << "(T:: *)(";
+			//<< function.ParameterList << ")>;\n";
+
+		if (!function.Parameters.empty()) {
+			stream << function.Parameters.front().Type << function.Parameters.front().Name;
+			for (auto iterator = function.Parameters.begin() + 1; iterator != function.Parameters.end(); ++iterator) {
+				const Identifier &parameter = *iterator;
+				stream << ", " << parameter.Type << parameter.Name;
+			}
+		}
+		stream << ")>;\n";
 	}
 	stream << indentation << "\trequires !std::is_same_v<T, " << name << ">;\n";
 	stream << indentation << "};\n\n";
@@ -238,8 +255,12 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 
 	for (const Function &function : functions) {
 		stream << indentation << '\t' << function.ReturnType << "(*" << function.Name << ")(void *instance";
-		if (!function.Parameters.empty()) stream << ", ";
-		stream << function.ParameterList << ");\n";
+		//if (!function.Parameters.empty()) stream << ", ";
+		//stream << function.ParameterList << ");\n";
+		for (const Identifier &parameter : function.Parameters) {
+			stream << ", " << parameter.Type << parameter.Name;
+		}
+		stream << ");\n";
 	}
 	stream << '\n';
 
