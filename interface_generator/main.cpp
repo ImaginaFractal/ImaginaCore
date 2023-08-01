@@ -6,7 +6,8 @@
 #include <unordered_map>
 
 class SyntaxError : std::exception {
-	virtual char const *what() const {
+public:
+	virtual char const *what() const noexcept {
 		return "Syntax error";
 	}
 };

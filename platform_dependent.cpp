@@ -35,7 +35,7 @@ namespace Imagina {
 	}
 
 	void *GetSymbol(void *handle, const char *name) {
-		return GetProcAddress((HMODULE)handle, name);
+		return (void *)GetProcAddress((HMODULE)handle, name);
 	}
 }
 
