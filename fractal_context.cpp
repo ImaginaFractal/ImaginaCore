@@ -3,22 +3,6 @@
 #include "location_manager"
 
 namespace Imagina {
-	void FractalContext::UseController(IController controller) {
-		Controller = controller;
-	}
-	void FractalContext::UsePixelManager(IPixelManager pixelManager) {
-		PixelManager = pixelManager;
-	}
-	void FractalContext::UsePixelManager(IGpuPixelManager pixelManager) {
-		PixelManager = pixelManager;
-		GpuTextureManager = pixelManager;
-	}
-	void FractalContext::UseEvaluator(IEvaluator *evaluator) {
-		Evaluator = evaluator;
-	}
-	void FractalContext::UseLocationManager(ILocationManager *locationManager) {
-		LocationManager = locationManager;
-	}
 	void FractalContext::Link() {
 		assert(Controller);
 		assert(PixelManager);

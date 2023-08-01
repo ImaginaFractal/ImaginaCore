@@ -15,12 +15,6 @@ namespace Imagina {
 
 		std::function<void(HRReal, HRReal)> OnReferenceChange;
 
-		void UseController(IController controller);
-		void UsePixelManager(IPixelManager pixelManager);
-		void UsePixelManager(IGpuPixelManager pixelManager);
-		void UseEvaluator(IEvaluator *evaluator);
-		void UseLocationManager(ILocationManager *locationManager);
-
 		void Link();
 
 		//void SetImmediateTarget(const HRLocation &location);
