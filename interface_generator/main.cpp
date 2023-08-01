@@ -172,14 +172,13 @@ void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation,
 		}
 	}
 	for (const Function &function : interface.functions) {
-		stream << '\n';
 		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
 		stream << indentation << "\t\treturn vTable->" << vTable << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", " << parameter.Name;
 		}
 		stream << ");\n";
-		stream << indentation << "\t}\n";
+		stream << indentation << "\t}\n\n";
 	}
 }
 
@@ -196,26 +195,27 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 
 	// Concept
 	stream << indentation << "template<typename T>\n";
-	stream << indentation << "concept " << ImplName << " = ";
+	stream << indentation << "concept " << ImplName << " = !Imagina::IsInterface<T>";
 	for (Interface *base : interface.Bases) {
-		stream << base->name << "Impl<T> && ";
+		stream << " && " << base->name << "Impl<T>";
 	}
-	stream << "requires {\n";
-	for (const Function &function : functions) {
-		stream << indentation << "\t{&T::" << function.Name << "}->std::convertible_to<" << function.ReturnType << "(T:: *)(";
-			//<< function.ParameterList << ")>;\n";
+	if (!functions.empty()) {
+		stream << " && requires {\n";
+		for (const Function &function : functions) {
+			stream << indentation << "\tstatic_cast<" << function.ReturnType << "(T:: *)(";
 
-		if (!function.Parameters.empty()) {
-			stream << function.Parameters.front().Type << function.Parameters.front().Name;
-			for (auto iterator = function.Parameters.begin() + 1; iterator != function.Parameters.end(); ++iterator) {
-				const Identifier &parameter = *iterator;
-				stream << ", " << parameter.Type << parameter.Name;
+			if (!function.Parameters.empty()) {
+				stream << function.Parameters.front().Type << function.Parameters.front().Name;
+				for (auto iterator = function.Parameters.begin() + 1; iterator != function.Parameters.end(); ++iterator) {
+					const Identifier &parameter = *iterator;
+					stream << ", " << parameter.Type << parameter.Name;
+				}
 			}
+			stream << ")>(&T::" << function.Name << ");\n";
 		}
-		stream << ")>;\n";
+		stream << indentation << '}';
 	}
-	stream << indentation << "\trequires !std::is_same_v<T, " << name << ">;\n";
-	stream << indentation << "};\n\n";
+	stream << ";\n\n";
 
 	// Wrappers
 	stream << indentation << "template<" << ImplName << " T>\n";
@@ -289,7 +289,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "};\n\n";
 
 	// Interface
-	stream << indentation << "class " << name << " {\n";
+	stream << indentation << "class " << name << " final {\n";
 	stream << indentation << "\tvoid *instance;\n";
 	stream << indentation << "\tconst " << VTableName << " *vTable;\n\n";
 
@@ -333,12 +333,14 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 
 	stream << indentation << "\tvoid Release() {\n";
 	stream << indentation << "\t\tvTable->Release(instance);\n";
-	stream << indentation << "\t}\n";
+	stream << indentation << "\t}\n\n";
 
 	{
 		std::unordered_set<std::string_view> visitedBases;
 		GenerateMemberFunctions(stream, indentation, "", interface, visitedBases);
 	}
+
+	stream << indentation << "\tusing _IIG_IsInterface = void;\n";
 	stream << indentation << "};";
 
 }
@@ -502,6 +504,9 @@ int main(int argc, char **argv) {
 	std::ofstream fstream(argv[1], std::ios::out);
 
 	Tokenizer tokenizer(source);
+
+	fstream << "#pragma once\n";
+	fstream << "#include <Imagina/interface>\n";
 
 	size_t unprocessedBegin = 0;
 	while (Token token = tokenizer.Get()) {

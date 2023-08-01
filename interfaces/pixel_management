@@ -1,3 +1,5 @@
+#pragma once
+#include <Imagina/interface>
 #include <concepts>
 #include <Imagina/types>
 
@@ -8,12 +10,11 @@ namespace Imagina {
 	class IGraphics;
 
 	template<typename T>
-	concept IGraphicsImpl = requires {
-		{&T::CreateTexture}->std::convertible_to<GpuTexture (T:: *)()>;
-		{&T::DeleteTexture}->std::convertible_to<void (T:: *)(GpuTexture texture)>;
-		{&T::SetTextureImage}->std::convertible_to<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>;
-		{&T::UpdateTextureImage}->std::convertible_to<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>;
-		requires !std::is_same_v<T, IGraphics>;
+	concept IGraphicsImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<GpuTexture (T:: *)()>(&T::CreateTexture);
+		static_cast<void (T:: *)(GpuTexture texture)>(&T::DeleteTexture);
+		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>(&T::SetTextureImage);
+		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>(&T::UpdateTextureImage);
 	};
 
 	template<IGraphicsImpl T>
@@ -66,7 +67,7 @@ namespace Imagina {
 		static IGraphicsVTable value;
 	};
 
-	class IGraphics {
+	class IGraphics final {
 		void *instance;
 		const IGraphicsVTable *vTable;
 
@@ -115,17 +116,18 @@ namespace Imagina {
 		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) {
 			return vTable->UpdateTextureImage(instance, texture, width, height, pixels);
 		}
-	};
 
+		using _IIG_IsInterface = void;
+	};
+	
 	class IRasterizingInterface;
 
 	template<typename T>
-	concept IRasterizingInterfaceImpl = requires {
-		{&T::GetPixel}->std::convertible_to<bool (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::GetDdx}->std::convertible_to<void (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::GetDdy}->std::convertible_to<void (T:: *)(HRReal &x, HRReal &y)>;
-		{&T::WriteResults}->std::convertible_to<void (T:: *)(void *value)>;
-		requires !std::is_same_v<T, IRasterizingInterface>;
+	concept IRasterizingInterfaceImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<bool (T:: *)(HRReal &x, HRReal &y)>(&T::GetPixel);
+		static_cast<void (T:: *)(HRReal &x, HRReal &y)>(&T::GetDdx);
+		static_cast<void (T:: *)(HRReal &x, HRReal &y)>(&T::GetDdy);
+		static_cast<void (T:: *)(void *value)>(&T::WriteResults);
 	};
 
 	template<IRasterizingInterfaceImpl T>
@@ -178,7 +180,7 @@ namespace Imagina {
 		static IRasterizingInterfaceVTable value;
 	};
 
-	class IRasterizingInterface {
+	class IRasterizingInterface final {
 		void *instance;
 		const IRasterizingInterfaceVTable *vTable;
 
@@ -227,16 +229,17 @@ namespace Imagina {
 		void WriteResults(void *value) {
 			return vTable->WriteResults(instance, value);
 		}
+
+		using _IIG_IsInterface = void;
 	};
 
 	class IRasterizer;
 
 	template<typename T>
-	concept IRasterizerImpl = requires {
-		{&T::Cancel}->std::convertible_to<void (T:: *)()>;
-		{&T::GetRasterizingInterface}->std::convertible_to<IRasterizingInterface (T:: *)()>;
-		{&T::FreeRasterizingInterface}->std::convertible_to<void (T:: *)(IRasterizingInterface Interface)>;
-		requires !std::is_same_v<T, IRasterizer>;
+	concept IRasterizerImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<void (T:: *)()>(&T::Cancel);
+		static_cast<IRasterizingInterface (T:: *)()>(&T::GetRasterizingInterface);
+		static_cast<void (T:: *)(IRasterizingInterface Interface)>(&T::FreeRasterizingInterface);
 	};
 
 	template<IRasterizerImpl T>
@@ -282,7 +285,7 @@ namespace Imagina {
 		static IRasterizerVTable value;
 	};
 
-	class IRasterizer {
+	class IRasterizer final {
 		void *instance;
 		const IRasterizerVTable *vTable;
 
@@ -327,5 +330,7 @@ namespace Imagina {
 		void FreeRasterizingInterface(IRasterizingInterface Interface) {
 			return vTable->FreeRasterizingInterface(instance, Interface);
 		}
+
+		using _IIG_IsInterface = void;
 	};
 }
