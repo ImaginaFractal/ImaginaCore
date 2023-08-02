@@ -5,4 +5,10 @@ namespace Imagina {
 	concept IsInterface = requires {
 		typename T::_IIG_IsInterface;
 	};
+
+	class IAny {
+	public:
+		void *instance;
+		const void *vTable;
+	};
 }

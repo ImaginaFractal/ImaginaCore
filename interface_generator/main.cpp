@@ -42,7 +42,24 @@ struct Identifier {
 	std::string_view Type;
 	std::string_view Name;
 	std::string_view Value;
+	bool IsIncompleteInterface;
 };
+
+struct Function {
+	std::string_view ReturnType;
+	std::string_view Name;
+	std::string_view ParameterList;
+	std::vector<Identifier> Parameters;
+};
+
+struct Interface {
+	std::string_view name;
+	std::vector<Interface *> Bases;
+	std::vector<Function> functions;
+};
+
+std::unordered_map<std::string_view, Interface> Interfaces;
+std::unordered_set<std::string_view> IncompleteInterfaces;
 
 Identifier ParseDeclaration(std::string_view declaration) {
 	Identifier result;
@@ -51,6 +68,8 @@ Identifier ParseDeclaration(std::string_view declaration) {
 	if (equalSignPos != std::string_view::npos) {
 		result.Value = TrimWhitespace(declaration.substr(equalSignPos + 1));
 		declaration = declaration.substr(0, equalSignPos);
+	} else {
+		result.Value = std::string_view();
 	}
 
 	declaration = TrimWhitespace(declaration);
@@ -65,15 +84,10 @@ Identifier ParseDeclaration(std::string_view declaration) {
 
 	if (result.Type.empty() || result.Name.empty() || !IsLetterOrUnderscore(result.Name[0])) throw std::invalid_argument("declaration");
 
+	result.IsIncompleteInterface = IncompleteInterfaces.find(TrimWhitespace(result.Type)) != IncompleteInterfaces.end();
+
 	return result;
 }
-
-struct Function {
-	std::string_view ReturnType;
-	std::string_view Name;
-	std::string_view ParameterList;
-	std::vector<Identifier> Parameters;
-};
 
 Function ParseFunction(std::string_view declaration) {
 	declaration = TrimWhitespace(declaration);
@@ -107,14 +121,6 @@ Function ParseFunction(std::string_view declaration) {
 
 	return result;
 }
-
-struct Interface {
-	std::string_view name;
-	std::vector<Interface *> Bases;
-	std::vector<Function> functions;
-};
-
-std::unordered_map<std::string_view, Interface> Interfaces;
 
 void GenerateSecondaryUpcasts(std::ostream &stream, std::string_view indentation, std::string_view vTable, const Interface &interface, std::unordered_set<std::string_view> &visitedBases) {
 	bool inserted = visitedBases.insert(interface.name).second;
@@ -173,10 +179,26 @@ void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation,
 		}
 	}
 	for (const Function &function : interface.functions) {
-		stream << indentation << "\t" << function.ReturnType << function.Name << '(' << function.ParameterList << ") {\n";
+		stream << indentation << "\t" << function.ReturnType << function.Name << '(';// << function.ParameterList << ") {\n";
+		if (!function.Parameters.empty()) for (auto iterator = function.Parameters.begin();;) {
+			if (iterator->IsIncompleteInterface) {
+				stream << "const " << iterator->Type << "&";
+			} else {
+				stream << iterator->Type;
+			}
+			stream << iterator->Name;
+			if (!iterator->Value.empty()) {
+				stream << " = " << iterator->Value;
+			}
+			if (++iterator == function.Parameters.end()) break;
+			stream << ", ";
+		}
+		stream << ") {\n";
 		stream << indentation << "\t\treturn vTable->" << vTable << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
-			stream << ", " << parameter.Name;
+			stream << ", ";
+			if (parameter.IsIncompleteInterface) stream << "(IAny &)";
+			stream << parameter.Name;
 		}
 		stream << ");\n";
 		stream << indentation << "\t}\n\n";
@@ -227,10 +249,21 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	for (const Function &function : functions) {
 		stream << indentation << "template<" << ImplName << " T>\n";
 		stream << indentation << function.ReturnType << "_IIG_" << name << '_' << function.Name << "(void *instance";
-		if (!function.Parameters.empty()) stream << ", ";
-		stream << function.ParameterList << ") {\n";
+		for (const Identifier &parameter : function.Parameters) {
+			stream << ", ";
+			if (parameter.IsIncompleteInterface) {
+				stream << "IAny ";
+			} else {
+				stream << parameter.Type;
+			}
+			stream << parameter.Name;
+		}
+		stream << ") {\n";
 		stream << indentation << "\treturn ((T *)instance)->T::" << function.Name << '(';
 		if (!function.ParameterList.empty()) for (auto iterator = function.Parameters.begin();;) {
+			if (iterator->IsIncompleteInterface) {
+				stream << "(const " << iterator->Type << "&)";
+			}
 			stream << iterator->Name;
 			if (++iterator == function.Parameters.end()) break;
 			stream << ", ";
@@ -259,7 +292,13 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 		//if (!function.Parameters.empty()) stream << ", ";
 		//stream << function.ParameterList << ");\n";
 		for (const Identifier &parameter : function.Parameters) {
-			stream << ", " << parameter.Type << parameter.Name;
+			stream << ", ";
+			if (parameter.IsIncompleteInterface) {
+				stream << "IAny ";
+			} else {
+				stream << parameter.Type;
+			}
+			stream << parameter.Name;
 		}
 		stream << ");\n";
 	}
@@ -468,6 +507,11 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 	interface.name = token.content;
 
 	token = tokenizer.Get();
+	if (token.content == ";") {
+		output << "class " << interface.name << ";";
+		if (Interfaces.find(interface.name) == Interfaces.end()) IncompleteInterfaces.insert(interface.name);
+		return;
+	}
 	if (token.content == ":") do {
 		token = tokenizer.Get();
 		if (!token || !IsLetterOrUnderscore(token.content[0])) throw SyntaxError();
@@ -491,6 +535,7 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 	if (tokenizer.Get().content != ";") throw SyntaxError();
 
 	Interfaces.emplace(interface.name, interface);
+	IncompleteInterfaces.erase(interface.name);
 
 	GenerateCode(output, indentation, interface);
 }
