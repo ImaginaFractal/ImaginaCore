@@ -34,8 +34,10 @@ add_custom_target(Interfaces DEPENDS
 )
 
 FILE (GLOB SourceFiles "*.cpp")
-add_library (ImaginaCore SHARED ${SourceFiles} "interfaces/pixel_management")
+add_library (ImaginaCore SHARED ${SourceFiles})
 target_link_libraries (ImaginaCore PRIVATE ImaginaCommon)
+
+add_dependencies (ImaginaCore Interfaces)
 
 target_include_directories (ImaginaCore PRIVATE "include/Imagina")
 target_include_directories (ImaginaCore SYSTEM PUBLIC "include")
