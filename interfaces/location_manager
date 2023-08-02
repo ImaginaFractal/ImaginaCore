@@ -5,6 +5,8 @@
 #include <Imagina/declarations>
 
 namespace Imagina {
+	class IEvaluator;
+
 	using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
 
 	class ILocationManager;
@@ -12,7 +14,7 @@ namespace Imagina {
 	template<typename T>
 	concept ILocationManagerImpl = !Imagina::IsInterface<T> && requires {
 		static_cast<void (T:: *)(pCoordinateUpdateCallback callback, void *data)>(&T::SetCoordinateUpdateCallback);
-		static_cast<void (T:: *)(IEvaluator *evaluator)>(&T::SetEvaluator);
+		static_cast<void (T:: *)(IEvaluator evaluator)>(&T::SetEvaluator);
 		static_cast<void (T:: *)(const HRLocation &location)>(&T::LocationChanged);
 	};
 
@@ -22,13 +24,13 @@ namespace Imagina {
 	}
 
 	template<ILocationManagerImpl T>
-	void _IIG_ILocationManager_SetCoordinateUpdateCallback(void *instance, pCoordinateUpdateCallback callback, void *data = nullptr) {
+	void _IIG_ILocationManager_SetCoordinateUpdateCallback(void *instance, pCoordinateUpdateCallback callback, void *data) {
 		return ((T *)instance)->T::SetCoordinateUpdateCallback(callback, data);
 	}
 
 	template<ILocationManagerImpl T>
-	void _IIG_ILocationManager_SetEvaluator(void *instance, IEvaluator *evaluator) {
-		return ((T *)instance)->T::SetEvaluator(evaluator);
+	void _IIG_ILocationManager_SetEvaluator(void *instance, IAny evaluator) {
+		return ((T *)instance)->T::SetEvaluator((const IEvaluator &)evaluator);
 	}
 
 	template<ILocationManagerImpl T>
@@ -41,7 +43,7 @@ namespace Imagina {
 		void (*Release)(void *instance);
 
 		void (*SetCoordinateUpdateCallback)(void *instance, pCoordinateUpdateCallback callback, void *data);
-		void (*SetEvaluator)(void *instance, IEvaluator *evaluator);
+		void (*SetEvaluator)(void *instance, IAny evaluator);
 		void (*LocationChanged)(void *instance, const HRLocation &location);
 
 		template<ILocationManagerImpl T>
@@ -97,8 +99,8 @@ namespace Imagina {
 			return vTable->SetCoordinateUpdateCallback(instance, callback, data);
 		}
 
-		void SetEvaluator(IEvaluator *evaluator) {
-			return vTable->SetEvaluator(instance, evaluator);
+		void SetEvaluator(const IEvaluator &evaluator) {
+			return vTable->SetEvaluator(instance, (IAny &)evaluator);
 		}
 
 		void LocationChanged(const HRLocation &location) {

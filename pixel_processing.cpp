@@ -111,8 +111,8 @@ namespace Imagina {
 		}
 	}
 
-	void PixelPipeline::UseEvaluator(IEvaluator *evaluator) {
-		outputs[0] = evaluator->GetOutputInfo();
+	void PixelPipeline::UseEvaluator(IEvaluator evaluator) {
+		outputs[0] = evaluator.GetOutputInfo();
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
 		stages[1] = processor;

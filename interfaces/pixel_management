@@ -11,6 +11,8 @@
 #endif
 
 namespace Imagina {
+	class IEvaluator;
+
 	struct _GpuTexture;
 	using GpuTexture = _GpuTexture *;
 
@@ -137,7 +139,7 @@ namespace Imagina {
 
 	template<typename T>
 	concept IPixelManagerImpl = !Imagina::IsInterface<T> && requires {
-		static_cast<void (T:: *)(IEvaluator *evaluator)>(&T::SetEvaluator);
+		static_cast<void (T:: *)(IEvaluator evaluator)>(&T::SetEvaluator);
 		static_cast<void (T:: *)(PixelPipeline *pipeline)>(&T::UsePixelPipeline);
 		static_cast<void (T:: *)(void *data, PixelPipeline::Stage stage)>(&T::GetPixelData);
 		static_cast<void (T:: *)(const HRLocation &location)>(&T::SetImmediateTarget);
@@ -153,8 +155,8 @@ namespace Imagina {
 	}
 
 	template<IPixelManagerImpl T>
-	void _IIG_IPixelManager_SetEvaluator(void *instance, IEvaluator *evaluator) {
-		return ((T *)instance)->T::SetEvaluator(evaluator);
+	void _IIG_IPixelManager_SetEvaluator(void *instance, IAny evaluator) {
+		return ((T *)instance)->T::SetEvaluator((const IEvaluator &)evaluator);
 	}
 
 	template<IPixelManagerImpl T>
@@ -196,7 +198,7 @@ namespace Imagina {
 		void *reserved = nullptr; // Must be null
 		void (*Release)(void *instance);
 
-		void (*SetEvaluator)(void *instance, IEvaluator *evaluator);
+		void (*SetEvaluator)(void *instance, IAny evaluator);
 		void (*UsePixelPipeline)(void *instance, PixelPipeline *pipeline);
 		void (*GetPixelData)(void *instance, void *data, PixelPipeline::Stage stage);
 		void (*SetImmediateTarget)(void *instance, const HRLocation &location);
@@ -259,8 +261,8 @@ namespace Imagina {
 			vTable->Release(instance);
 		}
 
-		void SetEvaluator(IEvaluator *evaluator) {
-			return vTable->SetEvaluator(instance, evaluator);
+		void SetEvaluator(const IEvaluator &evaluator) {
+			return vTable->SetEvaluator(instance, (IAny &)evaluator);
 		}
 
 		void UsePixelPipeline(PixelPipeline *pipeline) {
@@ -315,7 +317,7 @@ namespace Imagina {
 	}
 
 	template<IGpuTextureManagerImpl T>
-	void _IIG_IGpuTextureManager_DeactivateGpu(void *instance, bool cleanup = true) {
+	void _IIG_IGpuTextureManager_DeactivateGpu(void *instance, bool cleanup) {
 		return ((T *)instance)->T::DeactivateGpu(cleanup);
 	}
 
@@ -470,8 +472,8 @@ namespace Imagina {
 			vTable->Release(instance);
 		}
 
-		void SetEvaluator(IEvaluator *evaluator) {
-			return vTable->SetEvaluator(instance, evaluator);
+		void SetEvaluator(const IEvaluator &evaluator) {
+			return vTable->SetEvaluator(instance, (IAny &)evaluator);
 		}
 
 		void UsePixelPipeline(PixelPipeline *pipeline) {

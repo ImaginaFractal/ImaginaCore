@@ -13,20 +13,24 @@ add_custom_command(
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager" "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
+	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator" "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
 	DEPENDS InterfaceGenerator
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
 	OUTPUT
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
+		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
 )
 
 add_custom_target(Interfaces DEPENDS
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
+	"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
 )
 
 FILE (GLOB SourceFiles "*.cpp")

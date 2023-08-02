@@ -1,0 +1,231 @@
+#pragma once
+#include <concepts>
+#include <Imagina/interface>
+#include <Imagina/types>
+#include <Imagina/computation>
+#include <Imagina/pixel_processing>
+#include <Imagina/evaluator.h>
+#include "pixel_management"
+
+#ifdef __INTELLISENSE__
+#define interface class
+#endif
+
+namespace Imagina {
+	struct StandardEvaluationParameters : _StandardEvaluationParameters {
+		StandardEvaluationParameters() : _StandardEvaluationParameters{
+			.Iterations = 1024,
+			.DivergentEscapeRadius = 0x1.0p8,
+			.ConvergentEscapeRadius = 0x1.0p-16,
+		} {}
+	};
+
+	class IEvaluator;
+
+	template<typename T>
+	concept IEvaluatorImpl = !Imagina::IsInterface<T> && requires {
+		static_cast<const PixelDataInfo *(T:: *)()>(&T::GetOutputInfo);
+		static_cast<void (T:: *)(const StandardEvaluationParameters &parameters)>(&T::SetEvaluationParameters);
+		static_cast<bool (T:: *)()>(&T::Ready);
+		static_cast<ExecutionContext *(T:: *)(const HRCircle &circle, IRasterizer rasterizer)>(&T::RunEvaluation);
+	};
+
+	template<IEvaluatorImpl T>
+	void _IIG_IEvaluator_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<IEvaluatorImpl T>
+	const PixelDataInfo *_IIG_IEvaluator_GetOutputInfo(void *instance) {
+		return ((T *)instance)->T::GetOutputInfo();
+	}
+
+	template<IEvaluatorImpl T>
+	void _IIG_IEvaluator_SetEvaluationParameters(void *instance, const StandardEvaluationParameters &parameters) {
+		return ((T *)instance)->T::SetEvaluationParameters(parameters);
+	}
+
+	template<IEvaluatorImpl T>
+	bool _IIG_IEvaluator_Ready(void *instance) {
+		return ((T *)instance)->T::Ready();
+	}
+
+	template<IEvaluatorImpl T>
+	ExecutionContext *_IIG_IEvaluator_RunEvaluation(void *instance, const HRCircle &circle, IRasterizer rasterizer) {
+		return ((T *)instance)->T::RunEvaluation(circle, rasterizer);
+	}
+
+	struct IEvaluatorVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
+		const PixelDataInfo *(*GetOutputInfo)(void *instance);
+		void (*SetEvaluationParameters)(void *instance, const StandardEvaluationParameters &parameters);
+		bool (*Ready)(void *instance);
+		ExecutionContext *(*RunEvaluation)(void *instance, const HRCircle &circle, IRasterizer rasterizer);
+
+		template<IEvaluatorImpl T>
+		static IEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_IEvaluator_Release<T>) {
+			IEvaluatorVTable result;
+			result.Release = release;
+			result.GetOutputInfo = _IIG_IEvaluator_GetOutputInfo<T>;
+			result.SetEvaluationParameters = _IIG_IEvaluator_SetEvaluationParameters<T>;
+			result.Ready = _IIG_IEvaluator_Ready<T>;
+			result.RunEvaluation = _IIG_IEvaluator_RunEvaluation<T>;
+
+			return result;
+		}
+
+		template<IEvaluatorImpl T>
+		static IEvaluatorVTable value;
+	};
+
+	class IEvaluator final {
+		void *instance;
+		const IEvaluatorVTable *vTable;
+
+	public:
+		IEvaluator() = default;
+		IEvaluator(const IEvaluator &) = default;
+		IEvaluator(IEvaluator &&) = default;
+		IEvaluator(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		IEvaluator(void *instance, const IEvaluatorVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<IEvaluatorImpl T>
+		IEvaluator(T &instance) : instance(&instance), vTable(&IEvaluatorVTable::value<T>) {}
+
+		template<IEvaluatorImpl T>
+		IEvaluator(T *instance) : instance(instance), vTable(&IEvaluatorVTable::value<T>) {}
+
+		IEvaluator &operator=(const IEvaluator &) = default;
+		IEvaluator &operator=(IEvaluator &&) = default;
+
+		IEvaluator &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<IEvaluatorImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		const PixelDataInfo *GetOutputInfo() {
+			return vTable->GetOutputInfo(instance);
+		}
+
+		void SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+			return vTable->SetEvaluationParameters(instance, parameters);
+		}
+
+		bool Ready() {
+			return vTable->Ready(instance);
+		}
+
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) {
+			return vTable->RunEvaluation(instance, circle, rasterizer);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+
+	class StandardEvaluator;
+
+	template<typename T>
+	concept StandardEvaluatorImpl = !Imagina::IsInterface<T> && IEvaluatorImpl<T> && requires {
+		static_cast<void (T:: *)(const HPReal &x, const HPReal &y, HRReal radius)>(&T::SetReferenceLocation);
+	};
+
+	template<StandardEvaluatorImpl T>
+	void _IIG_StandardEvaluator_Release(void *instance) {
+		delete (T *)instance;
+	}
+
+	template<StandardEvaluatorImpl T>
+	void _IIG_StandardEvaluator_SetReferenceLocation(void *instance, const HPReal &x, const HPReal &y, HRReal radius) {
+		return ((T *)instance)->T::SetReferenceLocation(x, y, radius);
+	}
+
+	struct StandardEvaluatorVTable : IEvaluatorVTable {
+		void (*SetReferenceLocation)(void *instance, const HPReal &x, const HPReal &y, HRReal radius);
+
+		template<StandardEvaluatorImpl T>
+		static StandardEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_StandardEvaluator_Release<T>) {
+			StandardEvaluatorVTable result;
+			(IEvaluatorVTable &)result = IEvaluatorVTable::OfType<T>(release);
+			result.SetReferenceLocation = _IIG_StandardEvaluator_SetReferenceLocation<T>;
+
+			return result;
+		}
+
+		template<StandardEvaluatorImpl T>
+		static StandardEvaluatorVTable value;
+	};
+
+	class StandardEvaluator final {
+		void *instance;
+		const StandardEvaluatorVTable *vTable;
+
+	public:
+		StandardEvaluator() = default;
+		StandardEvaluator(const StandardEvaluator &) = default;
+		StandardEvaluator(StandardEvaluator &&) = default;
+		StandardEvaluator(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+
+		StandardEvaluator(void *instance, const StandardEvaluatorVTable *vTable) : instance(instance), vTable(vTable) {}
+
+		template<StandardEvaluatorImpl T>
+		StandardEvaluator(T &instance) : instance(&instance), vTable(&StandardEvaluatorVTable::value<T>) {}
+
+		template<StandardEvaluatorImpl T>
+		StandardEvaluator(T *instance) : instance(instance), vTable(&StandardEvaluatorVTable::value<T>) {}
+
+		StandardEvaluator &operator=(const StandardEvaluator &) = default;
+		StandardEvaluator &operator=(StandardEvaluator &&) = default;
+
+		StandardEvaluator &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		bool operator==(std::nullptr_t) { return instance == nullptr; }
+		bool operator!=(std::nullptr_t) { return instance != nullptr; }
+
+		operator bool() { return instance != nullptr; }
+
+		template<StandardEvaluatorImpl T>
+		explicit operator T *() { return (T *)instance; }
+
+		operator IEvaluator() { return IEvaluator(instance, vTable); }
+
+		void Release() {
+			vTable->Release(instance);
+		}
+
+		const PixelDataInfo *GetOutputInfo() {
+			return vTable->GetOutputInfo(instance);
+		}
+
+		void SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
+			return vTable->SetEvaluationParameters(instance, parameters);
+		}
+
+		bool Ready() {
+			return vTable->Ready(instance);
+		}
+
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) {
+			return vTable->RunEvaluation(instance, circle, rasterizer);
+		}
+
+		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
+			return vTable->SetReferenceLocation(instance, x, y, radius);
+		}
+
+		using _IIG_IsInterface = void;
+	};
+}
+
+#ifdef __INTELLISENSE__
+#undef interface
+#endif

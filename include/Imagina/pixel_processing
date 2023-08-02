@@ -146,7 +146,7 @@ namespace Imagina {
 
 		bool Equivalent(Stage a, Stage b) { return outputs[a] == outputs[b]; }
 		
-		void UseEvaluator(IEvaluator *evaluator);
+		void UseEvaluator(IEvaluator evaluator);
 
 		void UsePreprocessor(IPixelProcessor *processor);
 		void UsePostprocessor(IPixelProcessor *processor);

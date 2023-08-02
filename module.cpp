@@ -50,11 +50,11 @@ namespace Imagina {
 			switch (Info.ProxyType) {
 				case ProxyType::LowPrecisionEvaluator: {
 					auto functionTable = (ImCApi::LowPrecisionEvaluatorFunctionTable *)Info.FunctionTable;
-					return new LowPrecisionEvaluatorProxy((ImCApi::IEvaluator *)Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->evaluate);
+					return new LowPrecisionEvaluatorProxy((ImCApi::IEvaluator )Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->evaluate);
 				}
 				case ProxyType::SimpleEvaluator: {
 					auto functionTable = (ImCApi::SimpleEvaluatorFunctionTable *)Info.FunctionTable;
-					return new SimpleEvaluatorProxy((ImCApi::IEvaluator *)Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->setReferenceLocationAndPrecompute, functionTable->evaluate);
+					return new SimpleEvaluatorProxy((ImCApi::IEvaluator )Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->setReferenceLocationAndPrecompute, functionTable->evaluate);
 				}
 				default: return nullptr;
 			}

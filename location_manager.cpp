@@ -8,9 +8,10 @@ namespace Imagina {
 		callbackData = data;
 	}
 
-	void StandardLocationManager::SetEvaluator(IEvaluator *evaluator) {
+	void StandardLocationManager::SetEvaluator(IEvaluator evaluator) {
 		this->evaluator = evaluator;
-		static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, 2.0); // TEMPORARY
+		// FIXME: Cast
+		reinterpret_cast<StandardEvaluator &>(evaluator).SetReferenceLocation(referenceX, referenceY, 2.0); // TEMPORARY
 	}
 
 	void StandardLocationManager::LocationChanged(const HRLocation &location) {
@@ -24,7 +25,8 @@ namespace Imagina {
 			referenceX += location.X;
 			referenceY += location.Y;
 			// FIXME: Calculate radius correctly
-			static_cast<StandardEvaluator *>(evaluator)->SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
+			// FIXME: Cast
+			reinterpret_cast<StandardEvaluator &>(evaluator).SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
 			//if (OnReferenceChange) OnReferenceChange(-location.X, -location.Y);
 			if (coordinateUpdateCallback) coordinateUpdateCallback(callbackData, -location.X, -location.Y);
 		}

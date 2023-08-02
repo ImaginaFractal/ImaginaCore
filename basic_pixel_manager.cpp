@@ -30,7 +30,7 @@ namespace Imagina {
 
 		preprocessor = pixelPipeline->GetPreprocessor();
 		if (!preprocessor) {
-			copyProcessor.SetInput(evaluator->GetOutputInfo());
+			copyProcessor.SetInput(evaluator.GetOutputInfo());
 			preprocessor = &copyProcessor;
 		}
 
@@ -100,7 +100,7 @@ namespace Imagina {
 		gpuTextureUploadPoint = uploadPoint;
 	}
 
-	void BasicPixelManager::SetEvaluator(IEvaluator *evaluator) {
+	void BasicPixelManager::SetEvaluator(IEvaluator evaluator) {
 		this->evaluator = evaluator;
 		valid = false;
 	}
@@ -137,10 +137,10 @@ namespace Imagina {
 			//evaluator->Evaluate(*this);
 			if (executionContext) CancelAndWait();
 
-			if (evaluator->Ready()) {
+			if (evaluator.Ready()) {
 				i = 0;
 				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-				executionContext = evaluator->RunEvaluation(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
+				executionContext = evaluator.RunEvaluation(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
 
 				valid = true;
 			}

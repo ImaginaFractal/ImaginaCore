@@ -6,6 +6,7 @@
 #include "types"
 #include "pixel_management"
 #include "computation" // TODO: Replace with declarations
+#include "evaluator"
 
 namespace Imagina {
 	class BasicRasterizingInterface;
@@ -18,7 +19,7 @@ namespace Imagina {
 		IGraphics graphics = nullptr;
 		GpuTexture gpuTexture = nullptr;
 		PixelPipeline::Stage gpuTextureUploadPoint = PixelPipeline::Stage::Colorized;
-		IEvaluator *evaluator = nullptr;
+		IEvaluator evaluator = nullptr;
 
 		HRLocation location;
 
@@ -49,7 +50,7 @@ namespace Imagina {
 
 		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
 
-		void SetEvaluator(IEvaluator *evaluator);
+		void SetEvaluator(IEvaluator evaluator);
 		void SetImmediateTarget(const HRLocation &location);
 		void SetResolution(GRInt width, GRInt height);
 		void InvalidatePixels();

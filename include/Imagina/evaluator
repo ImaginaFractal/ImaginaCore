@@ -5,33 +5,10 @@
 #include "computation" // TODO: Use declarations instead
 #include "pixel_processing"
 #include "evaluator.h"
+#include "../../interfaces/evaluator"
 
 namespace Imagina {
-	class IEvaluator { // TODO: virtual void PrepareFor(const HRCircle &circle) = 0;
-	public:
-		virtual ~IEvaluator() = default;
-
-		virtual const PixelDataInfo *GetOutputInfo() = 0;
-		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) = 0; // TEMPORARY
-
-		virtual bool Ready() = 0;
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) = 0;
-	};
-
-	struct StandardEvaluationParameters : _StandardEvaluationParameters {
-		StandardEvaluationParameters() : _StandardEvaluationParameters{
-			.Iterations = 1024,
-			.DivergentEscapeRadius = 0x1.0p8,
-			.ConvergentEscapeRadius = 0x1.0p-16,
-		} {}
-	};
-
-	class StandardEvaluator : public IEvaluator {
-	public:
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) = 0; // TEMPORARY
-	};
-
-	class im_export SimpleEvaluator : public StandardEvaluator {
+	class im_export SimpleEvaluator {
 		class EvaluationTask;
 
 		ExecutionContext *precomputeExecutionContext = nullptr;
@@ -45,16 +22,16 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
-		virtual bool Ready() override final;
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) override final;
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
-		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
+		bool Ready();
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
+		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
+		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
 		virtual void Precompute() = 0;
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
 	};
 
-	class im_export LowPrecisionEvaluator : public StandardEvaluator {
+	class im_export LowPrecisionEvaluator {
 		class LPRasterizingInterface;
 		class EvaluationTask;
 		friend struct IRasterizingInterfaceVTable;
@@ -66,10 +43,10 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
-		virtual bool Ready() override final;
-		virtual ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) override final;
-		virtual void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) override final;
-		virtual void SetEvaluationParameters(const StandardEvaluationParameters &parameters) override;
+		bool Ready();
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
+		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
+		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
 	};
@@ -88,7 +65,7 @@ namespace Imagina {
 		//SRComplex referenceC;
 
 	public:
-		virtual const PixelDataInfo *GetOutputInfo() override;
+		const PixelDataInfo *GetOutputInfo();
 
 		virtual void Precompute() override;
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) override;
@@ -102,7 +79,7 @@ namespace Imagina {
 		};
 
 	public:
-		virtual const PixelDataInfo *GetOutputInfo() override;
+		const PixelDataInfo *GetOutputInfo();
 
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) override;
 	};

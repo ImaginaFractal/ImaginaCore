@@ -7,7 +7,7 @@
 #include "multi-precision.h"
 #include "pixel_processing.h"
 #include "evaluator.h"
-
+#if false
 #ifdef __cplusplus
 extern "C" namespace ImCApi {
 	//using namespace Imagina;
@@ -22,15 +22,15 @@ im_export bool RasterizingInterface_GetPixel(IRasterizingInterface *rasterizingI
 
 im_export void RasterizingInterface_WriteResults(IRasterizingInterface *rasterizingInterface, void *value);
 
-typedef void (*pIEvaluator_Release)(IEvaluator *instance);
-typedef const Imagina::PixelDataInfo *(*pIEvaluator_GetOutputInfo)(IEvaluator *instance);
+typedef void (*pIEvaluator_Release)(IEvaluator instance);
+typedef const Imagina::PixelDataInfo *(*pIEvaluator_GetOutputInfo)(IEvaluator instance);
 
-typedef void (*pComplexEvaluator_SetEvaluationParameters)(IEvaluator *instance, const Imagina::StandardEvaluationParameters *parameters);
+typedef void (*pComplexEvaluator_SetEvaluationParameters)(IEvaluator instance, const Imagina::StandardEvaluationParameters *parameters);
 
-typedef void (*pSimpleEvaluator_Evaluate)(IEvaluator *instance, IRasterizingInterface *rasterizingInterface);
-typedef void (*pSimpleEvaluator_SetReferenceLocationAndPrecompute)(IEvaluator *instance, const Imagina::HPReal *x, const Imagina::HPReal *y, Imagina::HRReal radius);
+typedef void (*pSimpleEvaluator_Evaluate)(IEvaluator instance, IRasterizingInterface *rasterizingInterface);
+typedef void (*pSimpleEvaluator_SetReferenceLocationAndPrecompute)(IEvaluator instance, const Imagina::HPReal *x, const Imagina::HPReal *y, Imagina::HRReal radius);
 
-typedef void (*pLowPrecisionEvaluator_Evaluate)(IEvaluator *instance, IRasterizingInterface *rasterizingInterface);
+typedef void (*pLowPrecisionEvaluator_Evaluate)(IEvaluator instance, IRasterizingInterface *rasterizingInterface);
 
 typedef struct {
 	ImCApi::pIEvaluator_GetOutputInfo getOutputInfo;
@@ -47,4 +47,5 @@ typedef struct {
 
 #ifdef __cplusplus
 }
+#endif
 #endif
