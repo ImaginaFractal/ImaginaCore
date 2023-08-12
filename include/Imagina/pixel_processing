@@ -11,52 +11,63 @@ namespace Imagina {
 	enum class PixelDataType : uint32_t {
 		Invalid = 0x0,
 
+		VectorSizeMask = 0xF000'0000,
+		Vector2 = 0x1000'0000,
+		Vector3 = 0x2000'0000,
+		Vector4 = 0x3000'0000,
+
 		// Integer
+		// Signed
 		Int8 = 0x10000,
 		Int16,
 		Int32,
 		Int64,
 
+		// Unsigned
 		UInt8 = 0x10010,
 		UInt16,
 		UInt32,
 		UInt64,
 
 		// Fixed point
-		Fract8 = 0x20000, // Same as UInt, but binary point is before MSB
+		// Fractional part, unsigned integers normalized to [0, 1) (divided by 2^bits)
+		Fract8 = 0x20000,
 		Fract16,
 		Fract32,
 		Fract64,
 
+		// Color, unsigned integers normalized to [0, 1] (divided by 2^bits - 1)
+		Monochrome8 = 0x30000,
+		Monochrome16,
+
 		// Floating point
-		Float16 = 0x30000, // Reserved
+		Float16 = 0x40000, // Reserved
 		Float32,
 		Float64,
 		FloatHR,
 
-		// Complex
-		SRComplex = 0x40000,
-		HRComplex,
 
-		// Color
-		Monochrome8 = 0x80000,
-		Monochrome16,
 
-		RGB8 = 0x80010,
-		RGB16,
+		RG8 = Vector2 | Monochrome8,
+		RG16 = Vector2 | Monochrome16,
 
-		RGB16F = 0x80018,
-		RGB32F,
+		RGB8 = Vector3 | Monochrome8,
+		RGB16 = Vector3 | Monochrome16,
+		
+		RGBA8 = Vector4 | Monochrome8,
+		RGBA16 = Vector4 | Monochrome16,
 
-		RGBA8 = 0x80020,
-		RGBA16,
+		RGB16F = Vector3 | Float16,
+		RGB32F = Vector3 | Float32,
 
-		RGBA16F = 0x80028,
-		RGBA32F,
-
+		RGBA16F = Vector4 | Float16,
+		RGBA32F = Vector4 | Float32,
 
 		SRReal = Float64,
 		HRReal = FloatHR,
+
+		SRComplex = Vector2 | SRReal,
+		HRComplex = Vector2 | HRReal,
 	};
 
 	struct FieldInfo {
