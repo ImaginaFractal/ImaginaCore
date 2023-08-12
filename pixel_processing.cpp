@@ -210,4 +210,51 @@ namespace Imagina {
 
 		*(double *)output = Iterations;
 	}
+
+	PaletteLookup::PaletteLookup(const RGBA *palette, size_t paletteSize) : paletteSize(paletteSize) {
+		RGBA *temp = new RGBA[paletteSize];
+		memcpy(temp, palette, paletteSize * sizeof(RGBA));
+		this->palette = temp;
+	}
+
+	PaletteLookup::~PaletteLookup() {
+		delete[]palette;
+	}
+
+	void PaletteLookup::SetInput(const PixelDataInfo *info) {
+		inputField = info->FindField("Value");
+
+		assert(inputField);
+		assert(inputField->IsScalar());
+	}
+
+	const PixelDataInfo *PaletteLookup::GetOutputInfo() {
+		static const FieldInfo OutputFields[1]{
+			{ "Color", 0, PixelDataType::RGBA32F }
+		};
+
+		static const PixelDataInfo OutputInfo{
+			16, 1, OutputFields
+		};
+
+		return &OutputInfo;
+	}
+
+	void PaletteLookup::Process(void *output, void *input) const {
+		SRReal value = inputField->GetScalar<SRReal>(input);
+
+		value *= valueMultiplier;
+		value += valueOffset;
+
+		value -= floor(value);
+		value *= paletteSize;
+
+		size_t index1 = floor(value);
+		size_t index2 = index1 + 1;
+		if (index2 == paletteSize) index2 = 0;
+
+		value -= floor(value);
+
+		*(RGBA *)output = lerp(palette[index1], palette[index2], (GRReal)value);
+	}
 }

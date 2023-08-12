@@ -2,6 +2,7 @@
 
 #include "declarations"
 #include "platform_dependent"
+#include "types"
 #include <cstdint>
 #include <initializer_list>
 #include <cassert>
@@ -295,6 +296,24 @@ namespace Imagina {
 		ptrdiff_t finalZOffset;
 
 	public:
+		virtual void SetInput(const PixelDataInfo *info) override;
+		virtual const PixelDataInfo *GetOutputInfo() override;
+		virtual void Process(void *output, void *input) const override;
+	};
+
+	class im_export PaletteLookup : public IPixelProcessor {
+		const FieldInfo *inputField;
+		const RGBA *palette;
+		size_t paletteSize;
+
+	public:
+		SRReal valueMultiplier = 0x1p-8;
+		SRReal valueOffset = 0.0;
+
+		PaletteLookup(const RGBA *palette, size_t paletteSize);
+
+		virtual ~PaletteLookup() override;
+
 		virtual void SetInput(const PixelDataInfo *info) override;
 		virtual const PixelDataInfo *GetOutputInfo() override;
 		virtual void Process(void *output, void *input) const override;
