@@ -137,8 +137,8 @@ namespace Imagina {
 			case PixelDataType::Monochrome16:	return GetField<uint16_t>	(base, Offset) / 0xFFFFp0;
 
 			//case PixelDataType::Float16:		not supported yet
-			case PixelDataType::Float32:		return GetField<float>		(base, Offset) * 0x1p-16;
-			case PixelDataType::Float64:		return GetField<double>		(base, Offset) * 0x1p-32;
+			case PixelDataType::Float32:		return GetField<float>		(base, Offset);
+			case PixelDataType::Float64:		return GetField<double>		(base, Offset);
 			//case PixelDataType::FloatHR:		not supported yet
 
 			default: return T(); // FIXME
