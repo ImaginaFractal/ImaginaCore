@@ -24,7 +24,7 @@ namespace Imagina {
 		size_t ModuleID;
 		//std::string_view ModuleID;
 		//Module *Module;
-		void *Create();
+		IAny Create();
 	};
 	struct Module {
 		ModuleInfo Info;
@@ -43,7 +43,7 @@ namespace Imagina {
 	//std::unordered_map<std::string_view, Module> Modules;
 	//std::unordered_map<std::string, Component> Components;
 
-	void *Component::Create() {
+	IAny Component::Create() {
 #if false
 		if (Info.Flags & ComponentFlag::UseCApi) {
 			if (!Info.FunctionTable) return nullptr;
@@ -69,13 +69,13 @@ namespace Imagina {
 		{
 			.Name = "BasicPixelManager",
 			.DisplayName = "Basic Pixel Manager",
-			.Create = [](const char *)->void *{ return new IGpuPixelManager(*new BasicPixelManager); }, // FIXME
+			.Create = [](const char *)->IAny { return IGpuPixelManager(*new BasicPixelManager); }, // FIXME
 			.Type = ComponentType::PixelManager,
 		},
 		{
 			.Name = "IMPLite",
 			.DisplayName = "IMP Lite",
-			.Create = [](const char *)->void *{ return (void *)&IMPLite; },
+			.Create = [](const char *)->IAny { return IAny((void *)&IMPLite); },
 			.Type = ComponentType::MultiPrecision,
 		},
 	};
@@ -157,7 +157,7 @@ namespace Imagina {
 		for (size_t i = 0; i < ModuleExtensionList.size(); i++) {
 			size_t id = ModuleExtensionList[i];
 
-			IModuleExtension *moduleExtension = (IModuleExtension *)Components[id].Create(); // FIXME: release
+			IModuleExtension *moduleExtension = (IModuleExtension *)(void *)Components[id].Create(); // FIXME: release
 			while (const ModuleInfo *info = moduleExtension->GetNextModule()) {
 				AddModule(info, nullptr);
 			}
@@ -199,10 +199,10 @@ namespace Imagina {
 		return Components[id].Info;
 	}
 
-	void *CreateComponent(size_t id) {
+	IAny CreateComponent(size_t id) {
 		assert(id != 0 && id < Components.size());
 		return Components[id].Create();
 	}
-	void *CreateComponent(std::string_view fullName)	{ return CreateComponent(GetComponent(fullName)); }
-	void *CreateComponent(ComponentType type)			{ return CreateComponent(GetComponent(type)); }
+	IAny CreateComponent(std::string_view fullName)	{ return CreateComponent(GetComponent(fullName)); }
+	IAny CreateComponent(ComponentType type)		{ return CreateComponent(GetComponent(type)); }
 }

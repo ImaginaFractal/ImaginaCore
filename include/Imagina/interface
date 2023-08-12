@@ -2,7 +2,7 @@
 
 namespace Imagina {
 	template <typename T>
-	concept IsInterface = requires {
+	concept Interface = requires {
 		typename T::_IIG_IsInterface;
 	};
 
@@ -10,5 +10,15 @@ namespace Imagina {
 	public:
 		void *instance;
 		const void *vTable;
+
+		IAny() = default;
+		IAny(const IAny &) = default;
+		IAny(IAny &&) = default;
+		//IAny(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+		explicit IAny(void *pointer) : instance(pointer), vTable(nullptr) {}
+
+		IAny(void *instance, const void *vTable) : instance(instance), vTable(vTable) {}
+
+		operator void *() { return instance; }
 	};
 }

@@ -218,7 +218,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 
 	// Concept
 	stream << indentation << "template<typename T>\n";
-	stream << indentation << "concept " << ImplName << " = !Imagina::IsInterface<T>";
+	stream << indentation << "concept " << ImplName << " = !Imagina::Interface<T>";
 	for (Interface *base : interface.Bases) {
 		stream << " && " << base->name << "Impl<T>";
 	}
@@ -339,7 +339,8 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << '\t' << name << '(' << name << " &&) = default;\n";
 	stream << indentation << '\t' << name << "(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}\n\n";
 
-	stream << indentation << '\t' << name << "(void *instance, const " << VTableName << " *vTable) : instance(instance), vTable(vTable) {}\n\n";
+	stream << indentation << '\t' << name << "(void *instance, const " << VTableName << " *vTable) : instance(instance), vTable(vTable) {}\n";
+	stream << indentation << '\t' << name << "(IAny any) : instance(any.instance), vTable((" << VTableName << " *)any.vTable) {}\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
@@ -354,6 +355,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "\tbool operator==(std::nullptr_t) { return instance == nullptr; }\n";
 	stream << indentation << "\tbool operator!=(std::nullptr_t) { return instance != nullptr; }\n\n";
 
+	stream << indentation << "\toperator IAny() { return IAny(instance, vTable); }\n";
 	stream << indentation << "\toperator bool() { return instance != nullptr; }\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";

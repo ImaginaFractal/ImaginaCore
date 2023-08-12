@@ -9,7 +9,7 @@ namespace Imagina {
 	class IController;
 
 	template<typename T>
-	concept IControllerImpl = !Imagina::IsInterface<T> && requires {
+	concept IControllerImpl = !Imagina::Interface<T> && requires {
 		static_cast<HRLocation (T:: *)()>(&T::GetRenderLocation);
 		static_cast<void (T:: *)(IPixelManager pixelManager)>(&T::SetPixelManager);
 		static_cast<void (T:: *)(ILocationManager locationManager)>(&T::SetLocationManager);
@@ -85,6 +85,7 @@ namespace Imagina {
 		IController(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IController(void *instance, const IControllerVTable *vTable) : instance(instance), vTable(vTable) {}
+		IController(IAny any) : instance(any.instance), vTable((IControllerVTable *)any.vTable) {}
 
 		template<IControllerImpl T>
 		IController(T &instance) : instance(&instance), vTable(&IControllerVTable::value<T>) {}
@@ -99,6 +100,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IControllerImpl T>

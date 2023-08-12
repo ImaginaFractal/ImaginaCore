@@ -12,7 +12,7 @@ namespace Imagina {
 	class ILocationManager;
 
 	template<typename T>
-	concept ILocationManagerImpl = !Imagina::IsInterface<T> && requires {
+	concept ILocationManagerImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)(pCoordinateUpdateCallback callback, void *data)>(&T::SetCoordinateUpdateCallback);
 		static_cast<void (T:: *)(IEvaluator evaluator)>(&T::SetEvaluator);
 		static_cast<void (T:: *)(const HRLocation &location)>(&T::LocationChanged);
@@ -72,6 +72,7 @@ namespace Imagina {
 		ILocationManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		ILocationManager(void *instance, const ILocationManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+		ILocationManager(IAny any) : instance(any.instance), vTable((ILocationManagerVTable *)any.vTable) {}
 
 		template<ILocationManagerImpl T>
 		ILocationManager(T &instance) : instance(&instance), vTable(&ILocationManagerVTable::value<T>) {}
@@ -86,6 +87,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<ILocationManagerImpl T>

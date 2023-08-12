@@ -19,7 +19,7 @@ namespace Imagina {
 	class IGraphics;
 
 	template<typename T>
-	concept IGraphicsImpl = !Imagina::IsInterface<T> && requires {
+	concept IGraphicsImpl = !Imagina::Interface<T> && requires {
 		static_cast<GpuTexture (T:: *)()>(&T::CreateTexture);
 		static_cast<void (T:: *)(GpuTexture texture)>(&T::DeleteTexture);
 		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>(&T::SetTextureImage);
@@ -87,6 +87,7 @@ namespace Imagina {
 		IGraphics(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IGraphics(void *instance, const IGraphicsVTable *vTable) : instance(instance), vTable(vTable) {}
+		IGraphics(IAny any) : instance(any.instance), vTable((IGraphicsVTable *)any.vTable) {}
 
 		template<IGraphicsImpl T>
 		IGraphics(T &instance) : instance(&instance), vTable(&IGraphicsVTable::value<T>) {}
@@ -101,6 +102,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IGraphicsImpl T>
@@ -138,7 +140,7 @@ namespace Imagina {
 	class IPixelManager;
 
 	template<typename T>
-	concept IPixelManagerImpl = !Imagina::IsInterface<T> && requires {
+	concept IPixelManagerImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)(IEvaluator evaluator)>(&T::SetEvaluator);
 		static_cast<void (T:: *)(PixelPipeline *pipeline)>(&T::UsePixelPipeline);
 		static_cast<void (T:: *)(void *data, PixelPipeline::Stage stage)>(&T::GetPixelData);
@@ -238,6 +240,7 @@ namespace Imagina {
 		IPixelManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IPixelManager(void *instance, const IPixelManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+		IPixelManager(IAny any) : instance(any.instance), vTable((IPixelManagerVTable *)any.vTable) {}
 
 		template<IPixelManagerImpl T>
 		IPixelManager(T &instance) : instance(&instance), vTable(&IPixelManagerVTable::value<T>) {}
@@ -252,6 +255,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IPixelManagerImpl T>
@@ -299,7 +303,7 @@ namespace Imagina {
 	class IGpuTextureManager;
 
 	template<typename T>
-	concept IGpuTextureManagerImpl = !Imagina::IsInterface<T> && requires {
+	concept IGpuTextureManagerImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)(IGraphics graphics)>(&T::ActivateGpu);
 		static_cast<void (T:: *)(bool cleanup)>(&T::DeactivateGpu);
 		static_cast<void (T:: *)(PixelPipeline::Stage uploadPoint)>(&T::SetTextureUploadPoint);
@@ -367,6 +371,7 @@ namespace Imagina {
 		IGpuTextureManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IGpuTextureManager(void *instance, const IGpuTextureManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+		IGpuTextureManager(IAny any) : instance(any.instance), vTable((IGpuTextureManagerVTable *)any.vTable) {}
 
 		template<IGpuTextureManagerImpl T>
 		IGpuTextureManager(T &instance) : instance(&instance), vTable(&IGpuTextureManagerVTable::value<T>) {}
@@ -381,6 +386,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IGpuTextureManagerImpl T>
@@ -412,7 +418,7 @@ namespace Imagina {
 	class IGpuPixelManager;
 
 	template<typename T>
-	concept IGpuPixelManagerImpl = !Imagina::IsInterface<T> && IPixelManagerImpl<T> && IGpuTextureManagerImpl<T>;
+	concept IGpuPixelManagerImpl = !Imagina::Interface<T> && IPixelManagerImpl<T> && IGpuTextureManagerImpl<T>;
 
 	template<IGpuPixelManagerImpl T>
 	void _IIG_IGpuPixelManager_Release(void *instance) {
@@ -446,6 +452,7 @@ namespace Imagina {
 		IGpuPixelManager(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IGpuPixelManager(void *instance, const IGpuPixelManagerVTable *vTable) : instance(instance), vTable(vTable) {}
+		IGpuPixelManager(IAny any) : instance(any.instance), vTable((IGpuPixelManagerVTable *)any.vTable) {}
 
 		template<IGpuPixelManagerImpl T>
 		IGpuPixelManager(T &instance) : instance(&instance), vTable(&IGpuPixelManagerVTable::value<T>) {}
@@ -460,6 +467,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IGpuPixelManagerImpl T>
@@ -526,7 +534,7 @@ namespace Imagina {
 	class IRasterizingInterface;
 
 	template<typename T>
-	concept IRasterizingInterfaceImpl = !Imagina::IsInterface<T> && requires {
+	concept IRasterizingInterfaceImpl = !Imagina::Interface<T> && requires {
 		static_cast<bool (T:: *)(HRReal &x, HRReal &y)>(&T::GetPixel);
 		static_cast<void (T:: *)(HRReal &x, HRReal &y)>(&T::GetDdx);
 		static_cast<void (T:: *)(HRReal &x, HRReal &y)>(&T::GetDdy);
@@ -594,6 +602,7 @@ namespace Imagina {
 		IRasterizingInterface(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IRasterizingInterface(void *instance, const IRasterizingInterfaceVTable *vTable) : instance(instance), vTable(vTable) {}
+		IRasterizingInterface(IAny any) : instance(any.instance), vTable((IRasterizingInterfaceVTable *)any.vTable) {}
 
 		template<IRasterizingInterfaceImpl T>
 		IRasterizingInterface(T &instance) : instance(&instance), vTable(&IRasterizingInterfaceVTable::value<T>) {}
@@ -608,6 +617,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IRasterizingInterfaceImpl T>
@@ -639,7 +649,7 @@ namespace Imagina {
 	class IRasterizer;
 
 	template<typename T>
-	concept IRasterizerImpl = !Imagina::IsInterface<T> && requires {
+	concept IRasterizerImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)()>(&T::Cancel);
 		static_cast<IRasterizingInterface (T:: *)()>(&T::GetRasterizingInterface);
 		static_cast<void (T:: *)(IRasterizingInterface Interface)>(&T::FreeRasterizingInterface);
@@ -699,6 +709,7 @@ namespace Imagina {
 		IRasterizer(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IRasterizer(void *instance, const IRasterizerVTable *vTable) : instance(instance), vTable(vTable) {}
+		IRasterizer(IAny any) : instance(any.instance), vTable((IRasterizerVTable *)any.vTable) {}
 
 		template<IRasterizerImpl T>
 		IRasterizer(T &instance) : instance(&instance), vTable(&IRasterizerVTable::value<T>) {}
@@ -713,6 +724,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IRasterizerImpl T>

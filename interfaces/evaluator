@@ -23,7 +23,7 @@ namespace Imagina {
 	class IEvaluator;
 
 	template<typename T>
-	concept IEvaluatorImpl = !Imagina::IsInterface<T> && requires {
+	concept IEvaluatorImpl = !Imagina::Interface<T> && requires {
 		static_cast<const PixelDataInfo *(T:: *)()>(&T::GetOutputInfo);
 		static_cast<void (T:: *)(const StandardEvaluationParameters &parameters)>(&T::SetEvaluationParameters);
 		static_cast<bool (T:: *)()>(&T::Ready);
@@ -91,6 +91,7 @@ namespace Imagina {
 		IEvaluator(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		IEvaluator(void *instance, const IEvaluatorVTable *vTable) : instance(instance), vTable(vTable) {}
+		IEvaluator(IAny any) : instance(any.instance), vTable((IEvaluatorVTable *)any.vTable) {}
 
 		template<IEvaluatorImpl T>
 		IEvaluator(T &instance) : instance(&instance), vTable(&IEvaluatorVTable::value<T>) {}
@@ -105,6 +106,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<IEvaluatorImpl T>
@@ -136,7 +138,7 @@ namespace Imagina {
 	class StandardEvaluator;
 
 	template<typename T>
-	concept StandardEvaluatorImpl = !Imagina::IsInterface<T> && IEvaluatorImpl<T> && requires {
+	concept StandardEvaluatorImpl = !Imagina::Interface<T> && IEvaluatorImpl<T> && requires {
 		static_cast<void (T:: *)(const HPReal &x, const HPReal &y, HRReal radius)>(&T::SetReferenceLocation);
 	};
 
@@ -177,6 +179,7 @@ namespace Imagina {
 		StandardEvaluator(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
 		StandardEvaluator(void *instance, const StandardEvaluatorVTable *vTable) : instance(instance), vTable(vTable) {}
+		StandardEvaluator(IAny any) : instance(any.instance), vTable((StandardEvaluatorVTable *)any.vTable) {}
 
 		template<StandardEvaluatorImpl T>
 		StandardEvaluator(T &instance) : instance(&instance), vTable(&StandardEvaluatorVTable::value<T>) {}
@@ -191,6 +194,7 @@ namespace Imagina {
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
+		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
 		template<StandardEvaluatorImpl T>
