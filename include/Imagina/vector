@@ -1,0 +1,30 @@
+#pragma once
+
+namespace Imagina {
+	template<typename T>
+	struct Vector4 {
+		T x, y, z, w;
+
+		Vector4() = default;
+		Vector4(T x) : x(x), y(x), z(x), w(x) {}
+		Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+
+		Vector4 &operator+=(Vector4 a) { x += a.x; y += a.y; z += a.z; w += a.w; return *this; }
+		Vector4 &operator-=(Vector4 a) { x -= a.x; y -= a.y; z -= a.z; w -= a.w; return *this; }
+		Vector4 &operator*=(Vector4 a) { x *= a.x; y *= a.y; z *= a.z; w *= a.w; return *this; }
+		Vector4 &operator/=(Vector4 a) { x /= a.x; y /= a.y; z /= a.z; w /= a.w; return *this; }
+
+		Vector4 &operator*=(T a) { x *= a; y *= a; z *= a; w *= a; return *this; }
+		Vector4 &operator/=(T a) { x /= a; y /= a; z /= a; w /= a; return *this; }
+	};
+
+	template<typename T> Vector4<T> operator+(Vector4<T> a, const Vector4<T> &b) { return a += b; }
+	template<typename T> Vector4<T> operator-(Vector4<T> a, const Vector4<T> &b) { return a -= b; }
+	template<typename T> Vector4<T> operator*(Vector4<T> a, const Vector4<T> &b) { return a *= b; }
+	template<typename T> Vector4<T> operator/(Vector4<T> a, const Vector4<T> &b) { return a /= b; }
+
+	template<typename T> Vector4<T> operator*(Vector4<T> a, T b) { return a *= b; }
+	template<typename T> Vector4<T> operator/(Vector4<T> a, T b) { return a /= b; }
+
+	template<typename T> Vector4<T> operator*(T a, Vector4<T> b) { return b *= a; }
+}
