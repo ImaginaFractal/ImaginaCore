@@ -5,7 +5,6 @@
 #include "declarations.h"
 #include "types.h"
 #include "multi-precision.h"
-#include "pixel_processing.h"
 #include "evaluator.h"
 #if false
 #ifdef __cplusplus

@@ -6,53 +6,52 @@
 #include <initializer_list>
 #include <cassert>
 #include <cstring>
-#include "pixel_processing.h"
 
 namespace Imagina {
 	enum class PixelDataType : uint32_t {
-		Invalid = IM_PDT_Invalid,
+		Invalid = 0x0,
 
 		// Integer
-		Int8 = IM_PDT_Int8,
+		Int8 = 0x10000,
 		Int16,
 		Int32,
 		Int64,
 
-		UInt8 = IM_PDT_UInt8,
+		UInt8 = 0x10010,
 		UInt16,
 		UInt32,
 		UInt64,
 
 		// Fixed point
-		Fract8 = IM_PDT_Fract8, // Same as UInt, but binary point is before MSB
+		Fract8 = 0x20000, // Same as UInt, but binary point is before MSB
 		Fract16,
 		Fract32,
 		Fract64,
 
 		// Floating point
-		Float16 = IM_PDT_Float16, // Reserved
+		Float16 = 0x30000, // Reserved
 		Float32,
 		Float64,
 		FloatHR,
 
 		// Complex
-		SRComplex = IM_PDT_SRComplex,
+		SRComplex = 0x40000,
 		HRComplex,
 
 		// Color
-		Monochrome8 = IM_PDT_Monochrome8,
+		Monochrome8 = 0x80000,
 		Monochrome16,
 
-		RGB8 = IM_PDT_RGB8,
+		RGB8 = 0x80010,
 		RGB16,
 
-		RGB16F = IM_PDT_RGB16F,
+		RGB16F = 0x80018,
 		RGB32F,
 
-		RGBA8 = IM_PDT_RGBA8,
+		RGBA8 = 0x80020,
 		RGBA16,
 
-		RGBA16F = IM_PDT_RGBA16F,
+		RGBA16F = 0x80028,
 		RGBA32F,
 
 
@@ -60,7 +59,17 @@ namespace Imagina {
 		HRReal = FloatHR,
 	};
 
-	struct im_export PixelDataInfo : _PixelDataInfo {
+	struct FieldInfo {
+		const char *Name;
+		ptrdiff_t Offset;
+		PixelDataType Type;
+	};
+
+	struct im_export PixelDataInfo {
+		size_t Size;
+		size_t FieldCount;
+		const FieldInfo *Fields;
+
 		const FieldInfo *FindField(const char *name) const;
 	};
 
