@@ -198,9 +198,6 @@ namespace Imagina {
 
 		return &OutputInfo;
 	}
-	template<typename T> T &GetField(void *base, ptrdiff_t offset) {
-		return *(T *)((char *)base + offset);
-	}
 
 	void TestProcessor2::Process(void *output, void *input) const {
 		const SRComplex &finalZ = GetField<SRComplex>(input, finalZOffset);
