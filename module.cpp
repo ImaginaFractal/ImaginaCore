@@ -1,5 +1,4 @@
-#include "module"
-#include "platform_dependent"
+#include <Imagina/module>
 #include <unordered_map>
 #include <string_view>
 #include <string>
@@ -7,14 +6,15 @@
 #include <cassert>
 #include <filesystem>
 
-#include "imagina.h"
-#include "proxy"
-#include "module_extension"
+#include <Imagina/platform_dependent>
+#include <Imagina/imagina.h>
+#include <Imagina/proxy>
+#include <Imagina/module_extension>
 
 // Builtin modules
 //#include "location_manager"
-#include "basic_pixel_manager"
-#include "imp_lite"
+#include <Imagina/basic_pixel_manager>
+#include <Imagina/imp_lite>
 
 namespace filesystem = std::filesystem;
 

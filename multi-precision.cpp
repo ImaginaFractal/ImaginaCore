@@ -1,4 +1,4 @@
-#include "multi-precision"
+#include <Imagina/multi-precision>
 #include <algorithm>
 
 namespace Imagina {

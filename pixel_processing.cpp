@@ -1,5 +1,5 @@
-#include "pixel_processing"
-#include "evaluator"
+#include <Imagina/pixel_processing>
+#include <Imagina/evaluator>
 #include <assert.h>
 #include <string.h>
 

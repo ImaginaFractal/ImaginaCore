@@ -39,8 +39,8 @@ target_link_libraries (ImaginaCore PRIVATE ImaginaCommon)
 
 add_dependencies (ImaginaCore Interfaces)
 
-target_include_directories (ImaginaCore PRIVATE "include/Imagina")
-target_include_directories (ImaginaCore SYSTEM PUBLIC "include")
+target_include_directories (ImaginaCore PRIVATE "include")
+target_include_directories (ImaginaCore SYSTEM INTERFACE "include")
 
 set_target_properties (ImaginaCore PROPERTIES PREFIX "")
 set_target_properties (ImaginaCore PROPERTIES OUTPUT_NAME "Imagina")

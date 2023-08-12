@@ -1,6 +1,6 @@
-#include "evaluator"
-#include "pixel_management"
-#include "output_info_helper"
+#include <Imagina/evaluator>
+#include <Imagina/pixel_management>
+#include <Imagina/output_info_helper>
 
 namespace Imagina {
 	class SimpleEvaluator::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {

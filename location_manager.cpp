@@ -1,6 +1,6 @@
-#include "location_manager"
-#include "fractal_context"
-#include "floating_point"
+#include <Imagina/location_manager>
+#include <Imagina/fractal_context>
+#include <Imagina/floating_point>
 
 namespace Imagina {
 	void StandardLocationManager::SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data) {

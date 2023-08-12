@@ -1,4 +1,4 @@
-#include "platform_dependent"
+#include <Imagina/platform_dependent>
 
 #ifdef _WIN32
 

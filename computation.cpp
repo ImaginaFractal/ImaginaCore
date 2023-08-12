@@ -1,5 +1,5 @@
-#include "computation"
-#include "platform_dependent"
+#include <Imagina/computation>
+#include <Imagina/platform_dependent>
 
 namespace Imagina {
 	bool Task::IsSynchronous() {
