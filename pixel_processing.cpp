@@ -160,7 +160,7 @@ namespace Imagina {
 	};
 
 	const FieldInfo TestProcessor::OutputFields[1]{
-		{ "Iterations", 0, PixelDataType::Float32 }
+		{ "Value", 0, PixelDataType::Float32 }
 	};
 
 	void TestProcessor::SetInput(const PixelDataInfo *info) {

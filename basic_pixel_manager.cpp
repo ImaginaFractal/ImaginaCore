@@ -26,7 +26,9 @@ namespace Imagina {
 
 		pixelCount = size_t(width) * size_t(height);
 		preprocessedDataSize = pixelPipeline->GetOutputOfStage(PixelPipeline::Preprocess)->Size;
-		finalDataSize = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint)->Size;
+		const PixelDataInfo *finalOutput = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);
+		finalDataSize = finalOutput->Size;
+		outputFieldInfo = finalOutput->FindField("Value");
 
 		preprocessor = pixelPipeline->GetPreprocessor();
 		if (!preprocessor) {
@@ -42,11 +44,7 @@ namespace Imagina {
 			finalProcessor = nullptr;
 		}
 
-		if (finalProcessor) {
-			finalPixels = new float[pixelCount];
-		} else {
-			finalPixels = (float *)preprocessedPixels;
-		}
+		finalPixels = new float[pixelCount];
 
 		initialized = true;
 	}
@@ -221,11 +219,15 @@ namespace Imagina {
 
 		pixelManager->preprocessor->Process(preprocessedOutput, value);
 
-		if (!pixelManager->finalProcessor) return;
+		void *finalOutput;
+		if (pixelManager->finalProcessor) {
+			finalOutput = alloca(pixelManager->finalDataSize);
 
-		void *finalOutput = &pixelManager->finalPixels[pixelIndex];
-
-		pixelManager->finalProcessor->Process(finalOutput, preprocessedOutput);
+			pixelManager->finalProcessor->Process(finalOutput, preprocessedOutput);
+		} else {
+			finalOutput = preprocessedOutput;
+		}
+		pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetScalar<float>(finalOutput);
 	}
 
 	template<>
