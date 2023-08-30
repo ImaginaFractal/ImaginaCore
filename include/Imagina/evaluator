@@ -4,7 +4,6 @@
 #include "declarations"
 #include "computation" // TODO: Use declarations instead
 #include "pixel_processing"
-#include "evaluator.h"
 #include "../../interfaces/evaluator"
 
 namespace Imagina {
