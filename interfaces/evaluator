@@ -4,13 +4,14 @@
 #include <Imagina/types>
 #include <Imagina/computation>
 #include <Imagina/pixel_processing>
-#include "pixel_management"
 
 #ifdef __INTELLISENSE__
 #define interface class
 #endif
 
 namespace Imagina {
+	class IRasterizer;
+
 	struct StandardEvaluationParameters {
 		ITUInt Iterations = 1024;
 		HRReal DivergentEscapeRadius = 0x1.0p8;
@@ -48,8 +49,8 @@ namespace Imagina {
 	}
 
 	template<IEvaluatorImpl T>
-	ExecutionContext *_IIG_IEvaluator_RunEvaluation(void *instance, const HRCircle &circle, IRasterizer rasterizer) {
-		return ((T *)instance)->T::RunEvaluation(circle, rasterizer);
+	ExecutionContext *_IIG_IEvaluator_RunEvaluation(void *instance, const HRCircle &circle, IAny rasterizer) {
+		return ((T *)instance)->T::RunEvaluation(circle, (const IRasterizer &)rasterizer);
 	}
 
 	struct IEvaluatorVTable {
@@ -59,7 +60,7 @@ namespace Imagina {
 		const PixelDataInfo *(*GetOutputInfo)(void *instance);
 		void (*SetEvaluationParameters)(void *instance, const StandardEvaluationParameters &parameters);
 		bool (*Ready)(void *instance);
-		ExecutionContext *(*RunEvaluation)(void *instance, const HRCircle &circle, IRasterizer rasterizer);
+		ExecutionContext *(*RunEvaluation)(void *instance, const HRCircle &circle, IAny rasterizer);
 
 		template<IEvaluatorImpl T>
 		static IEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_IEvaluator_Release<T>) {
@@ -125,8 +126,8 @@ namespace Imagina {
 			return vTable->Ready(instance);
 		}
 
-		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) {
-			return vTable->RunEvaluation(instance, circle, rasterizer);
+		ExecutionContext *RunEvaluation(const HRCircle &circle, const IRasterizer &rasterizer) {
+			return vTable->RunEvaluation(instance, circle, (IAny &)rasterizer);
 		}
 
 		using _IIG_IsInterface = void;
@@ -215,8 +216,8 @@ namespace Imagina {
 			return vTable->Ready(instance);
 		}
 
-		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer) {
-			return vTable->RunEvaluation(instance, circle, rasterizer);
+		ExecutionContext *RunEvaluation(const HRCircle &circle, const IRasterizer &rasterizer) {
+			return vTable->RunEvaluation(instance, circle, (IAny &)rasterizer);
 		}
 
 		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {

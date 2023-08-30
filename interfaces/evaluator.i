@@ -1,13 +1,14 @@
 #include <Imagina/types>
 #include <Imagina/computation>
 #include <Imagina/pixel_processing>
-#include "pixel_management"
 
 #ifdef __INTELLISENSE__
 #define interface class
 #endif
 
 namespace Imagina {
+	interface IRasterizer;
+
 	struct StandardEvaluationParameters {
 		ITUInt Iterations = 1024;
 		HRReal DivergentEscapeRadius = 0x1.0p8;
