@@ -22,8 +22,8 @@ namespace Imagina {
 	concept IGraphicsImpl = !Imagina::Interface<T> && requires {
 		static_cast<GpuTexture (T:: *)()>(&T::CreateTexture);
 		static_cast<void (T:: *)(GpuTexture texture)>(&T::DeleteTexture);
-		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>(&T::SetTextureImage);
-		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, float *pixels)>(&T::UpdateTextureImage);
+		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, uint32_t *pixels)>(&T::SetTextureImage);
+		static_cast<void (T:: *)(GpuTexture texture, size_t width, size_t height, uint32_t *pixels)>(&T::UpdateTextureImage);
 	};
 
 	template<IGraphicsImpl T>
@@ -42,12 +42,12 @@ namespace Imagina {
 	}
 
 	template<IGraphicsImpl T>
-	void _IIG_IGraphics_SetTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels) {
+	void _IIG_IGraphics_SetTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, uint32_t *pixels) {
 		return ((T *)instance)->T::SetTextureImage(texture, width, height, pixels);
 	}
 
 	template<IGraphicsImpl T>
-	void _IIG_IGraphics_UpdateTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels) {
+	void _IIG_IGraphics_UpdateTextureImage(void *instance, GpuTexture texture, size_t width, size_t height, uint32_t *pixels) {
 		return ((T *)instance)->T::UpdateTextureImage(texture, width, height, pixels);
 	}
 
@@ -57,8 +57,8 @@ namespace Imagina {
 
 		GpuTexture (*CreateTexture)(void *instance);
 		void (*DeleteTexture)(void *instance, GpuTexture texture);
-		void (*SetTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels);
-		void (*UpdateTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, float *pixels);
+		void (*SetTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, uint32_t *pixels);
+		void (*UpdateTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, uint32_t *pixels);
 
 		template<IGraphicsImpl T>
 		static IGraphicsVTable OfType(void (*release)(void *instance) = _IIG_IGraphics_Release<T>) {
@@ -120,11 +120,11 @@ namespace Imagina {
 			return vTable->DeleteTexture(instance, texture);
 		}
 
-		void SetTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) {
+		void SetTextureImage(GpuTexture texture, size_t width, size_t height, uint32_t *pixels) {
 			return vTable->SetTextureImage(instance, texture, width, height, pixels);
 		}
 
-		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels) {
+		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, uint32_t *pixels) {
 			return vTable->UpdateTextureImage(instance, texture, width, height, pixels);
 		}
 

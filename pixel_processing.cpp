@@ -243,6 +243,11 @@ namespace Imagina {
 	void PaletteLookup::Process(void *output, void *input) const {
 		SRReal value = inputField->GetScalar<SRReal>(input);
 
+		if (!std::isfinite(value)) {
+			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);
+			return;
+		}
+
 		value *= valueMultiplier;
 		value += valueOffset;
 
@@ -256,5 +261,8 @@ namespace Imagina {
 		value -= floor(value);
 
 		*(RGBA *)output = lerp(palette[index1], palette[index2], (GRReal)value);
+		((RGBA *)output)->x = std::sqrt(((RGBA *)output)->x);
+		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
+		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
 	}
 }

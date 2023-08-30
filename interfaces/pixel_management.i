@@ -17,8 +17,8 @@ namespace Imagina {
 		GpuTexture CreateTexture();
 		void DeleteTexture(GpuTexture texture);
 
-		void SetTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels);
-		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, float *pixels);
+		void SetTextureImage(GpuTexture texture, size_t width, size_t height, uint32_t *pixels);
+		void UpdateTextureImage(GpuTexture texture, size_t width, size_t height, uint32_t *pixels);
 	};
 	
 	struct TextureMapping {

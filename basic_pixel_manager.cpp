@@ -10,7 +10,7 @@ namespace Imagina {
 #ifdef _DEBUG
 		if (gpuTextureUploadPoint != PixelPipeline::None) {
 			const PixelDataInfo *finalData = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputInfo() : preprocessedData;
-			assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
+			//assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
 		}
 #endif
 
@@ -28,7 +28,8 @@ namespace Imagina {
 		preprocessedDataSize = pixelPipeline->GetOutputOfStage(PixelPipeline::Preprocess)->Size;
 		const PixelDataInfo *finalOutput = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);
 		finalDataSize = finalOutput->Size;
-		outputFieldInfo = finalOutput->FindField("Value");
+		//outputFieldInfo = finalOutput->FindField("Value");
+		outputFieldInfo = finalOutput->FindField("Color");
 
 		preprocessor = pixelPipeline->GetPreprocessor();
 		if (!preprocessor) {
@@ -44,7 +45,7 @@ namespace Imagina {
 			finalProcessor = nullptr;
 		}
 
-		finalPixels = new float[pixelCount];
+		finalPixels = new uint32_t[pixelCount];
 
 		initialized = true;
 	}
@@ -74,7 +75,7 @@ namespace Imagina {
 		if (pixelPipeline->Equivalent(stage, PixelPipeline::Preprocessed)) {
 			memcpy(data, preprocessedPixels, pixelCount * preprocessedDataSize);
 		} else if (pixelPipeline->Equivalent(stage, gpuTextureUploadPoint)) {
-			memcpy(data, finalPixels, pixelCount * sizeof(float));
+			memcpy(data, finalPixels, pixelCount * sizeof(*finalPixels));
 		} else {
 			IPixelProcessor *processor = pixelPipeline->GetCompositeProcessor(PixelPipeline::Postprocess, stage);
 			size_t inputSize = pixelPipeline->PreprocessedDataSize();
@@ -227,7 +228,8 @@ namespace Imagina {
 		} else {
 			finalOutput = preprocessedOutput;
 		}
-		pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetScalar<float>(finalOutput);
+		//pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetScalar<float>(finalOutput);
+		pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetRGBA8(finalOutput);
 	}
 
 	template<>
