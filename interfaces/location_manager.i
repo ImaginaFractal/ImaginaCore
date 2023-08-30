@@ -8,7 +8,6 @@ namespace Imagina {
 
 	interface ILocationManager {
 		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr);
-		void SetEvaluator(IEvaluator evaluator);
 		void LocationChanged(const HRLocation &location);
 	};
 }

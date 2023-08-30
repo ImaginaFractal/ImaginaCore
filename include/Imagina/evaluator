@@ -4,6 +4,7 @@
 #include "declarations"
 #include "computation" // TODO: Use declarations instead
 #include "pixel_processing"
+#include "location_manager"
 #include "../../interfaces/evaluator"
 
 namespace Imagina {
@@ -13,6 +14,8 @@ namespace Imagina {
 		ExecutionContext *precomputeExecutionContext = nullptr;
 		ExecutionContext *pixelExecutionContext = nullptr;
 
+		StandardLocationManager locationManager;
+
 		void CancelTasks();
 
 	protected:
@@ -21,6 +24,9 @@ namespace Imagina {
 		StandardEvaluationParameters parameters;
 
 	public:
+		SimpleEvaluator();
+
+		ILocationManager GetLocationManager();
 		bool Ready();
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
 		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
@@ -38,10 +44,15 @@ namespace Imagina {
 		SRReal referenceX = 0.0, referenceY = 0.0;
 		ExecutionContext *currentExecutionContext = nullptr;
 
+		StandardLocationManager locationManager;
+
 	protected:
 		StandardEvaluationParameters parameters;
 
 	public:
+		LowPrecisionEvaluator();
+
+		ILocationManager GetLocationManager();
 		bool Ready();
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
 		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);

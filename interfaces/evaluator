@@ -4,6 +4,7 @@
 #include <Imagina/types>
 #include <Imagina/computation>
 #include <Imagina/pixel_processing>
+#include "location_manager"
 
 #ifdef __INTELLISENSE__
 #define interface class
@@ -22,6 +23,7 @@ namespace Imagina {
 
 	template<typename T>
 	concept IEvaluatorImpl = !Imagina::Interface<T> && requires {
+		static_cast<ILocationManager (T:: *)()>(&T::GetLocationManager);
 		static_cast<const PixelDataInfo *(T:: *)()>(&T::GetOutputInfo);
 		static_cast<void (T:: *)(const StandardEvaluationParameters &parameters)>(&T::SetEvaluationParameters);
 		static_cast<bool (T:: *)()>(&T::Ready);
@@ -31,6 +33,11 @@ namespace Imagina {
 	template<IEvaluatorImpl T>
 	void _IIG_IEvaluator_Release(void *instance) {
 		delete (T *)instance;
+	}
+
+	template<IEvaluatorImpl T>
+	ILocationManager _IIG_IEvaluator_GetLocationManager(void *instance) {
+		return ((T *)instance)->T::GetLocationManager();
 	}
 
 	template<IEvaluatorImpl T>
@@ -57,6 +64,7 @@ namespace Imagina {
 		void *reserved = nullptr; // Must be null
 		void (*Release)(void *instance);
 
+		ILocationManager (*GetLocationManager)(void *instance);
 		const PixelDataInfo *(*GetOutputInfo)(void *instance);
 		void (*SetEvaluationParameters)(void *instance, const StandardEvaluationParameters &parameters);
 		bool (*Ready)(void *instance);
@@ -66,6 +74,7 @@ namespace Imagina {
 		static IEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_IEvaluator_Release<T>) {
 			IEvaluatorVTable result;
 			result.Release = release;
+			result.GetLocationManager = _IIG_IEvaluator_GetLocationManager<T>;
 			result.GetOutputInfo = _IIG_IEvaluator_GetOutputInfo<T>;
 			result.SetEvaluationParameters = _IIG_IEvaluator_SetEvaluationParameters<T>;
 			result.Ready = _IIG_IEvaluator_Ready<T>;
@@ -114,6 +123,10 @@ namespace Imagina {
 			vTable->Release(instance);
 		}
 
+		ILocationManager GetLocationManager() {
+			return vTable->GetLocationManager(instance);
+		}
+
 		const PixelDataInfo *GetOutputInfo() {
 			return vTable->GetOutputInfo(instance);
 		}
@@ -133,91 +146,80 @@ namespace Imagina {
 		using _IIG_IsInterface = void;
 	};
 
-	class StandardEvaluator;
+	//interface StandardEvaluator : IEvaluator {
+	//	void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius); // TEMPORARY
+	//};
+
+	class IComplexLocationSink;
 
 	template<typename T>
-	concept StandardEvaluatorImpl = !Imagina::Interface<T> && IEvaluatorImpl<T> && requires {
+	concept IComplexLocationSinkImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)(const HPReal &x, const HPReal &y, HRReal radius)>(&T::SetReferenceLocation);
 	};
 
-	template<StandardEvaluatorImpl T>
-	void _IIG_StandardEvaluator_Release(void *instance) {
+	template<IComplexLocationSinkImpl T>
+	void _IIG_IComplexLocationSink_Release(void *instance) {
 		delete (T *)instance;
 	}
 
-	template<StandardEvaluatorImpl T>
-	void _IIG_StandardEvaluator_SetReferenceLocation(void *instance, const HPReal &x, const HPReal &y, HRReal radius) {
+	template<IComplexLocationSinkImpl T>
+	void _IIG_IComplexLocationSink_SetReferenceLocation(void *instance, const HPReal &x, const HPReal &y, HRReal radius) {
 		return ((T *)instance)->T::SetReferenceLocation(x, y, radius);
 	}
 
-	struct StandardEvaluatorVTable : IEvaluatorVTable {
+	struct IComplexLocationSinkVTable {
+		void *reserved = nullptr; // Must be null
+		void (*Release)(void *instance);
+
 		void (*SetReferenceLocation)(void *instance, const HPReal &x, const HPReal &y, HRReal radius);
 
-		template<StandardEvaluatorImpl T>
-		static StandardEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_StandardEvaluator_Release<T>) {
-			StandardEvaluatorVTable result;
-			(IEvaluatorVTable &)result = IEvaluatorVTable::OfType<T>(release);
-			result.SetReferenceLocation = _IIG_StandardEvaluator_SetReferenceLocation<T>;
+		template<IComplexLocationSinkImpl T>
+		static IComplexLocationSinkVTable OfType(void (*release)(void *instance) = _IIG_IComplexLocationSink_Release<T>) {
+			IComplexLocationSinkVTable result;
+			result.Release = release;
+			result.SetReferenceLocation = _IIG_IComplexLocationSink_SetReferenceLocation<T>;
 
 			return result;
 		}
 
-		template<StandardEvaluatorImpl T>
-		static StandardEvaluatorVTable value;
+		template<IComplexLocationSinkImpl T>
+		static IComplexLocationSinkVTable value;
 	};
 
-	class StandardEvaluator final {
+	class IComplexLocationSink final {
 		void *instance;
-		const StandardEvaluatorVTable *vTable;
+		const IComplexLocationSinkVTable *vTable;
 
 	public:
-		StandardEvaluator() = default;
-		StandardEvaluator(const StandardEvaluator &) = default;
-		StandardEvaluator(StandardEvaluator &&) = default;
-		StandardEvaluator(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
+		IComplexLocationSink() = default;
+		IComplexLocationSink(const IComplexLocationSink &) = default;
+		IComplexLocationSink(IComplexLocationSink &&) = default;
+		IComplexLocationSink(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}
 
-		StandardEvaluator(void *instance, const StandardEvaluatorVTable *vTable) : instance(instance), vTable(vTable) {}
-		StandardEvaluator(IAny any) : instance(any.instance), vTable((StandardEvaluatorVTable *)any.vTable) {}
+		IComplexLocationSink(void *instance, const IComplexLocationSinkVTable *vTable) : instance(instance), vTable(vTable) {}
+		IComplexLocationSink(IAny any) : instance(any.instance), vTable((IComplexLocationSinkVTable *)any.vTable) {}
 
-		template<StandardEvaluatorImpl T>
-		StandardEvaluator(T &instance) : instance(&instance), vTable(&StandardEvaluatorVTable::value<T>) {}
+		template<IComplexLocationSinkImpl T>
+		IComplexLocationSink(T &instance) : instance(&instance), vTable(&IComplexLocationSinkVTable::value<T>) {}
 
-		template<StandardEvaluatorImpl T>
-		StandardEvaluator(T *instance) : instance(instance), vTable(&StandardEvaluatorVTable::value<T>) {}
+		template<IComplexLocationSinkImpl T>
+		IComplexLocationSink(T *instance) : instance(instance), vTable(&IComplexLocationSinkVTable::value<T>) {}
 
-		StandardEvaluator &operator=(const StandardEvaluator &) = default;
-		StandardEvaluator &operator=(StandardEvaluator &&) = default;
+		IComplexLocationSink &operator=(const IComplexLocationSink &) = default;
+		IComplexLocationSink &operator=(IComplexLocationSink &&) = default;
 
-		StandardEvaluator &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
+		IComplexLocationSink &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }
 		bool operator==(std::nullptr_t) { return instance == nullptr; }
 		bool operator!=(std::nullptr_t) { return instance != nullptr; }
 
 		operator IAny() { return IAny(instance, vTable); }
 		operator bool() { return instance != nullptr; }
 
-		template<StandardEvaluatorImpl T>
+		template<IComplexLocationSinkImpl T>
 		explicit operator T *() { return (T *)instance; }
-
-		operator IEvaluator() { return IEvaluator(instance, vTable); }
 
 		void Release() {
 			vTable->Release(instance);
-		}
-
-		const PixelDataInfo *GetOutputInfo() {
-			return vTable->GetOutputInfo(instance);
-		}
-
-		void SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
-			return vTable->SetEvaluationParameters(instance, parameters);
-		}
-
-		bool Ready() {
-			return vTable->Ready(instance);
-		}
-
-		ExecutionContext *RunEvaluation(const HRCircle &circle, const IRasterizer &rasterizer) {
-			return vTable->RunEvaluation(instance, circle, (IAny &)rasterizer);
 		}
 
 		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {

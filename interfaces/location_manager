@@ -14,7 +14,6 @@ namespace Imagina {
 	template<typename T>
 	concept ILocationManagerImpl = !Imagina::Interface<T> && requires {
 		static_cast<void (T:: *)(pCoordinateUpdateCallback callback, void *data)>(&T::SetCoordinateUpdateCallback);
-		static_cast<void (T:: *)(IEvaluator evaluator)>(&T::SetEvaluator);
 		static_cast<void (T:: *)(const HRLocation &location)>(&T::LocationChanged);
 	};
 
@@ -29,11 +28,6 @@ namespace Imagina {
 	}
 
 	template<ILocationManagerImpl T>
-	void _IIG_ILocationManager_SetEvaluator(void *instance, IAny evaluator) {
-		return ((T *)instance)->T::SetEvaluator((const IEvaluator &)evaluator);
-	}
-
-	template<ILocationManagerImpl T>
 	void _IIG_ILocationManager_LocationChanged(void *instance, const HRLocation &location) {
 		return ((T *)instance)->T::LocationChanged(location);
 	}
@@ -43,7 +37,6 @@ namespace Imagina {
 		void (*Release)(void *instance);
 
 		void (*SetCoordinateUpdateCallback)(void *instance, pCoordinateUpdateCallback callback, void *data);
-		void (*SetEvaluator)(void *instance, IAny evaluator);
 		void (*LocationChanged)(void *instance, const HRLocation &location);
 
 		template<ILocationManagerImpl T>
@@ -51,7 +44,6 @@ namespace Imagina {
 			ILocationManagerVTable result;
 			result.Release = release;
 			result.SetCoordinateUpdateCallback = _IIG_ILocationManager_SetCoordinateUpdateCallback<T>;
-			result.SetEvaluator = _IIG_ILocationManager_SetEvaluator<T>;
 			result.LocationChanged = _IIG_ILocationManager_LocationChanged<T>;
 
 			return result;
@@ -99,10 +91,6 @@ namespace Imagina {
 
 		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) {
 			return vTable->SetCoordinateUpdateCallback(instance, callback, data);
-		}
-
-		void SetEvaluator(const IEvaluator &evaluator) {
-			return vTable->SetEvaluator(instance, (IAny &)evaluator);
 		}
 
 		void LocationChanged(const HRLocation &location) {

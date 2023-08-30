@@ -1,6 +1,7 @@
 #include <Imagina/types>
 #include <Imagina/computation>
 #include <Imagina/pixel_processing>
+#include "location_manager"
 
 #ifdef __INTELLISENSE__
 #define interface class
@@ -16,6 +17,7 @@ namespace Imagina {
 	};
 
 	interface IEvaluator { // TODO: virtual void PrepareFor(const HRCircle &circle) = 0;
+		ILocationManager GetLocationManager();
 		const PixelDataInfo *GetOutputInfo();
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters); // TEMPORARY
 
@@ -23,7 +25,11 @@ namespace Imagina {
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
 	};
 
-	interface StandardEvaluator : IEvaluator {
+	//interface StandardEvaluator : IEvaluator {
+	//	void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius); // TEMPORARY
+	//};
+
+	interface IComplexLocationSink {
 		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius); // TEMPORARY
 	};
 }

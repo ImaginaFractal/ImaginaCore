@@ -1,6 +1,7 @@
 #include <Imagina/evaluator>
 #include <Imagina/pixel_management>
 #include <Imagina/output_info_helper>
+#include <Imagina/module>
 
 namespace Imagina {
 	class SimpleEvaluator::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {
@@ -37,6 +38,17 @@ namespace Imagina {
 			precomputeExecutionContext->WaitAndRelease();
 			precomputeExecutionContext = nullptr;
 		}
+	}
+
+	template<>
+	Imagina::IComplexLocationSinkVTable Imagina::IComplexLocationSinkVTable::value<SimpleEvaluator> = Imagina::IComplexLocationSinkVTable::OfType<SimpleEvaluator>();
+
+	SimpleEvaluator::SimpleEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
+		locationManager.SetEvaluator(this);
+	}
+
+	ILocationManager SimpleEvaluator::GetLocationManager() {
+		return locationManager;
 	}
 
 	bool SimpleEvaluator::Ready() {
@@ -124,6 +136,17 @@ namespace Imagina {
 		rasterizer.FreeRasterizingInterface(rasterizingInterface);
 	}
 
+	
+	template<>
+	Imagina::IComplexLocationSinkVTable Imagina::IComplexLocationSinkVTable::value<LowPrecisionEvaluator> = Imagina::IComplexLocationSinkVTable::OfType<LowPrecisionEvaluator>();
+
+	LowPrecisionEvaluator::LowPrecisionEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
+		locationManager.SetEvaluator(this);
+	}
+
+	ILocationManager LowPrecisionEvaluator::GetLocationManager() {
+		return locationManager;
+	}
 
 	bool LowPrecisionEvaluator::Ready() {
 		return true;
