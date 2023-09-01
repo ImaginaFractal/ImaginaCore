@@ -2,7 +2,7 @@
 #include <utility>
 #include "constants"
 
-namespace Imagina {
+namespace Imagina::inline Numerics {
 	template<typename Real>
 	struct Complex {
 		Real re, im;

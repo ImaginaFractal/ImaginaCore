@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Imagina {
+namespace Imagina::inline Numerics {
 	template<typename T>
 	struct Vector4 {
 		T x, y, z, w;

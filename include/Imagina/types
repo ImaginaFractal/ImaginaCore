@@ -3,19 +3,20 @@
 #include <exception>
 #include "complex"
 #include "multi-precision"
-#include "types.h"
-//#include "basic_types"
+#include "basic_types"
 #include "floating_point"
 #include "constants"
 #include "vector"
 #include "math"
 
 namespace Imagina {
-	using SRComplex = Complex<SRReal>;
-	using HRComplex = Complex<HRReal>;
-	using HPComplex = Complex<HPReal>;
+	inline namespace Numerics {
+		using SRComplex = Complex<SRReal>;
+		using HRComplex = Complex<HRReal>;
+		using HPComplex = Complex<HPReal>;
 
-	using GRVector4 = Vector4<GRReal>;
+		using GRVector4 = Vector4<GRReal>;
+	}
 
 	using RGBA = GRVector4;
 

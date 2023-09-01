@@ -5,7 +5,7 @@
 #include "declarations.h"
 
 #ifdef __cplusplus
-namespace Imagina {
+namespace Imagina::inline Numerics {
 #endif
 
 struct _FloatF64eI64 {
