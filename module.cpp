@@ -7,7 +7,6 @@
 #include <filesystem>
 
 #include <Imagina/platform_dependent>
-#include <Imagina/imagina.h>
 #include <Imagina/proxy>
 #include <Imagina/module_extension>
 
