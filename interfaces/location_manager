@@ -5,15 +5,13 @@
 #include <Imagina/declarations>
 
 namespace Imagina {
-	class IEvaluator;
-
-	using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
+	class IController;
 
 	class ILocationManager;
 
 	template<typename T>
 	concept ILocationManagerImpl = !Imagina::Interface<T> && requires {
-		static_cast<void (T:: *)(pCoordinateUpdateCallback callback, void *data)>(&T::SetCoordinateUpdateCallback);
+		static_cast<void (T:: *)(IController controller)>(&T::SetController);
 		static_cast<void (T:: *)(const HRLocation &location)>(&T::LocationChanged);
 	};
 
@@ -23,8 +21,8 @@ namespace Imagina {
 	}
 
 	template<ILocationManagerImpl T>
-	void _IIG_ILocationManager_SetCoordinateUpdateCallback(void *instance, pCoordinateUpdateCallback callback, void *data) {
-		return ((T *)instance)->T::SetCoordinateUpdateCallback(callback, data);
+	void _IIG_ILocationManager_SetController(void *instance, IAny controller) {
+		return ((T *)instance)->T::SetController((const IController &)controller);
 	}
 
 	template<ILocationManagerImpl T>
@@ -36,14 +34,14 @@ namespace Imagina {
 		void *reserved = nullptr; // Must be null
 		void (*Release)(void *instance);
 
-		void (*SetCoordinateUpdateCallback)(void *instance, pCoordinateUpdateCallback callback, void *data);
+		void (*SetController)(void *instance, IAny controller);
 		void (*LocationChanged)(void *instance, const HRLocation &location);
 
 		template<ILocationManagerImpl T>
 		static ILocationManagerVTable OfType(void (*release)(void *instance) = _IIG_ILocationManager_Release<T>) {
 			ILocationManagerVTable result;
 			result.Release = release;
-			result.SetCoordinateUpdateCallback = _IIG_ILocationManager_SetCoordinateUpdateCallback<T>;
+			result.SetController = _IIG_ILocationManager_SetController<T>;
 			result.LocationChanged = _IIG_ILocationManager_LocationChanged<T>;
 
 			return result;
@@ -89,8 +87,8 @@ namespace Imagina {
 			vTable->Release(instance);
 		}
 
-		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) {
-			return vTable->SetCoordinateUpdateCallback(instance, callback, data);
+		void SetController(const IController &controller) {
+			return vTable->SetController(instance, (IAny &)controller);
 		}
 
 		void LocationChanged(const HRLocation &location) {

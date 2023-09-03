@@ -2,12 +2,10 @@
 #include <Imagina/declarations>
 
 namespace Imagina {
-	interface IEvaluator;
-
-	using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
+	interface IController;
 
 	interface ILocationManager {
-		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr);
+		void SetController(IController controller);
 		void LocationChanged(const HRLocation &location);
 	};
 }

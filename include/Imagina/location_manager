@@ -5,28 +5,20 @@
 #include <functional>
 #include "../../interfaces/location_manager"
 #include "../../interfaces/evaluator"
+#include "../../interfaces/controller"
 
 namespace Imagina {
-	/*using pCoordinateUpdateCallback = void (*)(void *data, HRReal, HRReal);
-
-	class ILocationManager {
-	public:
-		virtual void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr) = 0;
-		virtual void SetEvaluator(IEvaluator evaluator) = 0;
-		virtual void LocationChanged(const HRLocation &location) = 0;
-	};*/
-
 	class im_export StandardLocationManager {
 		IComplexLocationSink evaluator = nullptr;
 		[[maybe_unused]] MultiPrecision &mp;
 		HPReal referenceX, referenceY;
-		pCoordinateUpdateCallback coordinateUpdateCallback = nullptr;
+		IController controller = nullptr;
 		void *callbackData;
 
 	public:
 		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(0.0, mp), referenceY(0.0, mp) {}
 
-		void SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data = nullptr);
+		void SetController(IController controller);
 		void SetEvaluator(IComplexLocationSink evaluator);
 		void LocationChanged(const HRLocation &location);
 	};

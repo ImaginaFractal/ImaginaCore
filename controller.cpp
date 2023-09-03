@@ -20,6 +20,8 @@ namespace Imagina {
 		renderLocation.Y += differenceY;
 		immediateTarget.X += differenceX;
 		immediateTarget.Y += differenceY;
+
+		pixelManager.UpdateRelativeCoordinates(differenceX, differenceY);
 	}
 	void NavigationController::Update(SRReal deltaTime) {
 		bool immediateTargetChanged = false;

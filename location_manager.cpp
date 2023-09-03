@@ -3,9 +3,8 @@
 #include <Imagina/floating_point>
 
 namespace Imagina {
-	void StandardLocationManager::SetCoordinateUpdateCallback(pCoordinateUpdateCallback callback, void *data) {
-		coordinateUpdateCallback = callback;
-		callbackData = data;
+	void StandardLocationManager::SetController(IController controller) {
+		this->controller = controller;
 	}
 
 	void StandardLocationManager::SetEvaluator(IComplexLocationSink evaluator) {
@@ -25,8 +24,7 @@ namespace Imagina {
 			referenceY += location.Y;
 			// FIXME: Calculate radius correctly
 			evaluator.SetReferenceLocation(referenceX, referenceY, location.HalfHeight); // TEMPORARY
-			//if (OnReferenceChange) OnReferenceChange(-location.X, -location.Y);
-			if (coordinateUpdateCallback) coordinateUpdateCallback(callbackData, -location.X, -location.Y);
+			if (controller) controller.UpdateRelativeCoordinates(-location.X, -location.Y);
 		}
 	}
 
