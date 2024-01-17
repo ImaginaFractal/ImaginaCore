@@ -61,7 +61,7 @@ namespace Imagina {
 		void (*UpdateTextureImage)(void *instance, GpuTexture texture, size_t width, size_t height, uint32_t *pixels);
 
 		template<IGraphicsImpl T>
-		static IGraphicsVTable OfType(void (*release)(void *instance) = _IIG_IGraphics_Release<T>) {
+		static constexpr IGraphicsVTable OfType(void (*release)(void *instance) = _IIG_IGraphics_Release<T>) {
 			IGraphicsVTable result;
 			result.Release = release;
 			result.CreateTexture = _IIG_IGraphics_CreateTexture<T>;
@@ -210,7 +210,7 @@ namespace Imagina {
 		void (*Update)(void *instance);
 
 		template<IPixelManagerImpl T>
-		static IPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IPixelManager_Release<T>) {
+		static constexpr IPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IPixelManager_Release<T>) {
 			IPixelManagerVTable result;
 			result.Release = release;
 			result.SetEvaluator = _IIG_IPixelManager_SetEvaluator<T>;
@@ -345,7 +345,7 @@ namespace Imagina {
 		std::vector<TextureMapping> (*GetTextureMappings)(void *instance, const HRRectangle &location);
 
 		template<IGpuTextureManagerImpl T>
-		static IGpuTextureManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuTextureManager_Release<T>) {
+		static constexpr IGpuTextureManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuTextureManager_Release<T>) {
 			IGpuTextureManagerVTable result;
 			result.Release = release;
 			result.ActivateGpu = _IIG_IGpuTextureManager_ActivateGpu<T>;
@@ -429,7 +429,7 @@ namespace Imagina {
 		IGpuTextureManagerVTable IGpuTextureManagervTable;
 
 		template<IGpuPixelManagerImpl T>
-		static IGpuPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuPixelManager_Release<T>) {
+		static constexpr IGpuPixelManagerVTable OfType(void (*release)(void *instance) = _IIG_IGpuPixelManager_Release<T>) {
 			IGpuPixelManagerVTable result;
 			(IPixelManagerVTable &)result = IPixelManagerVTable::OfType<T>(release);
 			result.IGpuTextureManagervTable = IGpuTextureManagerVTable::OfType<T>(release);
@@ -576,7 +576,7 @@ namespace Imagina {
 		void (*WriteResults)(void *instance, void *value);
 
 		template<IRasterizingInterfaceImpl T>
-		static IRasterizingInterfaceVTable OfType(void (*release)(void *instance) = _IIG_IRasterizingInterface_Release<T>) {
+		static constexpr IRasterizingInterfaceVTable OfType(void (*release)(void *instance) = _IIG_IRasterizingInterface_Release<T>) {
 			IRasterizingInterfaceVTable result;
 			result.Release = release;
 			result.GetPixel = _IIG_IRasterizingInterface_GetPixel<T>;
@@ -684,7 +684,7 @@ namespace Imagina {
 		void (*FreeRasterizingInterface)(void *instance, IRasterizingInterface Interface);
 
 		template<IRasterizerImpl T>
-		static IRasterizerVTable OfType(void (*release)(void *instance) = _IIG_IRasterizer_Release<T>) {
+		static constexpr IRasterizerVTable OfType(void (*release)(void *instance) = _IIG_IRasterizer_Release<T>) {
 			IRasterizerVTable result;
 			result.Release = release;
 			result.Cancel = _IIG_IRasterizer_Cancel<T>;

@@ -38,7 +38,7 @@ namespace Imagina {
 		void (*LocationChanged)(void *instance, const HRLocation &location);
 
 		template<ILocationManagerImpl T>
-		static ILocationManagerVTable OfType(void (*release)(void *instance) = _IIG_ILocationManager_Release<T>) {
+		static constexpr ILocationManagerVTable OfType(void (*release)(void *instance) = _IIG_ILocationManager_Release<T>) {
 			ILocationManagerVTable result;
 			result.Release = release;
 			result.SetController = _IIG_ILocationManager_SetController<T>;

@@ -58,7 +58,7 @@ namespace Imagina {
 		void (*Update)(void *instance, SRReal deltaTime);
 
 		template<IControllerImpl T>
-		static IControllerVTable OfType(void (*release)(void *instance) = _IIG_IController_Release<T>) {
+		static constexpr IControllerVTable OfType(void (*release)(void *instance) = _IIG_IController_Release<T>) {
 			IControllerVTable result;
 			result.Release = release;
 			result.GetRenderLocation = _IIG_IController_GetRenderLocation<T>;

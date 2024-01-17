@@ -71,7 +71,7 @@ namespace Imagina {
 		ExecutionContext *(*RunEvaluation)(void *instance, const HRCircle &circle, IAny rasterizer);
 
 		template<IEvaluatorImpl T>
-		static IEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_IEvaluator_Release<T>) {
+		static constexpr IEvaluatorVTable OfType(void (*release)(void *instance) = _IIG_IEvaluator_Release<T>) {
 			IEvaluatorVTable result;
 			result.Release = release;
 			result.GetLocationManager = _IIG_IEvaluator_GetLocationManager<T>;
@@ -174,7 +174,7 @@ namespace Imagina {
 		void (*SetReferenceLocation)(void *instance, const HPReal &x, const HPReal &y, HRReal radius);
 
 		template<IComplexLocationSinkImpl T>
-		static IComplexLocationSinkVTable OfType(void (*release)(void *instance) = _IIG_IComplexLocationSink_Release<T>) {
+		static constexpr IComplexLocationSinkVTable OfType(void (*release)(void *instance) = _IIG_IComplexLocationSink_Release<T>) {
 			IComplexLocationSinkVTable result;
 			result.Release = release;
 			result.SetReferenceLocation = _IIG_IComplexLocationSink_SetReferenceLocation<T>;

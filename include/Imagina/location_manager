@@ -10,7 +10,7 @@
 namespace Imagina {
 	class im_export StandardLocationManager {
 		IComplexLocationSink evaluator = nullptr;
-		[[maybe_unused]] MultiPrecision &mp;
+		MultiPrecision &mp;
 		HPReal referenceX, referenceY;
 		IController controller = nullptr;
 		void *callbackData;

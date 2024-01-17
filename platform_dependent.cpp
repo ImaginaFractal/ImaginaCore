@@ -56,7 +56,7 @@ namespace Imagina {
 	}
 
 	bool UnloadLibrary(void *handle) {
-		return FreeLibrary((HMODULE)handle) == 0;
+		return dlclose(handle) == 0;
 	}
 
 	void *GetSymbol(void *handle, const char *name) {

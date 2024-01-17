@@ -305,7 +305,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << '\n';
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
-	stream << indentation << "\tstatic " << VTableName << " OfType(void (*release)(void *instance) = _IIG_" << name << "_Release<T>) {\n";
+	stream << indentation << "\tstatic constexpr " << VTableName << " OfType(void (*release)(void *instance) = _IIG_" << name << "_Release<T>) {\n";
 	stream << indentation << "\t\t" << VTableName << " result;\n";
 	if (isDerived) {
 		stream << indentation << "\t\t(" << bases.front()->name << "VTable &)result = " << bases.front()->name << "VTable::OfType<T>(release);\n";

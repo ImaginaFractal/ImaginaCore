@@ -30,11 +30,11 @@ namespace Imagina {
 #ifndef __cplusplus
 	typedef uint32_t ComponentType;
 	typedef uint32_t ComponentFlag;
-	typedef uint32_t ProxyType;
+	//typedef uint32_t ProxyType;
 #else
 	enum class ComponentType : uint32_t;
 	enum class ComponentFlag : uint32_t;
-	enum class ProxyType : uint32_t;
+	//enum class ProxyType : uint32_t;
 #endif
 
 	typedef IAny (*pCreateComponent)(const char *ID);
@@ -49,8 +49,8 @@ namespace Imagina {
 		ComponentFlag Flags;
 
 		// For C API
-		ProxyType ProxyType;
-		void *FunctionTable;
+		//ProxyType ProxyType;
+		//void *FunctionTable;
 	} ComponentInfo;
 
 	typedef struct {
