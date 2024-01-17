@@ -232,12 +232,6 @@ namespace Imagina {
 		pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetRGBA8(finalOutput);
 	}
 
-	template<>
-	IGpuPixelManagerVTable IGpuPixelManagerVTable::value<BasicPixelManager> = IGpuPixelManagerVTable::OfType<BasicPixelManager>();
-
-	template<>
-	IRasterizerVTable IRasterizerVTable::value<BasicPixelManager> = IRasterizerVTable::OfType<BasicPixelManager>();
-
-	template<>
-	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<BasicRasterizingInterface> = IRasterizingInterfaceVTable::OfType<BasicRasterizingInterface>();
+	IMPLEMENT_INTERFACE2(BasicPixelManager, IGpuPixelManager, IRasterizer);
+	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
 }

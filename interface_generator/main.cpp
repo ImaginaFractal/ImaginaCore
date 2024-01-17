@@ -325,7 +325,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "\t}\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
-	stream << indentation << "\tstatic " << VTableName << " value;\n";
+	stream << indentation << "\tstatic const " << VTableName << " value;\n";
 	stream << indentation << "};\n\n";
 
 	// Interface

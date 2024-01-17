@@ -73,7 +73,7 @@ namespace Imagina {
 		}
 
 		template<IGraphicsImpl T>
-		static IGraphicsVTable value;
+		static const IGraphicsVTable value;
 	};
 
 	class IGraphics final {
@@ -226,7 +226,7 @@ namespace Imagina {
 		}
 
 		template<IPixelManagerImpl T>
-		static IPixelManagerVTable value;
+		static const IPixelManagerVTable value;
 	};
 
 	class IPixelManager final {
@@ -357,7 +357,7 @@ namespace Imagina {
 		}
 
 		template<IGpuTextureManagerImpl T>
-		static IGpuTextureManagerVTable value;
+		static const IGpuTextureManagerVTable value;
 	};
 
 	class IGpuTextureManager final {
@@ -438,7 +438,7 @@ namespace Imagina {
 		}
 
 		template<IGpuPixelManagerImpl T>
-		static IGpuPixelManagerVTable value;
+		static const IGpuPixelManagerVTable value;
 	};
 
 	class IGpuPixelManager final {
@@ -588,7 +588,7 @@ namespace Imagina {
 		}
 
 		template<IRasterizingInterfaceImpl T>
-		static IRasterizingInterfaceVTable value;
+		static const IRasterizingInterfaceVTable value;
 	};
 
 	class IRasterizingInterface final {
@@ -695,7 +695,7 @@ namespace Imagina {
 		}
 
 		template<IRasterizerImpl T>
-		static IRasterizerVTable value;
+		static const IRasterizerVTable value;
 	};
 
 	class IRasterizer final {

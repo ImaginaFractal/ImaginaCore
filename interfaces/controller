@@ -71,7 +71,7 @@ namespace Imagina {
 		}
 
 		template<IControllerImpl T>
-		static IControllerVTable value;
+		static const IControllerVTable value;
 	};
 
 	class IController final {

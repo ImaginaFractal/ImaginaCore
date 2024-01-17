@@ -40,8 +40,7 @@ namespace Imagina {
 		}
 	}
 
-	template<>
-	Imagina::IComplexLocationSinkVTable Imagina::IComplexLocationSinkVTable::value<SimpleEvaluator> = Imagina::IComplexLocationSinkVTable::OfType<SimpleEvaluator>();
+	IMPLEMENT_INTERFACE(SimpleEvaluator, IComplexLocationSink);
 
 	SimpleEvaluator::SimpleEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);
@@ -97,8 +96,7 @@ namespace Imagina {
 		void WriteResults(void *value);
 	};
 
-	template<>
-	IRasterizingInterfaceVTable IRasterizingInterfaceVTable::value<LowPrecisionEvaluator::LPRasterizingInterface> = IRasterizingInterfaceVTable::OfType<LowPrecisionEvaluator::LPRasterizingInterface>();
+	IMPLEMENT_INTERFACE(LowPrecisionEvaluator::LPRasterizingInterface, IRasterizingInterface);
 
 	bool LowPrecisionEvaluator::LPRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
 		bool result = rasterizingInterface.GetPixel(x, y);
@@ -137,8 +135,7 @@ namespace Imagina {
 	}
 
 	
-	template<>
-	Imagina::IComplexLocationSinkVTable Imagina::IComplexLocationSinkVTable::value<LowPrecisionEvaluator> = Imagina::IComplexLocationSinkVTable::OfType<LowPrecisionEvaluator>();
+	IMPLEMENT_INTERFACE(LowPrecisionEvaluator, IComplexLocationSink);
 
 	LowPrecisionEvaluator::LowPrecisionEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);

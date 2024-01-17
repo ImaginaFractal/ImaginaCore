@@ -48,7 +48,7 @@ namespace Imagina {
 		}
 
 		template<ILocationManagerImpl T>
-		static ILocationManagerVTable value;
+		static const ILocationManagerVTable value;
 	};
 
 	class ILocationManager final {

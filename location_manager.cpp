@@ -28,6 +28,5 @@ namespace Imagina {
 		}
 	}
 
-	template<>
-	ILocationManagerVTable ILocationManagerVTable::value<StandardLocationManager> = ILocationManagerVTable::OfType<StandardLocationManager>();
+	IMPLEMENT_INTERFACE(StandardLocationManager, ILocationManager);
 }

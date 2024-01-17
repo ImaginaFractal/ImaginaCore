@@ -84,7 +84,7 @@ namespace Imagina {
 		}
 
 		template<IEvaluatorImpl T>
-		static IEvaluatorVTable value;
+		static const IEvaluatorVTable value;
 	};
 
 	class IEvaluator final {
@@ -183,7 +183,7 @@ namespace Imagina {
 		}
 
 		template<IComplexLocationSinkImpl T>
-		static IComplexLocationSinkVTable value;
+		static const IComplexLocationSinkVTable value;
 	};
 
 	class IComplexLocationSink final {
