@@ -43,24 +43,6 @@ namespace Imagina {
 	//std::unordered_map<std::string, Component> Components;
 
 	IAny Component::Create() {
-#if false
-		if (Info.Flags & ComponentFlag::UseCApi) {
-			if (!Info.FunctionTable) return nullptr;
-			switch (Info.ProxyType) {
-				case ProxyType::LowPrecisionEvaluator: {
-					auto functionTable = (ImCApi::LowPrecisionEvaluatorFunctionTable *)Info.FunctionTable;
-					return new LowPrecisionEvaluatorProxy((ImCApi::IEvaluator )Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->evaluate);
-				}
-				case ProxyType::SimpleEvaluator: {
-					auto functionTable = (ImCApi::SimpleEvaluatorFunctionTable *)Info.FunctionTable;
-					return new SimpleEvaluatorProxy((ImCApi::IEvaluator )Info.Create(Info.Name), nullptr/*FIXME*/, functionTable->getOutputInfo, functionTable->setEvaluationParameters, functionTable->setReferenceLocationAndPrecompute, functionTable->evaluate);
-				}
-				default: return nullptr;
-			}
-		} else {
-			return Info.Create(Info.Name);
-		}
-#endif
 		return Info.Create(Info.Name);
 	}
 
