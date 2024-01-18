@@ -13,7 +13,6 @@ namespace Imagina {
 		MultiPrecision &mp;
 		HPReal referenceX, referenceY;
 		IController controller = nullptr;
-		void *callbackData;
 
 	public:
 		StandardLocationManager(MultiPrecision &mp) : mp(mp), referenceX(0.0, mp), referenceY(0.0, mp) {}
