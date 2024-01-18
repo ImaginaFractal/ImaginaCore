@@ -61,12 +61,7 @@ namespace Imagina {
 		},
 	};
 
-	ModuleInfo BuiltinModule{
-		.Name = "Imagina",
-		.DisplayName = "Imagina",
-		.ComponentCount = 2,
-		.Components = BuiltinComponents,
-	};
+	ModuleInfo BuiltinModule("Imagina", "Imagina", BuiltinComponents);
 
 	// TODO: Validations
 	bool AddModule(const ModuleInfo *moduleInfo, void *handle) {

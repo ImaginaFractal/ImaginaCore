@@ -3,8 +3,11 @@
 #include <string_view>
 #include <stddef.h>
 #include <stdint.h>
+#include <iterator>
 #include "declarations"
 #include "interface"
+
+#include "../../interfaces/evaluator"
 
 namespace Imagina {
 	using pCreateComponent = IAny (*)(const char *ID);
@@ -32,6 +35,16 @@ namespace Imagina {
 		pReleaseComponent Release = nullptr;
 		ComponentType Type;
 		ComponentFlag Flags;
+
+		template<IEvaluatorImpl T>
+		static constexpr ComponentInfo Evaluator(const char *Name, const char *DisplayName) {
+			return {
+				.Name = Name,
+				.DisplayName = DisplayName,
+				.Create = [](const char *)->Imagina::IAny { return Imagina::IEvaluator(new T); },
+				.Type = ComponentType::Evaluator,
+			};
+		}
 	};
 
 	struct ModuleInfo {
@@ -39,6 +52,13 @@ namespace Imagina {
 		const char *DisplayName;
 		size_t ComponentCount;
 		const ComponentInfo *Components;
+
+		template <size_t componentCount>
+		constexpr ModuleInfo(const char *name, const char *displayName, const ComponentInfo(&components)[componentCount]) :
+			Name(name), DisplayName(displayName), ComponentCount(componentCount), Components(components) {}
+
+		constexpr ModuleInfo(const char *name, const char *displayName, const ComponentInfo &component) :
+			Name(name), DisplayName(displayName), ComponentCount(1), Components(&component) {}
 	};
 
 	using pImInit = void (*)();
