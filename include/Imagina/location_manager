@@ -1,8 +1,5 @@
 #pragma once
 
-#include "types"
-#include "declarations"
-#include <functional>
 #include "../../interfaces/location_manager"
 #include "../../interfaces/evaluator"
 #include "../../interfaces/controller"

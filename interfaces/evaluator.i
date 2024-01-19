@@ -1,4 +1,4 @@
-#include <Imagina/types>
+#include <Imagina/numerics>
 #include <Imagina/computation>
 #include <Imagina/pixel_processing>
 #include "location_manager"

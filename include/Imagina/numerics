@@ -16,4 +16,6 @@ namespace Imagina::inline Numerics {
 	using HPComplex = Complex<HPReal>;
 
 	using GRVector4 = Vector4<GRReal>;
+
+	using RGBA = GRVector4;
 }

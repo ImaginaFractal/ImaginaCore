@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "types"
+#include "numerics"
 #include "pixel_processing"
 
 //https://www.scs.stanford.edu/~dm/blog/va-opt.html

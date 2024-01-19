@@ -1,4 +1,4 @@
-#include <Imagina/types>
+#include <Imagina/numerics>
 #include <Imagina/declarations>
 #include <Imagina/pixel_management>
 

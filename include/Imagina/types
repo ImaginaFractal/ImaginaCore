@@ -6,8 +6,6 @@
 #include "math"
 
 namespace Imagina {
-	using RGBA = GRVector4;
-
 	//template<intmax_t factor, typename type>
 	//type MulInt(type a) {
 	//	return a * Constants::Integer<type, factor>();

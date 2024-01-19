@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types"
 #include "declarations"
 
 #include <thread>
@@ -37,7 +36,7 @@ namespace Imagina {
 	class ProgressTrackable {
 	public:
 		virtual ~ProgressTrackable() {}
-		virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const = 0;
+		virtual bool GetProgress(double &Numerator, double &Denoninator) const = 0;
 	};
 
 	class im_export ParallelTask : public virtual Task {
