@@ -2,11 +2,56 @@
 
 #include <stdint.h>
 #include "declarations"
-#include "multi-precision.h"
 #include "floating_point"
 
 namespace Imagina {
 	struct MPReal;
+
+	typedef void		(*pMultiPrecision_InitContent)		(MPReal *, MPBCUInt); // Do not use directly, use Init instead.
+	typedef void		(*pMultiPrecision_InitContentCopy)	(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
+
+	typedef void		(*pMultiPrecision_ClearContent)		(MPReal *); // Do not use directly, use Clear instead.
+
+	typedef MPBCUInt	(*pMultiPrecision_GetPrecision)		(const MPReal *);
+	typedef void		(*pMultiPrecision_SetPrecision)		(MPReal *, MPBCUInt);
+
+	typedef void		(*pMultiPrecision_Set)				(MPReal *, const MPReal *);
+	typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
+	typedef void		(*pMultiPrecision_SetDouble)		(MPReal *, double);
+	typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, FloatF64eI64);
+
+	typedef double		(*pMultiPrecision_GetDouble)		(const MPReal *);
+	typedef FloatF64eI64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
+
+	typedef void		(*pMultiPrecision_Add)				(MPReal *, const MPReal *, const MPReal *);
+	typedef void		(*pMultiPrecision_Sub)				(MPReal *, const MPReal *, const MPReal *);
+	typedef void		(*pMultiPrecision_Mul)				(MPReal *, const MPReal *, const MPReal *);
+	typedef void		(*pMultiPrecision_Div)				(MPReal *, const MPReal *, const MPReal *);
+
+	struct _MultiPrecisionMutable {
+		const char *Name;
+
+		pMultiPrecision_InitContent		InitContent;
+		pMultiPrecision_InitContentCopy	InitContentCopy;
+
+		pMultiPrecision_ClearContent	ClearContent;
+
+		pMultiPrecision_GetPrecision	GetPrecision;
+		pMultiPrecision_SetPrecision	SetPrecision;
+
+		pMultiPrecision_Set				Set;
+		pMultiPrecision_Copy			Copy;
+		pMultiPrecision_SetDouble		SetDouble;
+		pMultiPrecision_SetFloatF64eI64	SetFloatF64eI64;
+
+		pMultiPrecision_GetDouble		GetDouble;
+		pMultiPrecision_GetFloatF64eI64	GetFloatF64eI64;
+
+		pMultiPrecision_Add				Add;
+		pMultiPrecision_Sub				Sub;
+		pMultiPrecision_Mul				Mul;
+		pMultiPrecision_Div				Div;
+	};
 
 	struct MultiPrecisionMutable : _MultiPrecisionMutable {
 		operator MultiPrecisionMutable *() { return this; }

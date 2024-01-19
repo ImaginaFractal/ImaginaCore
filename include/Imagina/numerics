@@ -1,0 +1,19 @@
+#pragma once
+
+#include <stdint.h>
+#include "basic_types"
+#include "multi-precision"
+#include "floating_point"
+#include "complex"
+#include "vector"
+
+namespace Imagina::inline Numerics {
+	using HRReal = FloatF64eI64; // Real type for fractal with standard precision and highest range
+	using HPReal = MPReal; // Real type for fractal with high precision
+
+	using SRComplex = Complex<SRReal>;
+	using HRComplex = Complex<HRReal>;
+	using HPComplex = Complex<HPReal>;
+
+	using GRVector4 = Vector4<GRReal>;
+}

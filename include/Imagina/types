@@ -1,23 +1,11 @@
 #pragma once
 
 #include <exception>
-#include "complex"
-#include "multi-precision"
-#include "basic_types"
-#include "floating_point"
+#include "numerics"
 #include "constants"
-#include "vector"
 #include "math"
 
 namespace Imagina {
-	inline namespace Numerics {
-		using SRComplex = Complex<SRReal>;
-		using HRComplex = Complex<HRReal>;
-		using HPComplex = Complex<HPReal>;
-
-		using GRVector4 = Vector4<GRReal>;
-	}
-
 	using RGBA = GRVector4;
 
 	//template<intmax_t factor, typename type>
@@ -89,12 +77,11 @@ namespace Imagina {
 		}
 
 		Circle<real> Circumcircle() const {
-			//using std::hypot; // Computes the square root of the sum of the squares of x and y, without undue overflow or underflow at intermediate stages of the computation
+			// FIXME //using std::hypot; // Computes the square root of the sum of the squares of x and y, without undue overflow or underflow at intermediate stages of the computation
 			return Circle(X, Y, hypot(HalfHeight, HalfWidth));
 		}
 
 		Circle<real> ApproximateCircumcircle() const {
-			//using std::hypot; // Computes the square root of the sum of the squares of x and y, without undue overflow or underflow at intermediate stages of the computation
 			return Circle(X, Y, ManhattanHypot(HalfHeight, HalfWidth));
 		}
 	};

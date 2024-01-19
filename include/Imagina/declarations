@@ -10,6 +10,9 @@
 #define im_export
 #endif
 
+#define if_likely(...) if (__VA_ARGS__) [[likely]]
+#define if_unlikely(...) if (__VA_ARGS__) [[unlikely]]
+
 namespace Imagina {
 	class IModuleExtension;
 
