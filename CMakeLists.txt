@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("ImaginaCore")
 
+option(GENERATE_INTERFACES "Generate interfaces" TRUE)
+
 add_subdirectory ("interface_generator")
 
 add_library (ImaginaCommon INTERFACE)
@@ -37,13 +39,16 @@ FILE (GLOB SourceFiles "*.cpp")
 add_library (ImaginaCore SHARED ${SourceFiles})
 target_link_libraries (ImaginaCore PRIVATE ImaginaCommon)
 
-add_dependencies (ImaginaCore Interfaces)
+if (GENERATE_INTERFACES)
+	add_dependencies (ImaginaCore Interfaces)
+endif()
 
 target_include_directories (ImaginaCore PRIVATE "include")
 target_include_directories (ImaginaCore SYSTEM INTERFACE "include")
 
 set_target_properties (ImaginaCore PROPERTIES PREFIX "")
 set_target_properties (ImaginaCore PROPERTIES OUTPUT_NAME "Imagina")
+set_target_properties (ImaginaCore PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}) # It will be in the same directory as the executable
 
 target_compile_definitions (ImaginaCore PRIVATE IM_BUILD_CORE)
 
