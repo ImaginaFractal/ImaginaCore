@@ -3,6 +3,8 @@
 #include <cmath>
 #include <algorithm>
 #include <concepts>
+#include <limits>
+#include <cassert>
 #include "numerics"
 #include "constants"
 
@@ -107,5 +109,56 @@ namespace Imagina {
 	template<typename T1, typename T2>
 	T1 lerp(T1 a, T1 b, T2 t) {
 		return a * (T2(1) - t) + b * t;
+	}
+
+	inline std::pair<double, double> _cmp_abs_common(const Complex<double> &a, const Complex<double> &b) {
+		double ar = std::abs(a.re), ai = std::abs(a.im);
+		double br = std::abs(b.re), bi = std::abs(b.im);
+		double max = std::max(std::max(ar, ai), std::max(br, bi));
+		assert(std::isfinite(max));
+		double scale = std::bit_cast<double>(std::bit_cast<uint64_t>(std::numeric_limits<double>::max()) - std::bit_cast<uint64_t>(max));
+
+		ar *= scale;
+		ai *= scale;
+		br *= scale;
+		bi *= scale;
+
+		return { ar * ar + ai * ai, br * br + bi * bi };
+	}
+
+	inline bool abs_lt(const Complex<double> &a, const Complex<double> &b) {
+		auto [abs_a, abs_b] = _cmp_abs_common(a, b);
+		return abs_a < abs_b;
+	}
+
+	inline bool abs_le(const Complex<double> &a, const Complex<double> &b) {
+		auto [abs_a, abs_b] = _cmp_abs_common(a, b);
+		return abs_a <= abs_b;
+	}
+
+	inline bool abs_gt(const Complex<double> &a, const Complex<double> &b) {
+		auto [abs_a, abs_b] = _cmp_abs_common(a, b);
+		return abs_a > abs_b;
+	}
+
+	inline bool abs_ge(const Complex<double> &a, const Complex<double> &b) {
+		auto [abs_a, abs_b] = _cmp_abs_common(a, b);
+		return abs_a >= abs_b;
+	}
+
+	inline bool abs_lt(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+		return norm(a) < norm(b);
+	}
+
+	inline bool abs_le(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+		return norm(a) <= norm(b);
+	}
+
+	inline bool abs_gt(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+		return norm(a) > norm(b);
+	}
+
+	inline bool abs_ge(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+		return norm(a) >= norm(b);
 	}
 }
