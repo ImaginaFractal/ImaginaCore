@@ -64,20 +64,20 @@ namespace Imagina {
 		return std::atan2(y2, x2);
 	}
 
-	template<typename T> inline T ManhattanHypot(const T &x, const T &y) {
+	template<typename T> inline T manhattan_hypot(const T &x, const T &y) {
 		return abs(x) + abs(y);
 	}
 
-	template<typename T> inline T ChebyshevHypot(const T &x, const T &y) {
+	template<typename T> inline T chebyshev_hypot(const T &x, const T &y) {
 		return max(abs(x), abs(y));
 	}
 
-	template<typename T> inline T ManhattanNorm(const Complex<T> &x) {
-		return ManhattanHypot(x.re, x.im);
+	template<typename T> inline T manhattan_norm(const Complex<T> &x) {
+		return manhattan_hypot(x.re, x.im);
 	}
 
-	template<typename T> inline T ChebyshevNorm(const Complex<T> &x) {
-		return ChebyshevHypot(x.re, x.im);
+	template<typename T> inline T chebyshev_norm(const Complex<T> &x) { // FIXME: Rename
+		return chebyshev_hypot(x.re, x.im);
 	}
 
 	template<std::floating_point T> inline T abs(const Complex<T> &x) {

@@ -80,7 +80,7 @@ namespace Imagina {
 		}
 
 		Circle<real> ApproximateCircumcircle() const {
-			return Circle(X, Y, ManhattanHypot(HalfHeight, HalfWidth));
+			return Circle(X, Y, manhattan_hypot(HalfHeight, HalfWidth));
 		}
 	};
 	
