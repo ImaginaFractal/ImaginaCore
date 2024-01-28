@@ -298,6 +298,18 @@ namespace Imagina::MPLite {
 		return i > 0;
 	}
 
+	// result = (a << shift) + b
+	uint32_t ShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, uint32_t b, uint32_t size) {
+		assert(shift <= 32);
+		uint64_t carry = b;
+		for (uint32_t i = 0; i < size; i++) {
+			carry += uint64_t(a[i]) << shift;
+			result[i] = uint32_t(carry);
+			carry >>= 32;
+		}
+		return uint32_t(carry);
+	}
+
 	// Sign of y is ignored
 	void Float::UnsignedAdd(Float *result, const Float *x, const Float *y) {
 		result->Sign = x->Sign;
@@ -324,55 +336,79 @@ namespace Imagina::MPLite {
 		const uint32_t *xdata = x->Data();
 		const uint32_t *ydata = y->Data();
 
-		if (rsize < xsize) {
-			xdata += xsize - rsize;
-			xsize = rsize;
-		}
 
-		uint32_t temp = y->Size + exponentDifference;
-		uint32_t i, j;
-		uint64_t carry;
-		if (temp > rsize) {
-			i = 0;
-			j = temp - rsize;
-			carry = uint64_t(ydata[j - 1]) >> (32 - shift);
-		} else {
-			i = rsize - temp;
-			j = 0;
-			carry = 0;
-		}
+		uint64_t carry = 0;
+		uint32_t yalign = ysize + exponentDifference;
 
-		if (rsize > xsize) { // FIXME: when i != 0
-			uint32_t diff = rsize - xsize;
-			while (i < diff) {
-				if (j >= ysize) throw ""; // FIXME
-				carry += uint64_t(ydata[j]) << shift;
-				rdata[i] = carry;
-				i++;
-				j++;
-				carry >>= 32;
-			}
+		// TODO: Ensure ysize doesn't underflow
+
+		if (uint32_t temp = std::max(xsize, yalign); temp < rsize) { // Result is too large: shrink result
+			uint32_t diff = rsize - temp;
+			memset(rdata, 0, diff * sizeof(uint32_t));
 			rdata += diff;
-			i = 0;
-		}
+			rsize = temp;
+		} else {
+			if (xsize > rsize) {
+				xdata += xsize - rsize;
+				xsize = rsize;
 
-		while (j < ysize) {
-			carry += uint64_t(xdata[i]) + (uint64_t(ydata[j]) << shift);
-			rdata[i] = uint32_t(carry);
-			i++;
-			j++;
+				carry = xdata[-1];
+			}
+
+			if (yalign > rsize) {
+				uint32_t diff = yalign - rsize;
+
+				ydata += diff;
+				ysize -= diff;
+				yalign -= diff;
+
+				carry += uint64_t(ydata[-1]) << shift;
+			}
+
+			carry += 0x8000'0000; // Round to nearest
 			carry >>= 32;
 		}
-		while (i < xsize) {
+
+		if (yalign > xsize) {
+			uint32_t diff = yalign - xsize;
+			assert(ysize >= diff);
+			carry = ShlAdd1(rdata, ydata, shift, carry, diff);
+			ydata += diff;
+			ysize -= diff;
+			yalign -= diff;
+			rdata += diff;
+			rsize -= diff;
+			assert(yalign == rsize);
+		} else {
+			uint32_t diff = xsize - yalign;
+			if (result != x) memcpy(rdata, xdata, diff * sizeof(uint32_t)); // FIXME: carry
+			carry = 0;
+			xdata += diff;
+			xsize -= diff;
+			rdata += diff;
+			rsize -= diff;
+			assert(xsize == rsize);
+		}
+
+		uint32_t i = 0;
+
+		for (; i < ysize; i++) {
+			carry += uint64_t(xdata[i]) + (uint64_t(ydata[i]) << shift);
+			rdata[i] = uint32_t(carry);
+			carry >>= 32;
+		}
+
+		for (; i < xsize; i++) {
 			carry += uint64_t(xdata[i]);
 			rdata[i] = uint32_t(carry);
-			i++;
-			j++;
 			carry >>= 32;
 		}
+
 		result->Exponent = x->Exponent;
 		if (carry) {
 			assert(carry == 1);
+			rdata = result->Data();
+			rsize = result->Size;
 
 			carry = rdata[0] >> 1;
 			for (i = 1; i < rsize; i++) {
