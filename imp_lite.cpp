@@ -94,8 +94,8 @@ namespace Imagina::MPLite {
 		uint32_t size = x->Size;
 		uint32_t srcSize = src->Size;
 
-		uint32_t *dstData = (size > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *srcData = (srcSize > BufferSize) ? src->Pointer : src->Buffer;
+		uint32_t *dstData = x->Data();
+		const uint32_t *srcData = src->Data();
 
 		if (srcSize > size) {
 			srcData += srcSize - size;
@@ -133,7 +133,7 @@ namespace Imagina::MPLite {
 			return;
 		}
 		uint32_t size = x->Size;
-		uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
+		uint32_t *data = x->Data();
 		
 		uint64_t bits = std::bit_cast<uint64_t>(d);
 		x->Sign = bits >> 63;
@@ -166,7 +166,7 @@ namespace Imagina::MPLite {
 			result = 0;
 		} else {
 			uint32_t size = x->Size;
-			const uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
+			const uint32_t *data = x->Data();
 			uint64_t Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
 			result = (Mantissa >> 11) & 0x000F'FFFF'FFFF'FFFFULL;
 			result |= uint64_t(x->Exponent + 0x3FE) << 52;
@@ -216,9 +216,9 @@ namespace Imagina::MPLite {
 		uint32_t xsize = x->Size;
 		uint32_t ysize = y->Size;
 
-		uint32_t *rdata = (rsize > BufferSize) ? result->Pointer : result->Buffer;
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
+		uint32_t *rdata = result->Data();
+		const uint32_t *xdata = x->Data();
+		const uint32_t *ydata = y->Data();
 
 		uint32_t rindex = 0;
 
@@ -283,13 +283,10 @@ namespace Imagina::MPLite {
 		if (x->Exponent > y->Exponent) return true;
 		if (x->Exponent < y->Exponent) return false;
 
-		uint32_t xsize = x->Size;
-		uint32_t ysize = y->Size;
+		const uint32_t *xdata = x->Data();
+		const uint32_t *ydata = y->Data();
 
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
-
-		uint32_t i = xsize, j = ysize;
+		uint32_t i = x->Size, j = y->Size;
 		while (i-- > 0 && j-- > 0) {
 			if (xdata[i] > ydata[j]) {
 				return true;
@@ -322,10 +319,10 @@ namespace Imagina::MPLite {
 		uint32_t shift = -exponentDifference & 0x1F;
 		exponentDifference = (exponentDifference + shift) >> 5;
 
-		uint32_t *rdata = (rsize > BufferSize) ? result->Pointer : result->Buffer;
+		uint32_t *rdata = result->Data();
 		uint32_t *rdata2 = rdata;
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
+		const uint32_t *xdata = x->Data();
+		const uint32_t *ydata = y->Data();
 
 		if (rsize < xsize) {
 			xdata += xsize - rsize;
@@ -411,10 +408,10 @@ namespace Imagina::MPLite {
 		uint32_t shift = -exponentDifference & 0x1F;
 		exponentDifference = (exponentDifference + shift) >> 5;
 
-		uint32_t *rdata = (rsize > BufferSize) ? result->Pointer : result->Buffer;
+		uint32_t *rdata = result->Data();
 		uint32_t *rdata2 = rdata;
-		const uint32_t *xdata = (xsize > BufferSize) ? x->Pointer : x->Buffer;
-		const uint32_t *ydata = (ysize > BufferSize) ? y->Pointer : y->Buffer;
+		const uint32_t *xdata = x->Data();
+		const uint32_t *ydata = y->Data();
 
 		if (rsize < xsize) {
 			xdata += xsize - rsize;

@@ -23,6 +23,9 @@ namespace Imagina::MPLite {
 			int32_t SignSize;
 		};
 
+		uint32_t *Data() { return (Size > BufferSize) ? Pointer : Buffer; }
+		const uint32_t *Data() const { return (Size > BufferSize) ? Pointer : Buffer; }
+
 		static void Init(Float *x, uintptr_t precision);
 		static void InitCopy(Float *x, const Float *src);
 
