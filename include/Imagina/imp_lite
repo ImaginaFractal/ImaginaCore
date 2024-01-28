@@ -51,6 +51,8 @@ namespace Imagina::MPLite {
 
 	private:
 		inline static void UnsignedSet(Float *x, const Float *src);
+		template<bool IsAdd>
+		static void UnsignedAddSub(Float *result, const Float *x, const Float *y);
 		static void UnsignedAdd(Float *result, const Float *x, const Float *y);
 		static void UnsignedSub(Float *result, const Float *x, const Float *y);
 	};

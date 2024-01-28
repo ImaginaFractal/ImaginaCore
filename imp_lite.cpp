@@ -310,10 +310,39 @@ namespace Imagina::MPLite {
 		return uint32_t(carry);
 	}
 
+	// result = (-a << shift) + b
+	int32_t NegShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, int32_t b, uint32_t size) {
+		assert(shift <= 32);
+		int64_t carry = b;
+		for (uint32_t i = 0; i < size; i++) {
+			carry -= int64_t(a[i]) << shift;
+			result[i] = uint32_t(carry);
+			carry >>= 32;
+		}
+		return int32_t(carry);
+	}
+
 	// Sign of y is ignored
 	void Float::UnsignedAdd(Float *result, const Float *x, const Float *y) {
+		UnsignedAddSub<true>(result, x, y);
+	}
+	// Sign of y is ignored
+	void Float::UnsignedSub(Float *result, const Float *x, const Float *y) {
+		UnsignedAddSub<false>(result, x, y);
+	}
+	template<bool IsAdd>
+	void Float::UnsignedAddSub(Float *result, const Float *x, const Float *y) {
+		using CarryType = std::conditional<IsAdd, uint64_t, int64_t>::type;
+
 		result->Sign = x->Sign;
-		if (x->Exponent < y->Exponent) std::swap(x, y);
+		if constexpr (IsAdd) {
+			if (x->Exponent < y->Exponent) std::swap(x, y);
+		} else {
+			if (MagnitudeGreater(y, x)) {
+				std::swap(x, y);
+				result->Sign = ~result->Sign;
+			}
+		}
 
 		uint32_t exponentDifference = uint32_t(x->Exponent - y->Exponent);
 
@@ -337,10 +366,11 @@ namespace Imagina::MPLite {
 		const uint32_t *ydata = y->Data();
 
 
-		uint64_t carry = 0;
+		CarryType carry = 0;
 		uint32_t yalign = ysize + exponentDifference;
 
 		// TODO: Ensure ysize doesn't underflow
+		// FIXME: Loss of precision in catastrophic cancellation if rsize is much smaller than xsize and ysize
 
 		if (uint32_t temp = std::max(xsize, yalign); temp < rsize) { // Result is too large: shrink result
 			uint32_t diff = rsize - temp;
@@ -362,7 +392,11 @@ namespace Imagina::MPLite {
 				ysize -= diff;
 				yalign -= diff;
 
-				carry += uint64_t(ydata[-1]) << shift;
+				if (IsAdd) {
+					carry += CarryType(ydata[-1]) << shift;
+				} else {
+					carry -= CarryType(ydata[-1]) << shift;
+				}
 			}
 
 			carry += 0x8000'0000; // Round to nearest
@@ -372,7 +406,11 @@ namespace Imagina::MPLite {
 		if (yalign > xsize) {
 			uint32_t diff = yalign - xsize;
 			assert(ysize >= diff);
-			carry = ShlAdd1(rdata, ydata, shift, carry, diff);
+			if (IsAdd) {
+				carry = ShlAdd1(rdata, ydata, shift, carry, diff);
+			} else {
+				carry = NegShlAdd1(rdata, ydata, shift, carry, diff);
+			}
 			ydata += diff;
 			ysize -= diff;
 			yalign -= diff;
@@ -393,152 +431,75 @@ namespace Imagina::MPLite {
 		uint32_t i = 0;
 
 		for (; i < ysize; i++) {
-			carry += uint64_t(xdata[i]) + (uint64_t(ydata[i]) << shift);
+			if (IsAdd) {
+				carry += CarryType(xdata[i]) + (CarryType(ydata[i]) << shift);
+			} else {
+				carry += CarryType(xdata[i]) - (CarryType(ydata[i]) << shift);
+			}
 			rdata[i] = uint32_t(carry);
 			carry >>= 32;
 		}
 
 		for (; i < xsize; i++) {
-			carry += uint64_t(xdata[i]);
+			carry += CarryType(xdata[i]);
 			rdata[i] = uint32_t(carry);
 			carry >>= 32;
 		}
 
 		result->Exponent = x->Exponent;
-		if (carry) {
-			assert(carry == 1);
-			rdata = result->Data();
-			rsize = result->Size;
 
-			carry = rdata[0] >> 1;
-			for (i = 1; i < rsize; i++) {
-				carry |= uint64_t(rdata[i]) << 31;
-				rdata[i - 1] = uint32_t(carry);
-				carry >>= 32;
+		rdata = result->Data();
+		rsize = result->Size;
+
+		if constexpr (IsAdd) {
+			if (carry) {
+				assert(carry == 1);
+
+				carry = rdata[0] >> 1;
+				for (i = 1; i < rsize; i++) {
+					carry |= uint64_t(rdata[i]) << 31;
+					rdata[i - 1] = uint32_t(carry);
+					carry >>= 32;
+				}
+				rdata[i - 1] = uint32_t(carry) | 0x8000'0000;
+				result->Exponent++;
 			}
-			rdata[i - 1] = uint32_t(carry) | 0x8000'0000;
-			result->Exponent++;
+		} else {
+			assert(!carry);
+
+			i = rsize;
+			while (!rdata[--i]) if (i == 0) {
+				result->Exponent = INT32_MIN;
+				return;
+			}
+
+			uint32_t lshift = std::countl_zero(rdata[i]);
+			result->Exponent -= (rsize - 1 - i) * 32 + lshift;
+
+			uint32_t j = rsize;
+			if (lshift == 0) {
+				do {
+					j--;
+					rdata[j] = rdata[i];
+				} while (i-- > 0);
+			} else {
+				uint32_t rshift = 32 - lshift;
+				uint32_t hiword = rdata[i];
+
+				while (i-- > 0) {
+					j--;
+
+					uint32_t loword = rdata[i];
+					rdata[j] = (hiword << lshift) | (loword >> rshift);
+					hiword = loword;
+				}
+				if (j == 0) return;
+				j--;
+				rdata[j] = hiword << lshift;
+			}
+			if (j > 0) memset(rdata, 0, j * sizeof(uint32_t));
 		}
 	}
-
-	void Float::UnsignedSub(Float *result, const Float *x, const Float *y) {
-		result->Sign = x->Sign;
-		if (MagnitudeGreater(y, x)) {
-			std::swap(x, y);
-			result->Sign = ~result->Sign;
-		}
-
-		uint32_t exponentDifference = uint32_t(x->Exponent - y->Exponent);
-
-		uint32_t rsize = result->Size;
-
-		//if_unlikely(y->Exponent == INT32_MIN) {
-		if (uintptr_t(exponentDifference) >= uintptr_t(rsize) * 32) {
-			if (result != x) UnsignedSet(result, x);
-			return;
-		}
-
-		uint32_t xsize = x->Size;
-		uint32_t ysize = y->Size;
-
-		uint32_t shift = -exponentDifference & 0x1F;
-		exponentDifference = (exponentDifference + shift) >> 5;
-
-		uint32_t *rdata = result->Data();
-		uint32_t *rdata2 = rdata;
-		const uint32_t *xdata = x->Data();
-		const uint32_t *ydata = y->Data();
-
-		if (rsize < xsize) {
-			xdata += xsize - rsize;
-			xsize = rsize;
-		}
-
-		uint32_t temp = y->Size + exponentDifference;
-		uint32_t i, j;
-		int64_t carry;
-		if (temp > rsize) {
-			i = 0;
-			j = temp - rsize;
-			carry = -(uint64_t(ydata[j - 1]) >> (32 - shift));
-		} else {
-			i = rsize - temp;
-			j = 0;
-			carry = 0;
-		}
-
-		if (rsize > xsize) { // FIXME: when i != 0
-			uint32_t diff = rsize - xsize;
-			while (i < diff) {
-				if (j >= ysize) throw ""; // FIXME
-				carry -= int64_t(ydata[j]) << shift;
-				rdata[i] = carry;
-				i++;
-				j++;
-				carry >>= 32;
-			}
-			rdata += diff;
-			i = 0;
-		}
-
-		while (j < ysize) {
-			carry += int64_t(xdata[i]) - (int64_t(ydata[j]) << shift);
-			rdata[i] = uint32_t(carry);
-			i++;
-			j++;
-			carry >>= 32;
-		}
-		while (i < xsize) {
-			carry += uint64_t(xdata[i]);
-			rdata[i] = uint32_t(carry);
-			i++;
-			j++;
-			carry >>= 32;
-		}
-		result->Exponent = x->Exponent;
-
-		assert(!carry);
-
-		//uint32_t lzwords, lzbits;
-
-		i = rsize;
-		do if (!i--) { // Find the first non zero word
-			result->Exponent = INT32_MIN;
-			return;
-		} while (!rdata[i]);
-
-		//lzbits = std::countl_zero(rdata[i]);
-		//lzwords = rsize - i + (lzbits == 0);
-
-		uint32_t lshift = std::countl_zero(rdata[i]);
-		result->Exponent -= (rsize - 1 - i) * 32 + lshift;
-
-		j = rsize;
-		if (lshift == 0) {
-			do {
-				j--;
-				rdata[j] = rdata[i];
-			} while (i-- > 0);
-			if (j == 0) return;
-		} else {
-			uint32_t rshift = 32 - lshift;
-			uint32_t hiword = rdata[i];
-
-			while (i-- > 0) {
-				j--;
-
-				uint32_t loword = rdata[i];
-				rdata[j] = (hiword << lshift) | (loword >> rshift);
-				hiword = loword;
-			}
-			if (j == 0) return;
-			j--;
-			rdata[j] = hiword << lshift;
-		}
-		if (j > 0) memset(rdata, 0, j * sizeof(uint32_t));
-	}
-
-
 }
 
 namespace Imagina {
