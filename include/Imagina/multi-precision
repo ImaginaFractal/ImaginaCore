@@ -19,6 +19,7 @@ namespace Imagina {
 	typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
 	typedef void		(*pMultiPrecision_SetDouble)		(MPReal *, double);
 	typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, FloatF64eI64);
+	typedef void		(*pMultiPrecision_SetString)		(MPReal *, const char *, int);
 
 	typedef double		(*pMultiPrecision_GetDouble)		(const MPReal *);
 	typedef FloatF64eI64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
@@ -43,6 +44,7 @@ namespace Imagina {
 		pMultiPrecision_Copy			Copy;
 		pMultiPrecision_SetDouble		SetDouble;
 		pMultiPrecision_SetFloatF64eI64	SetFloatF64eI64;
+		pMultiPrecision_SetString		SetString;
 
 		pMultiPrecision_GetDouble		GetDouble;
 		pMultiPrecision_GetFloatF64eI64	GetFloatF64eI64;
