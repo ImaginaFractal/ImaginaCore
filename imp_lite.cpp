@@ -281,7 +281,7 @@ namespace Imagina::MPLite {
 
 	bool Float::MagnitudeGreater(const Float *x, const Float *y) {
 		if (x->Exponent > y->Exponent) return true;
-		if (x->Exponent < y->Exponent) return false;
+		if (x->Exponent < y->Exponent || y->Exponent == INT32_MIN) return false;
 
 		const uint32_t *xdata = x->Data();
 		const uint32_t *ydata = y->Data();
@@ -342,6 +342,10 @@ namespace Imagina::MPLite {
 				std::swap(x, y);
 				result->Sign = ~result->Sign;
 			}
+		}
+		if (x->Exponent == INT32_MIN) {
+			result->Exponent = INT32_MIN;
+			return;
 		}
 
 		uint32_t exponentDifference = uint32_t(x->Exponent - y->Exponent);
