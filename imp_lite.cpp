@@ -145,7 +145,7 @@ namespace Imagina::MPLite {
 		data[size - 2] = (uint32_t)Mantissa;
 		if (size == 2) return;
 
-		memset(data, 0, size - 2);
+		memset(data, 0, (size - 2) * sizeof(uint32_t));
 	}
 
 	void Float::SetFloatF64eI64(Float *x, Imagina::FloatF64eI64 f) {
@@ -223,7 +223,7 @@ namespace Imagina::MPLite {
 		uint32_t rindex = 0;
 
 		if (rsize > xsize) {
-			memset(rdata, 0, rsize - xsize);
+			memset(rdata, 0, (rsize - xsize) * sizeof(uint32_t));
 			uint32_t productSize = xsize + ysize;
 			if (rsize > productSize) {
 				rdata += rsize - productSize;
