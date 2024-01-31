@@ -5,6 +5,7 @@
 #include <bit>
 #include <utility>
 #include <Imagina/floating_point>
+#include <Imagina/math>
 
 namespace Imagina::MPLite {
 	uint32_t PrecisionToSize(uintptr_t precision) {
@@ -276,7 +277,132 @@ namespace Imagina::MPLite {
 	}
 
 	void Float::Div(Float *result, const Float *x, const Float *y) {
-		throw ""; // FIXME
+		if_unlikely(x->Exponent == INT32_MIN) {
+			result->Exponent = INT32_MIN;
+			return;
+		}
+		if_unlikely(y->Exponent == INT32_MIN) { // FIXME: Infinity not supported (yet)
+			result->Exponent = INT32_MAX;
+			return;
+		}
+		uint32_t rsize = result->Size;
+		uint32_t xsize = x->Size;
+		uint32_t ysize = y->Size;
+
+		uint32_t *rdata = result->Data();
+		const uint32_t *xdata = x->Data();
+		const uint32_t *ydata = y->Data();
+
+		if (result == y) {
+			uint32_t *temp = new uint32_t[ysize];
+			memcpy(temp, ydata, ysize * sizeof(uint32_t));
+			ydata = temp;
+		}
+
+		uint32_t *rem = new uint32_t[ysize];
+		int32_t rem_sign = 0;
+		uint32_t i = rsize;
+
+		double inv_y = 0x1p33 / ((uint64_t(ydata[ysize - 1]) << 32) | ydata[ysize - 2]);
+
+		if (xsize > ysize) { // Copy high part of x to remainder
+			uint32_t diff = xsize - ysize;
+			memcpy(rem, xdata + diff, ysize * sizeof(uint32_t));
+			xsize = diff; // Remaining low part
+		} else {
+			uint32_t diff = ysize - xsize;
+			memset(rem, 0, diff * sizeof(uint32_t));
+			memcpy(rem + diff, xdata, xsize * sizeof(uint32_t));
+			xsize = 0;
+		}
+
+		uint32_t *p_rem_msw = rem + (ysize - 2);
+		if (p_rem_msw[1] > ydata[ysize - 1]) { // Remainder too large, subtract divisor from it
+			rdata[--i] = 1;
+			int64_t carry = 0;
+			for (uint32_t j = 0; j < ysize; j++) {
+				carry = int64_t(rem[j]) - ydata[j] + carry;
+				rem[j] = uint32_t(carry);
+				carry >>= 32;
+			}
+			rem_sign = int32_t(carry);
+		} else {
+			rdata[--i] = 0;
+		}
+
+		int64_t Q;
+		while (true) {
+			int64_t rem_msw = int64_t(rem_sign) << 63 | int64_t(p_rem_msw[1]) << 31 | p_rem_msw[0] >> 1;
+			Q = round_i64(rem_msw * inv_y);
+			if (i == 0) break;
+
+			if_unlikely(Q >= 0x1'0000'0000) {
+				Q = 0xFFFF'FFFF;
+			} else if_unlikely(Q <= -0x1'0000'0000) {
+				Q = -0xFFFF'FFFF;
+			} else if_unlikely(Q == 0 && rem_msw < 0) {
+				Q = -1;
+			}
+
+			rdata[i] += int32_t(Q >> 32); // There will be no borrow
+			rdata[--i] = uint32_t(Q);
+
+			if (Q > 0) { // mul sub
+				uint32_t q = uint32_t(Q);
+				uint64_t carry = 0;
+				uint32_t loword = xsize ? xdata[--xsize] : 0;
+				for (uint32_t j = 0; j < ysize; j++) {
+					carry += uint64_t(q) * ydata[j];
+					carry += ~loword; // ~(~x + y) == x - y
+					loword = rem[j];
+					rem[j] = ~uint32_t(carry);
+					carry >>= 32;
+				}
+				int64_t temp = int64_t(loword) - carry;
+				rem_sign = (int32_t)temp;
+				assert(temp == 0 || temp == -1);
+			} else { // mul add
+				uint32_t q = uint32_t(-Q);
+				uint64_t carry = 0;
+				uint32_t loword = xsize ? xdata[--xsize] : 0;
+				for (uint32_t j = 0; j < ysize; j++) {
+					carry += uint64_t(q) * ydata[j];
+					carry += loword;
+					loword = rem[j];
+					rem[j] = uint32_t(carry);
+					carry >>= 32;
+				}
+				carry += loword;
+				rem_sign = (int32_t)carry;
+				assert(carry == 0x1'0000'0000 || carry == 0xFFFF'FFFF);
+			}
+		}
+
+		if_unlikely(Q >= 0x1'0000'0000 && rdata[0] == 0xFFFF'FFFF) {
+			Q = 0xFFFF'FFFF;
+		}
+		rdata[0] += int32_t(Q >> 32);
+
+		result->Sign = x->Sign ^ y->Sign;
+		result->Exponent = x->Exponent - y->Exponent;
+		if (rdata[rsize - 1] == 0) {
+			memmove(rdata + 1, rdata, (rsize - 1) * sizeof(uint32_t));
+			rdata[0] = uint32_t(Q);
+		} else {
+			result->Exponent += 1;
+			i = rsize - 1;
+			uint32_t hiword = rdata[i];
+
+			while (i-- > 0) {
+				uint32_t loword = rdata[i];
+				rdata[i + 1] = (hiword << 31) | (loword >> 1);
+				hiword = loword;
+			}
+			rdata[0] = (hiword << 31) | (uint32_t(Q) >> 1);
+		}
+
+		delete[] rem;
+		if (ydata != y->Data()) delete[] ydata;
 	}
 
 	bool Float::MagnitudeGreater(const Float *x, const Float *y) {
