@@ -161,4 +161,40 @@ namespace Imagina {
 	inline bool abs_ge(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
 		return norm(a) >= norm(b);
 	}
+
+	inline double fast_round(double x);
+	inline int32_t round_i32(double x);
+	inline int64_t round_i64(double x);
 }
+
+#if (defined(__SSE4_1__) || defined(__AVX__)) && __has_include(<smmintrin.h>)
+#include <smmintrin.h>
+
+inline double Imagina::fast_round(double x) {
+	__m128d temp = _mm_set_sd(x);
+	return _mm_cvtsd_f64(_mm_round_sd(temp, temp, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC));
+}
+
+inline int32_t Imagina::round_i32(double x) { return Imagina::fast_round(x); }
+inline int64_t Imagina::round_i64(double x) { return Imagina::fast_round(x); }
+#elif defined(__x86_64__) || defined(_M_X64) || defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
+inline double Imagina::fast_round(double x) {
+	return std::nearbyint(x); // FIXME: rounding mode
+}
+inline int32_t Imagina::round_i32(double x) {
+	return x + std::copysign(0.5, x);
+}
+inline int64_t Imagina::round_i64(double x) {
+	return x + std::copysign(0.5, x);
+}
+#else // ARM
+inline double Imagina::fast_round(double x) {
+	return std::round(x);
+}
+inline int32_t Imagina::round_i32(double x) {
+	return std::round(x);
+}
+inline int64_t Imagina::round_i64(double x) {
+	return std::round(x);
+}
+#endif
