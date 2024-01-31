@@ -482,6 +482,8 @@ namespace Imagina::MPLite {
 
 			uint32_t j = rsize;
 			if (lshift == 0) {
+				if (i == rsize - 1) return;
+
 				do {
 					j--;
 					rdata[j] = rdata[i];
