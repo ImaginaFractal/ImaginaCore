@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <cassert>
 #include "declarations"
 #include "floating_point"
 
@@ -86,10 +87,11 @@ namespace Imagina {
 		operator MPReal *() { return this; }
 		operator const MPReal *() const { return this; }
 
-		MPReal &operator=(const MPReal &x) { MP->Set(this, x); return *this; } // Assign
+		MPReal &operator=(const MPReal &x) { assert(MP == x.MP); MP->Set(this, x); return *this; } // Assign
 		MPReal &operator&=(const MPReal &x); // Copy (set precision and assign)
 		MPReal &operator|=(const MPReal &x); // Set MP and copy
 		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
+		MPReal &operator=(FloatF64eI64 x) { MP->SetFloatF64eI64(this, x); return *this; }
 
 		explicit operator double() const { return MP->GetDouble(this); }
 		explicit operator FloatF64eI64() const { return MP->GetFloatF64eI64(this); };
@@ -97,16 +99,26 @@ namespace Imagina {
 		MPBCUInt GetPrecision() const { return MP->GetPrecision(this); }
 		void SetPrecision(MPBCUInt precision) { MP->SetPrecision(this, precision); }
 
-		MPReal &operator+=(const MPReal &x) { MP->Add(this, this, x); return *this; }
-		MPReal &operator-=(const MPReal &x) { MP->Sub(this, this, x); return *this; }
-		MPReal &operator*=(const MPReal &x) { MP->Mul(this, this, x); return *this; }
-		MPReal &operator/=(const MPReal &x) { MP->Div(this, this, x); return *this; }
+		MPReal &operator+=(const MPReal &x) { assert(MP == x.MP); MP->Add(this, this, x); return *this; }
+		MPReal &operator-=(const MPReal &x) { assert(MP == x.MP); MP->Sub(this, this, x); return *this; }
+		MPReal &operator*=(const MPReal &x) { assert(MP == x.MP); MP->Mul(this, this, x); return *this; }
+		MPReal &operator/=(const MPReal &x) { assert(MP == x.MP); MP->Div(this, this, x); return *this; }
 
 		MPReal &operator+=(double x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
 		MPReal &operator-=(double x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
 
 		MPReal &operator+=(FloatF64eI64 x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
 		MPReal &operator-=(FloatF64eI64 x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
+
+		void CopyFrom(const MPReal &x) {
+			if_likely (MP == x.MP) {
+				MP->Copy(this, x);
+			} else {
+				if (MP) MP->ClearContent(this);
+
+				x.MP->InitCopy(this, x);
+			}
+		}
 	};
 
 	inline void MultiPrecisionMutable::Init(MPReal *x, MPBCUInt precision) const {
@@ -142,6 +154,7 @@ namespace Imagina {
 		return *this;
 	}
 
+	// TODO: Eliminate temporary variable
 	inline MPReal operator+(MPReal x, const MPReal &y) { return x += y; }
 	inline MPReal operator-(MPReal x, const MPReal &y) { return x -= y; }
 	inline MPReal operator*(MPReal x, const MPReal &y) { return x *= y; }
