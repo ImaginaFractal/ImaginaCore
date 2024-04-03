@@ -9,7 +9,7 @@
 
 namespace Imagina::MPLite {
 	uint32_t PrecisionToSize(uintptr_t precision) {
-		uint32_t size = (precision + 32) / 32; // ceil((precision + 1) / 32)
+		uint32_t size = (precision + 31) / 32; // ceil((precision) / 32)
 		if (size < 2) size = 2;
 		return size;
 	}
@@ -18,13 +18,16 @@ namespace Imagina::MPLite {
 		return uintptr_t(size) * 32;
 	}
 
-	void Float::Init(Float *x, uintptr_t precision) {
+	void Float::_Init(Float *x, uint32_t size) {
 		memset(x, 0, sizeof(Float));
-		uint32_t size = PrecisionToSize(precision);
 		x->SignSize = size;
 		if (size > BufferSize) {
 			x->Pointer = (uint32_t *)calloc(size, sizeof(uint32_t));
 		}
+	}
+
+	void Float::Init(Float *x, uintptr_t precision) {
+		_Init(x, PrecisionToSize(precision));
 	}
 	void Float::InitCopy(Float *x, const Float *src) {
 		x->SignSize = src->SignSize;
@@ -128,6 +131,23 @@ namespace Imagina::MPLite {
 		memcpy((newSize > BufferSize) ? x->Pointer : x->Buffer, (newSize > BufferSize) ? src->Pointer : src->Buffer, newSize * sizeof(uint32_t));
 	}
 
+	void Float::SetU32(Float *x, uint32_t u32) {
+		if_unlikely (u32 == 0) {
+			x->Exponent = INT32_MIN;
+			return;
+		}
+		uint32_t size = x->Size;
+		uint32_t *data = x->Data();
+
+		uint32_t shift = std::countl_zero(u32);
+		u32 <<= shift;
+		x->Exponent = 32 - shift;
+		x->Sign = 0;
+		data[size - 1] = u32;
+
+		memset(data, 0, (size - 1) * sizeof(uint32_t));
+	}
+
 	void Float::SetDouble(Float *x, double d) { // FIXME: Denormal
 		if_unlikely (d == 0.0) {
 			x->Exponent = INT32_MIN;
@@ -158,6 +178,138 @@ namespace Imagina::MPLite {
 		x->Exponent += f.Exponent;
 	}
 
+	inline bool IsWhitespace(char c) {
+		return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+	}
+
+	inline bool IsDigit(char c) {
+		return c >= '0' && c <= '9';
+	}
+
+	static uint32_t shr(uint32_t *result, const uint32_t *x, uint32_t size, uint32_t shift, uint32_t shift_in = 0) {
+		assert(shift > 0 && shift < 32);
+		uint32_t hiword = shift_in;
+		uint32_t lshift = 32 - shift;
+		for (uint32_t i = size; i-- > 0;) {
+			uint32_t loword = x[i];
+			result[i] = (hiword << lshift) | (loword >> shift);
+			hiword = loword;
+		}
+		return hiword << lshift;
+	}
+
+	static void shl_rev(uint32_t *result, const uint32_t *x, uint32_t size, uint32_t shift) {
+		result[0] = shr(result + 1, x, size - 1, 32 - shift, x[size - 1]);
+	}
+
+	static uint32_t mul_u32(uint32_t *result, const uint32_t *x, uint32_t size, uint32_t y, uint32_t carry = 0) {
+		for (uint32_t i = 0; i < size; i++) {
+			uint64_t product = (uint64_t)x[i] * y + carry;
+			result[i] = (uint32_t)product;
+			carry = uint32_t(product >> 32);
+		}
+		return carry;
+	}
+
+	void Float::SetString(Float *x, const char *str, int base) {
+		assert(base == 10); // FIXME
+		int32_t exponent = 0;
+
+		uint32_t *data = x->Data();
+		uint32_t max_size = x->Size;
+		uint32_t size = 1;
+		data[0] = 0;
+
+		while (IsWhitespace(*str)) str++;
+		if (*str == '-') {
+			x->Sign = 1;
+			str++;
+		} else {
+			x->Sign = 0;
+			if (*str == '+') str++;
+		}
+		while (IsWhitespace(*str)) str++;
+		bool fractional_part = false;
+		char c;
+		uint32_t mul;
+		while (true) switch (c = *(str++)) { // FIXME: reject empty string
+			case '@': // TODO: support 'e'
+			case 0: {
+				goto end;
+			}
+			case '.': {
+				if (fractional_part) throw std::exception();
+				fractional_part = true;
+
+				continue;
+			}
+			case '\'':
+				continue;
+			default: {
+				if (!IsDigit(c)) throw std::exception(); // FIXME
+				if (fractional_part) exponent--;
+				uint32_t carry = mul_u32(data, data, size, 10, c - '0');
+				if (carry != 0) {
+					if (size < max_size) {
+						data[size++] = carry;
+					} else {
+						uint32_t shift = 32 - std::countl_zero(carry);
+						shr(data, data, size, shift, carry);
+						x->Exponent = size * 32 + shift;
+						while (true) { // Skip all remaining digits;
+							c = *(str++);
+							if (IsDigit(c)) {
+								if (!fractional_part) exponent++;
+							} else if (c != '\'') {
+								break;
+							}
+						}
+						goto normalized;
+					}
+				}
+			}
+		}
+	end:
+		if (size == 1 && data[0] == 0) {
+			x->Exponent = INT32_MIN;
+			return;
+		} else {
+			assert(data[size - 1] != 0);
+			uint32_t shift = std::countl_zero(data[size - 1]);
+			uint32_t diff = max_size - size;
+			if (shift != 0) {
+				shl_rev(data + diff, data, size, shift);
+			} else if (diff != 0) {
+				memmove(data + diff, data, size * sizeof(uint32_t));
+			}
+			memset(data, 0, diff * sizeof(uint32_t));
+			x->Exponent = size * 32 - shift;
+			size = max_size;
+		}
+	normalized:
+		if (c == '@' || (base <= 10 && (c == 'e' || c == 'E'))) {
+			// TODO
+		}
+
+		if (exponent == 0) return;
+
+		bool div = false;
+		if (exponent < 0) {
+			exponent = -exponent;
+			div = true;
+		}
+
+		Float temp;
+		_Init(&temp, size + 1);
+		U32PowU32(&temp, 10, exponent);
+		if (div) {
+			Div(x, x, &temp);
+		} else {
+			Mul(x, x, &temp);
+		}
+		Clear(&temp);
+	}
+
 	double Float::GetDouble(const Float *x) {
 		uint64_t result;
 		if (x->Exponent >= 0x7FF - 0x3FE) {
@@ -168,8 +320,11 @@ namespace Imagina::MPLite {
 		} else {
 			uint32_t size = x->Size;
 			const uint32_t *data = x->Data();
-			uint64_t Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
-			result = (Mantissa >> 11) & 0x000F'FFFF'FFFF'FFFFULL;
+			uint32_t exponent = x->Exponent;
+			uint64_t mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
+			mantissa += 1 << 10; // Round up, the (right shifted) mantissa will be 0 if this carries
+			exponent += mantissa < (1 << 10); // Increment exponent if the previous addition carries, this is correct even if exponent + 0x3FE == 0x7FE, in which case, the result will overflow to infinity.
+			result = (mantissa >> 11) & 0x000F'FFFF'FFFF'FFFFULL;
 			result |= uint64_t(x->Exponent + 0x3FE) << 52;
 		}
 		result |= uint64_t(x->Sign) << 63;
@@ -185,6 +340,77 @@ namespace Imagina::MPLite {
 		const uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
 		uint64_t Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
 		return Imagina::FloatF64eI64(x->Sign ? -double(Mantissa) : double(Mantissa), x->Exponent - 64);
+	}
+
+	void Float::MulU32(Float *result, const Float *x, uint32_t y) {
+		if_unlikely(x->Exponent == INT32_MIN || y == 0) {
+			result->Exponent = INT32_MIN;
+			return;
+		}
+		result->Sign = x->Sign;
+		if_unlikely(y == 1) {
+			if (result != x) UnsignedSet(result, x);
+			return;
+		}
+		result->Exponent = x->Exponent;
+
+		uint32_t rsize = result->Size;
+		uint32_t xsize = x->Size;
+
+		uint32_t *rdata = result->Data();
+		const uint32_t *xdata = x->Data();
+
+		bool result_is_larger;
+
+		if ((result_is_larger = rsize > xsize)) {
+			uint32_t diff = rsize - xsize;
+			memset(rdata, 0, diff * sizeof(uint32_t));
+			rsize = xsize;
+			rdata += diff;
+		} else {
+			uint32_t diff = xsize - rsize;
+			xsize = rsize;
+			xdata += diff;
+		}
+
+		uint32_t carry = mul_u32(rdata, xdata, rsize, y);
+		assert(carry != 0);
+
+		uint32_t shift = 32 - std::countl_zero(carry);
+		result->Exponent += shift;
+		if (shift < 32) {
+			carry = shr(rdata, rdata, rsize, shift, carry);
+		} else {
+			uint32_t temp = rdata[0];
+			memmove(rdata, rdata + 1, (rsize - 1) * sizeof(uint32_t));
+			rdata[rsize - 1] = carry;
+			carry = temp;
+		}
+
+		if (result_is_larger) {
+			rdata[-1] = carry;
+		}
+	}
+
+	void Float::U32PowU32(Float *result, uint32_t x, uint32_t y) { // TODO: Improve efficiency
+		if_unlikely (y == 0) SetU32(result, 1);
+		SetU32(result, x);
+		for (uint32_t i = std::countl_zero(y) + 1; i < 32; i++) {
+			Mul(result, result, result);
+			if ((y << i) & 0x8000'0000) {
+				MulU32(result, result, x);
+			}
+		}
+	}
+
+	void Float::Neg(Float *result, const Float *x) {
+		if (result != x) UnsignedSet(result, x);
+		result->Sign = ~x->Sign;
+	}
+
+	void Float::Abs(Float *result, const Float *x) {
+		if (result != x) UnsignedSet(result, x);
+		result->Sign = 0;
 	}
 
 	void Float::Add(Float *result, const Float *x, const Float *y) {
@@ -220,6 +446,12 @@ namespace Imagina::MPLite {
 		uint32_t *rdata = result->Data();
 		const uint32_t *xdata = x->Data();
 		const uint32_t *ydata = y->Data();
+
+		if (ydata == rdata) {
+			uint32_t *temp = new uint32_t[ysize];
+			memcpy(temp, ydata, ysize * sizeof(uint32_t));
+			ydata = temp;
+		}
 
 		uint32_t rindex = 0;
 
@@ -273,6 +505,9 @@ namespace Imagina::MPLite {
 				loword = hiword;
 			}
 			result->Exponent--;
+		}
+		if (ydata != y->Data()) {
+			delete[] ydata;
 		}
 	}
 
@@ -425,7 +660,7 @@ namespace Imagina::MPLite {
 	}
 
 	// result = (a << shift) + b
-	uint32_t ShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, uint32_t b, uint32_t size) {
+	static uint32_t ShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, uint32_t b, uint32_t size) {
 		assert(shift <= 32);
 		uint64_t carry = b;
 		for (uint32_t i = 0; i < size; i++) {
@@ -437,7 +672,7 @@ namespace Imagina::MPLite {
 	}
 
 	// result = (-a << shift) + b
-	int32_t NegShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, int32_t b, uint32_t size) {
+	static int32_t NegShlAdd1(uint32_t *result, const uint32_t *a, uint32_t shift, int32_t b, uint32_t size) {
 		assert(shift <= 32);
 		int64_t carry = b;
 		for (uint32_t i = 0; i < size; i++) {
@@ -650,6 +885,7 @@ namespace Imagina {
 		.Copy				= (pMultiPrecision_Copy)			MPLite::Float::Copy,
 		.SetDouble			= (pMultiPrecision_SetDouble)		MPLite::Float::SetDouble,
 		.SetFloatF64eI64	= (pMultiPrecision_SetFloatF64eI64)	MPLite::Float::SetFloatF64eI64,
+		.SetString			= (pMultiPrecision_SetString)		MPLite::Float::SetString,
 
 		.GetDouble			= (pMultiPrecision_GetDouble)		MPLite::Float::GetDouble,
 		.GetFloatF64eI64	= (pMultiPrecision_GetFloatF64eI64)	MPLite::Float::GetFloatF64eI64,
