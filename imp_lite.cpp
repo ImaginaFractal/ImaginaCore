@@ -325,7 +325,7 @@ namespace Imagina::MPLite {
 			mantissa += 1 << 10; // Round up, the (right shifted) mantissa will be 0 if this carries
 			exponent += mantissa < (1 << 10); // Increment exponent if the previous addition carries, this is correct even if exponent + 0x3FE == 0x7FE, in which case, the result will overflow to infinity.
 			result = (mantissa >> 11) & 0x000F'FFFF'FFFF'FFFFULL;
-			result |= uint64_t(x->Exponent + 0x3FE) << 52;
+			result |= uint64_t(exponent + 0x3FE) << 52;
 		}
 		result |= uint64_t(x->Sign) << 63;
 		return std::bit_cast<double>(result);
