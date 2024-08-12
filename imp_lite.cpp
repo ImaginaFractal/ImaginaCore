@@ -231,7 +231,7 @@ namespace Imagina::MPLite {
 		while (IsWhitespace(*str)) str++;
 		bool fractional_part = false;
 		char c;
-		uint32_t mul;
+		//uint32_t mul;
 		while (true) switch (c = *(str++)) { // FIXME: reject empty string
 			case '@': // TODO: support 'e'
 			case 0: {
@@ -726,7 +726,7 @@ namespace Imagina::MPLite {
 		exponentDifference = (exponentDifference + shift) >> 5;
 
 		uint32_t *rdata = result->Data();
-		uint32_t *rdata2 = rdata;
+		//uint32_t *rdata2 = rdata;
 		const uint32_t *xdata = x->Data();
 		const uint32_t *ydata = y->Data();
 

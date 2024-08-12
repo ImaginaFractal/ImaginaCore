@@ -17,10 +17,10 @@ namespace Imagina::MPLite {
 		int32_t Exponent;
 		union {
 			struct {
-				int32_t Size : 31;
-				int32_t Sign : 1;
+				uint32_t Size : 31;
+				uint32_t Sign : 1;
 			};
-			int32_t SignSize;
+			uint32_t SignSize;
 		};
 
 		uint32_t *Data() { return (Size > BufferSize) ? Pointer : Buffer; }
