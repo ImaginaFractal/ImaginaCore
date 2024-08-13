@@ -82,4 +82,7 @@ namespace Imagina {
 		void GetDdy(HRReal &x, HRReal &y);
 		void WriteResults(void *value);
 	};
+
+	IMPLEMENT_INTERFACE2(BasicPixelManager, IGpuPixelManager, IRasterizer);
+	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
 }

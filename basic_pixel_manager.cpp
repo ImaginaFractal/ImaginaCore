@@ -231,7 +231,4 @@ namespace Imagina {
 		//pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetScalar<float>(finalOutput);
 		pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetRGBA8(finalOutput);
 	}
-
-	IMPLEMENT_INTERFACE2(BasicPixelManager, IGpuPixelManager, IRasterizer);
-	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
 }

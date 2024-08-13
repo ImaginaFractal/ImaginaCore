@@ -18,4 +18,6 @@ namespace Imagina {
 		void SetEvaluator(IComplexLocationSink evaluator);
 		void LocationChanged(const HRLocation &location);
 	};
+
+	IMPLEMENT_INTERFACE(StandardLocationManager, ILocationManager);
 }

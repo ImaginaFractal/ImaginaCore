@@ -27,6 +27,4 @@ namespace Imagina {
 			if (controller) controller.UpdateRelativeCoordinates(-location.X, -location.Y);
 		}
 	}
-
-	IMPLEMENT_INTERFACE(StandardLocationManager, ILocationManager);
 }

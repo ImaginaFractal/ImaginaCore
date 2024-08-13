@@ -36,6 +36,8 @@ namespace Imagina {
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
 	};
 
+	IMPLEMENT_INTERFACE(SimpleEvaluator, IComplexLocationSink);
+
 	class im_export LowPrecisionEvaluator {
 		class LPRasterizingInterface;
 		class EvaluationTask;
@@ -60,6 +62,8 @@ namespace Imagina {
 
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
 	};
+
+	IMPLEMENT_INTERFACE(LowPrecisionEvaluator, IComplexLocationSink);
 
 	class im_export TestSimpleEvaluator : public SimpleEvaluator {
 		using real = SRReal;

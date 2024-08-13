@@ -40,8 +40,6 @@ namespace Imagina {
 		}
 	}
 
-	IMPLEMENT_INTERFACE(SimpleEvaluator, IComplexLocationSink);
-
 	SimpleEvaluator::SimpleEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);
 	}
@@ -135,8 +133,6 @@ namespace Imagina {
 	}
 
 	
-	IMPLEMENT_INTERFACE(LowPrecisionEvaluator, IComplexLocationSink);
-
 	LowPrecisionEvaluator::LowPrecisionEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);
 	}

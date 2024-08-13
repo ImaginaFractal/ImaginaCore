@@ -32,4 +32,6 @@ namespace Imagina {
 		void ZoomOut(SRReal centerX, SRReal centerY);
 		void Move(SRReal x, SRReal y);
 	};
+
+	IMPLEMENT_INTERFACE(NavigationController, IController);
 }
