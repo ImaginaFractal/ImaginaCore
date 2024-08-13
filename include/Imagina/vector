@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace Imagina::inline Numerics {
 	template<typename T>
 	struct Vector4 {
