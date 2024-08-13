@@ -25,6 +25,7 @@ namespace Imagina {
 
 	public:
 		SimpleEvaluator();
+		virtual ~SimpleEvaluator() = default; // This is not really necessary, but without it the compiler may complain
 
 		ILocationManager GetLocationManager();
 		bool Ready();
@@ -53,6 +54,7 @@ namespace Imagina {
 
 	public:
 		LowPrecisionEvaluator();
+		virtual ~LowPrecisionEvaluator() = default; // Same as above
 
 		ILocationManager GetLocationManager();
 		bool Ready();
