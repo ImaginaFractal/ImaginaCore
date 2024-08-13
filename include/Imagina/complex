@@ -88,6 +88,6 @@ namespace Imagina::inline Numerics {
 
 	template<typename Real>
 	constexpr Complex<Real> operator/(const Complex<Real> &a, const Complex<Real> &b) {
-		return a * conj(b) / norm(b);
+		return a * conj(b) / norm(b); // FIXME: overflow
 	}
 }
