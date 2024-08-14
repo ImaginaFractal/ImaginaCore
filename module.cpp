@@ -116,11 +116,16 @@ namespace Imagina {
 		return LoadModule(LoadLibrary(path));
 	}
 
-	bool Imagina_LoadModules(const char *path, const char *extension) {
+	bool Imagina_LoadModules(const char8_t *path, size_t pathLength, const char8_t *extension, size_t extensionLength) {
+		filesystem::path Path = std::u8string_view(path, pathLength);
+		filesystem::path Extension = std::u8string_view(extension, extensionLength);
+
 		size_t loadedCount = 0;
-		for (const auto &entry : filesystem::directory_iterator(path)) {
-			if (!entry.is_regular_file() || entry.path().extension() != extension) continue;
-			loadedCount += LoadModule(entry);
+
+		for (const auto &entry : filesystem::directory_iterator(Path)) {
+			if (entry.is_regular_file() && entry.path().extension() == Extension) {
+				loadedCount += LoadModule(entry);
+			}
 		}
 
 		if (loadedCount == 0) return false;
