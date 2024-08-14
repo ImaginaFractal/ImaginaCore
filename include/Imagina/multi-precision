@@ -60,6 +60,10 @@ namespace Imagina::inline Numerics {
 		operator MultiPrecisionMutable *() { return this; }
 		operator const MultiPrecisionMutable *() const { return this; }
 
+		MultiPrecisionMutable(_MultiPrecisionMutable &&mp) : _MultiPrecisionMutable(mp) {}
+		MultiPrecisionMutable(const MultiPrecisionMutable &) = delete;
+		MultiPrecisionMutable(MultiPrecisionMutable &&) = delete;
+
 		void Init(MPReal *x, MPBCUInt precision) const;
 		void InitCopy(MPReal *dst, const MPReal *src) const;
 
