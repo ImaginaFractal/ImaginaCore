@@ -76,23 +76,41 @@ namespace Imagina {
 	template<> inline constexpr ComponentType TypeToComponentType<IController>		= ComponentType::Controller;
 	template<> inline constexpr ComponentType TypeToComponentType<MultiPrecision>	= ComponentType::MultiPrecision;
 
-	im_export void LoadBuiltinComponents();
+	imcore_api void Imagina_LoadBuiltinComponents();
 
-	im_export bool AddModule(const ModuleInfo *moduleInfo, void *handle); // TEMPORARY
-	im_export bool LoadModule(const char *filename);
-	im_export bool LoadModules(const char *path, const char *extension);
+	imcore_api bool Imagina_LoadModule(const char *filename);
+	imcore_api bool Imagina_LoadModules(const char *path, const char *extension);
 
 	// Return value is invalidated when new a component is added
-	im_export const size_t *GetComponentList(ComponentType type, size_t &count);
+	imcore_api const size_t *Imagina_GetComponentList(ComponentType type, size_t *count);
 
-	im_export size_t GetComponent(std::string_view fullName);
-	im_export size_t GetComponent(ComponentType type);
+	imcore_api size_t Imagina_GetComponent_Name(const char *fullName, size_t length);
+	imcore_api size_t Imagina_GetComponent_Type(ComponentType type);
 
-	im_export const ComponentInfo &GetComponentInfo(size_t id);
+	imcore_api const ComponentInfo *Imagina_GetComponentInfo(size_t id);
 
-	im_export IAny CreateComponent(size_t id);
-	im_export IAny CreateComponent(std::string_view fullName);
-	im_export IAny CreateComponent(ComponentType type);
+	imcore_api IAny Imagina_CreateComponent_Id(size_t id);
+	imcore_api IAny Imagina_CreateComponent_Name(const char *fullName, size_t length);
+	imcore_api IAny Imagina_CreateComponent_Type(ComponentType type);
+
+
+
+	inline void LoadBuiltinComponents()											{ Imagina_LoadBuiltinComponents(); }
+
+	inline bool LoadModule(const char *filename)								{ return Imagina_LoadModule(filename); }
+	inline bool LoadModules(const char *path, const char *extension)			{ return Imagina_LoadModules(path, extension); }
+
+	// Return value is invalidated when new a component is added
+	inline const size_t *GetComponentList(ComponentType type, size_t &count)	{ return Imagina_GetComponentList(type, &count); }
+
+	inline size_t GetComponent(std::string_view fullName)						{ return Imagina_GetComponent_Name(fullName.data(), fullName.length()); }
+	inline size_t GetComponent(ComponentType type)								{ return Imagina_GetComponent_Type(type); }
+
+	inline const ComponentInfo &GetComponentInfo(size_t id)						{ return *Imagina_GetComponentInfo(id); }
+
+	inline IAny CreateComponent(size_t id)										{ return Imagina_CreateComponent_Id(id); }
+	inline IAny CreateComponent(std::string_view fullName)						{ return Imagina_CreateComponent_Name(fullName.data(), fullName.length()); }
+	inline IAny CreateComponent(ComponentType type)								{ return Imagina_CreateComponent_Type(type); }
 
 	//template<typename T>
 	//inline T CreateComponent() {

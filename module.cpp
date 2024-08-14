@@ -85,7 +85,7 @@ namespace Imagina {
 		return true;
 	}
 
-	im_export void LoadBuiltinComponents() {
+	void Imagina_LoadBuiltinComponents() {
 		AddModule(&BuiltinModule, nullptr);
 	}
 
@@ -108,7 +108,7 @@ namespace Imagina {
 		return true;
 	}
 
-	bool LoadModule(const char *filename) {
+	bool Imagina_LoadModule(const char *filename) {
 		return LoadModule(LoadLibrary(filename));
 	}
 
@@ -116,7 +116,7 @@ namespace Imagina {
 		return LoadModule(LoadLibrary(path));
 	}
 
-	bool LoadModules(const char *path, const char *extension) {
+	bool Imagina_LoadModules(const char *path, const char *extension) {
 		size_t loadedCount = 0;
 		for (const auto &entry : filesystem::directory_iterator(path)) {
 			if (!entry.is_regular_file() || entry.path().extension() != extension) continue;
@@ -147,37 +147,43 @@ namespace Imagina {
 		if (iterator == ComponentLists.end()) return nullptr;
 		return &iterator->second;
 	}
-	const size_t *GetComponentList(ComponentType type, size_t &count) {
+	const size_t *Imagina_GetComponentList(ComponentType type, size_t *count) {
 		const std::vector<size_t> *list = GetComponentList(type);
 		if (!list) {
 			count = 0;
 			return nullptr;
 		}
-		count = list->size();
+		*count = list->size();
 		return list->data();
 	}
 
-	size_t GetComponent(std::string_view fullName) {
-		auto iterator = ComponentMap.find(std::string(fullName));
+	size_t Imagina_GetComponent_Name(const char *fullName, size_t length) {
+		auto iterator = ComponentMap.find(std::string(fullName, length));
 		if (iterator == ComponentMap.end()) return 0;
 		return iterator->second;
 	}
-	size_t GetComponent(ComponentType type) {
+	size_t Imagina_GetComponent_Type(ComponentType type) {
 		const std::vector<size_t> *list = GetComponentList(type);
 		if (!list || list->empty()) return 0;
 
 		return (*list)[list->size() - 1];
 	}
 
-	const ComponentInfo &GetComponentInfo(size_t id) {
+	const ComponentInfo *Imagina_GetComponentInfo(size_t id) {
 		assert(id != 0 && id < Components.size());
-		return Components[id].Info;
+		return &Components[id].Info;
 	}
 
-	IAny CreateComponent(size_t id) {
+	IAny Imagina_CreateComponent_Id(size_t id) {
 		assert(id != 0 && id < Components.size());
 		return Components[id].Create();
 	}
-	IAny CreateComponent(std::string_view fullName)	{ return CreateComponent(GetComponent(fullName)); }
-	IAny CreateComponent(ComponentType type)		{ return CreateComponent(GetComponent(type)); }
+
+	IAny Imagina_CreateComponent_Name(const char *fullName, size_t length) {
+		return CreateComponent(Imagina_GetComponent_Name(fullName, length));
+	}
+
+	IAny Imagina_CreateComponent_Type(ComponentType type) { 
+		return CreateComponent(Imagina_GetComponent_Type(type));
+	}
 }
