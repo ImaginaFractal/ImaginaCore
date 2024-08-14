@@ -1,7 +1,7 @@
 #include <Imagina/multi-precision>
 #include <algorithm>
 
-namespace Imagina {
+namespace Imagina::inline Numerics {
 	template <typename T> T Power2(const int64_t &Power);
 
 	template <> inline double Power2<double>(const int64_t &Power) {

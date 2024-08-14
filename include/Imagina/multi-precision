@@ -5,7 +5,7 @@
 #include "declarations"
 #include "floating_point"
 
-namespace Imagina {
+namespace Imagina::inline Numerics {
 	struct MPReal;
 
 	typedef void		(*pMultiPrecision_InitContent)		(MPReal *, MPBCUInt); // Do not use directly, use Init instead.

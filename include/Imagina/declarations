@@ -38,6 +38,8 @@ namespace Imagina {
 	class IPixelProcessor;
 	class PixelPipeline;
 
-	struct MultiPrecisionMutable;
-	using MultiPrecision = const MultiPrecisionMutable;
+	inline namespace Numerics {
+		struct MultiPrecisionMutable;
+		using MultiPrecision = const MultiPrecisionMutable;
+	}
 }
