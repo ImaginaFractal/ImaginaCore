@@ -30,8 +30,20 @@ add_custom_target(Interfaces DEPENDS
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
 )
 
-FILE (GLOB SourceFiles "*.cpp")
-add_library (ImaginaCore SHARED ${SourceFiles})
+add_library (ImaginaCore SHARED
+	"basic_pixel_manager.cpp"
+	"computation.cpp"
+	"controller.cpp"
+	"evaluator.cpp"
+	"fractal_context.cpp"
+	"imp_lite.cpp"
+	"location_manager.cpp"
+	"module.cpp"
+	"multi-precision.cpp"
+	"pixel_management.cpp"
+	"pixel_processing.cpp"
+	"platform_dependent.cpp"
+)
 
 if (GENERATE_INTERFACES)
 	add_dependencies (ImaginaCore Interfaces)
