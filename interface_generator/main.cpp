@@ -375,7 +375,9 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	}
 
 	stream << indentation << "\tvoid Release() {\n";
+	stream << indentation << "\t\tif (!instance) return;\n";
 	stream << indentation << "\t\tvTable->Release(instance);\n";
+	stream << indentation << "\t\t*this = nullptr;\n";
 	stream << indentation << "\t}\n\n";
 
 	{
