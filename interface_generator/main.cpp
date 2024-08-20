@@ -341,7 +341,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << '\t' << name << "(std::nullptr_t) : instance(nullptr), vTable(nullptr) {}\n\n";
 
 	stream << indentation << '\t' << name << "(void *instance, const " << VTableName << " *vTable) : instance(instance), vTable(vTable) {}\n";
-	stream << indentation << '\t' << name << "(IAny any) : instance(any.instance), vTable((" << VTableName << " *)any.vTable) {}\n\n";
+	stream << indentation << "\texplicit " << name << "(IAny any) : instance(any.instance), vTable((" << VTableName << " *)any.vTable) {}\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << '\t' << name << "(T &instance) : instance(&instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
