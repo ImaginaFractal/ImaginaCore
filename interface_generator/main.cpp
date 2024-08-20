@@ -353,8 +353,8 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << '\t' << name << " &operator=(" << name << " &&) = default;\n\n";
 
 	stream << indentation << "\t" << name << " &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }\n";
-	stream << indentation << "\tbool operator==(std::nullptr_t) { return instance == nullptr; }\n";
-	stream << indentation << "\tbool operator!=(std::nullptr_t) { return instance != nullptr; }\n\n";
+	stream << indentation << "\tbool operator==(const " << name << " x) const { return instance == x.instance; }\n";
+	stream << indentation << "\tbool operator!=(const " << name << " x) const { return instance != x.instance; }\n\n";
 
 	stream << indentation << "\toperator IAny() { return IAny(instance, vTable); }\n";
 	stream << indentation << "\toperator bool() { return instance != nullptr; }\n\n";
