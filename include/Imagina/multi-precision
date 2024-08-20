@@ -29,8 +29,11 @@ namespace Imagina::inline Numerics {
 	typedef void		(*pMultiPrecision_Sub)				(MPReal *, const MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Mul)				(MPReal *, const MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Div)				(MPReal *, const MPReal *, const MPReal *);
+	
+	typedef size_t		(*pMultiPrecision_CalcSize)			(MPBCUInt);
+	typedef void		(*pMultiPrecision_PlacementInit)	(MPReal *, MPBCUInt, void *); // Construct MPReal using preallocated memory.
 
-	struct _MultiPrecisionMutable {
+	struct _MultiPrecisionMutable { // TODO: Reorder
 		const char *Name;
 
 		pMultiPrecision_InitContent		InitContent;
@@ -54,6 +57,9 @@ namespace Imagina::inline Numerics {
 		pMultiPrecision_Sub				Sub;
 		pMultiPrecision_Mul				Mul;
 		pMultiPrecision_Div				Div;
+
+		pMultiPrecision_CalcSize		CalcSize;
+		pMultiPrecision_PlacementInit	PlacementInit;
 	};
 
 	struct MultiPrecisionMutable : _MultiPrecisionMutable {
