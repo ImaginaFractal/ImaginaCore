@@ -77,14 +77,14 @@ namespace Imagina {
 		} else if (pixelPipeline->Equivalent(stage, gpuTextureUploadPoint)) {
 			memcpy(data, finalPixels, pixelCount * sizeof(*finalPixels));
 		} else {
-			IPixelProcessor *processor = pixelPipeline->GetCompositeProcessor(PixelPipeline::Postprocess, stage);
+			IPixelProcessor processor = pixelPipeline->GetCompositeProcessor(PixelPipeline::Postprocess, stage);
 			size_t inputSize = pixelPipeline->PreprocessedDataSize();
-			size_t outputSize = processor->GetOutputInfo()->Size;
+			size_t outputSize = processor.GetOutputInfo()->Size;
 
 			for (size_t i = 0; i < pixelCount; i++) {
 				void *input = &preprocessedPixels[i * inputSize];
 				void *output = &((char *)data)[i * outputSize];
-				processor->Process(output, input);
+				processor.Process(output, input);
 			}
 		}
 	}
@@ -218,13 +218,13 @@ namespace Imagina {
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelPipeline->PreprocessedDataSize()];
 
-		pixelManager->preprocessor->Process(preprocessedOutput, value);
+		pixelManager->preprocessor.Process(preprocessedOutput, value);
 
 		void *finalOutput;
 		if (pixelManager->finalProcessor) {
 			finalOutput = alloca(pixelManager->finalDataSize);
 
-			pixelManager->finalProcessor->Process(finalOutput, preprocessedOutput);
+			pixelManager->finalProcessor.Process(finalOutput, preprocessedOutput);
 		} else {
 			finalOutput = preprocessedOutput;
 		}

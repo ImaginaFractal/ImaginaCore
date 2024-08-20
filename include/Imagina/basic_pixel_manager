@@ -35,8 +35,8 @@ namespace Imagina {
 		uint32_t *finalPixels = nullptr;
 
 		PixelPipeline *pixelPipeline = nullptr;
-		IPixelProcessor *preprocessor = nullptr;
-		IPixelProcessor *finalProcessor = nullptr;
+		const IPixelProcessor preprocessor = nullptr;
+		const IPixelProcessor finalProcessor = nullptr;
 		CopyProcessor copyProcessor; // used as preprocessor if no preprocessor is provided
 
 		void Initialize();

@@ -4,7 +4,7 @@
 #include <string.h>
 
 namespace Imagina {
-	im_export const FieldInfo *PixelDataInfo::FindField(const char *name) const {
+	const FieldInfo *PixelDataInfo::FindField(const char *name) const {
 		for (size_t i = 0; i < FieldCount; i++) {
 			//if (Fields[i].Name == name) {
 			if (strcmp(Fields[i].Name, name) == 0) {
@@ -16,29 +16,29 @@ namespace Imagina {
 	}
 
 	void SerialCompositeProcessor2::SetInput(const PixelDataInfo *info) {
-		processors[0]->SetInput(info);
-		const PixelDataInfo *intermediateData = processors[0]->GetOutputInfo();
+		processors[0].SetInput(info);
+		const PixelDataInfo *intermediateData = processors[0].GetOutputInfo();
 		intermediateDataSize = intermediateData->Size;
-		processors[1]->SetInput(intermediateData);
+		processors[1].SetInput(intermediateData);
 	}
 
 	const PixelDataInfo *SerialCompositeProcessor2::GetOutputInfo() {
-		return processors[1]->GetOutputInfo();
+		return processors[1].GetOutputInfo();
 	}
 
 	void SerialCompositeProcessor2::Process(void *output, void *input) const {
 		void *intermediateData = alloca(intermediateDataSize);
 
-		processors[0]->Process(intermediateData, input);
-		processors[1]->Process(output, intermediateData);
+		processors[0].Process(intermediateData, input);
+		processors[1].Process(output, intermediateData);
 	}
 
-	SerialCompositeProcessor::SerialCompositeProcessor(std::initializer_list<IPixelProcessor *> processors) {
+	SerialCompositeProcessor::SerialCompositeProcessor(std::initializer_list<IPixelProcessor> processors) {
 		assert(std::find(processors.begin(), processors.end(), nullptr) == processors.end());
 		assert(processors.size() > 1);
 
 		processorCount = processors.size();
-		this->processors = new IPixelProcessor * [processorCount];
+		this->processors = new IPixelProcessor[processorCount];
 		std::copy(processors.begin(), processors.end(), this->processors);
 		//memcpy(this->processors, processors.begin(), processorCount * sizeof(IPixelProcessor *));
 	}
@@ -46,31 +46,31 @@ namespace Imagina {
 	void SerialCompositeProcessor::SetInput(const PixelDataInfo *info) {
 		const PixelDataInfo *intermediateData;
 
-		processors[0]->SetInput(info);
-		intermediateData = processors[0]->GetOutputInfo();
+		processors[0].SetInput(info);
+		intermediateData = processors[0].GetOutputInfo();
 
 		for (size_t i = 1; i < processorCount; i++) {
 			intermediateDataSize = std::max(intermediateDataSize, intermediateData->Size);
-			processors[i]->SetInput(info);
-			intermediateData = processors[i]->GetOutputInfo();
+			processors[i].SetInput(info);
+			intermediateData = processors[i].GetOutputInfo();
 		}
 	}
 
 	const PixelDataInfo *SerialCompositeProcessor::GetOutputInfo() {
-		return processors[processorCount - 1]->GetOutputInfo();
+		return processors[processorCount - 1].GetOutputInfo();
 	}
 
 	void SerialCompositeProcessor::Process(void *output, void *input) const {
 		void *intermediateData[2] = { alloca(intermediateDataSize * 2) };
 		intermediateData[1] = (char *)intermediateData[0] + intermediateDataSize;
 
-		processors[0]->Process(intermediateData[0], input);
+		processors[0].Process(intermediateData[0], input);
 
 		size_t i;
 		for (i = 1; i < processorCount - 1; i++) {
-			processors[i]->Process(intermediateData[i & 1], intermediateData[~i & 1]);
+			processors[i].Process(intermediateData[i & 1], intermediateData[~i & 1]);
 		}
-		processors[i]->Process(output, intermediateData[~i & 1]);
+		processors[i].Process(output, intermediateData[~i & 1]);
 	}
 
 	void CopyProcessor::SetInput(const PixelDataInfo *info) {
@@ -86,7 +86,7 @@ namespace Imagina {
 		memcpy(output, input, dataSize);
 	}
 
-	IPixelProcessor *PixelPipeline::GetCompositeProcessor(Stage first, Stage last) {
+	IPixelProcessor PixelPipeline::GetCompositeProcessor(Stage first, Stage last) {
 		assert(StageValid(first) && StageValid(last) && first <= last);
 
 		uint8_t First = (uint8_t)first;
@@ -100,7 +100,7 @@ namespace Imagina {
 		} else if (First == Last) { // One
 			return stages[First];
 		} else if (First + 1 == Last || !stages[(uint8_t)Stage::Postprocess]) { // Two
-			IPixelProcessor *&compositeProcessor = composite2[First - (uint8_t)Stage::Preprocess];
+			IPixelProcessor &compositeProcessor = composite2[First - (uint8_t)Stage::Preprocess];
 			if (!compositeProcessor) compositeProcessor = new SerialCompositeProcessor2(stages[First], stages[Last]);
 
 			return compositeProcessor;
@@ -114,15 +114,15 @@ namespace Imagina {
 	void PixelPipeline::UseEvaluator(IEvaluator evaluator) {
 		outputs[0] = evaluator.GetOutputInfo();
 	}
-	void PixelPipeline::UsePreprocessor(IPixelProcessor *processor) {
+	void PixelPipeline::UsePreprocessor(IPixelProcessor processor) {
 		stages[1] = processor;
 		linked = false;
 	}
-	void PixelPipeline::UsePostprocessor(IPixelProcessor *processor) {
+	void PixelPipeline::UsePostprocessor(IPixelProcessor processor) {
 		stages[2] = processor;
 		linked = false;
 	}
-	void PixelPipeline::UseColorizer(IPixelProcessor *processor) {
+	void PixelPipeline::UseColorizer(IPixelProcessor processor) {
 		stages[3] = processor;
 		linked = false;
 	}
@@ -131,18 +131,18 @@ namespace Imagina {
 		const PixelDataInfo *pixelData = outputs[0];
 
 		if (stages[1]) {
-			stages[1]->SetInput(pixelData);
-			pixelData = stages[1]->GetOutputInfo();
+			stages[1].SetInput(pixelData);
+			pixelData = stages[1].GetOutputInfo();
 		}
 		outputs[1] = pixelData;
 		if (stages[2]) {
-			stages[2]->SetInput(pixelData);
-			pixelData = stages[2]->GetOutputInfo();
+			stages[2].SetInput(pixelData);
+			pixelData = stages[2].GetOutputInfo();
 		}
 		outputs[2] = pixelData;
 		if (stages[3]) {
-			stages[3]->SetInput(pixelData);
-			pixelData = stages[3]->GetOutputInfo();
+			stages[3].SetInput(pixelData);
+			pixelData = stages[3].GetOutputInfo();
 		}
 		outputs[3] = pixelData;
 		linked = true;

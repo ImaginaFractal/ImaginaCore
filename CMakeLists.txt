@@ -8,16 +8,19 @@ add_subdirectory ("interface_generator")
 
 add_custom_command(
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
+	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing.i"
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager" "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
 	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator" "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
 	DEPENDS InterfaceGenerator
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing.i"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
 	OUTPUT
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
+		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
 		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
@@ -25,6 +28,7 @@ add_custom_command(
 
 add_custom_target(Interfaces DEPENDS
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
+	"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing"
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
 	"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
@@ -45,8 +49,15 @@ add_library (ImaginaCore SHARED
 	"platform_dependent.cpp"
 )
 
+add_library (ImaginaCoreStatic STATIC "pixel_processing.cpp")
+set_target_properties (ImaginaCoreStatic PROPERTIES CXX_STANDARD 20)
+target_include_directories (ImaginaCoreStatic PRIVATE "include")
+
+target_link_libraries (ImaginaCore INTERFACE ImaginaCoreStatic)
+
 if (GENERATE_INTERFACES)
 	add_dependencies (ImaginaCore Interfaces)
+	add_dependencies (ImaginaCoreStatic Interfaces)
 endif()
 
 target_include_directories (ImaginaCore PRIVATE "include")

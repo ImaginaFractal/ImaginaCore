@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
+#include "../../interfaces/pixel_processing"
 
 namespace Imagina {
 	enum class PixelDataType : uint32_t {
@@ -168,7 +169,7 @@ namespace Imagina {
 		}
 	}
 
-	struct im_export PixelDataInfo {
+	struct PixelDataInfo {
 		size_t Size;
 		size_t FieldCount;
 		const FieldInfo *Fields;
@@ -176,58 +177,54 @@ namespace Imagina {
 		const FieldInfo *FindField(const char *name) const;
 	};
 
-	class IPixelProcessor {
-	public:
-		virtual ~IPixelProcessor() = default;
-
-		virtual void SetInput(const PixelDataInfo *info) = 0;
-		virtual const PixelDataInfo *GetOutputInfo() = 0;
-
-		virtual void Process(void *output, void *input) const = 0;
-	};
-
 	// A special case of SerialCompositeProcessor
-	class im_export SerialCompositeProcessor2 : public IPixelProcessor {
-		IPixelProcessor *processors[2];
+	class SerialCompositeProcessor2 {
+		IPixelProcessor processors[2];
 		size_t intermediateDataSize = 0;
 
 	public:
-		SerialCompositeProcessor2(IPixelProcessor *first, IPixelProcessor *second) : processors{ first, second } { assert(first && second); }
+		SerialCompositeProcessor2(IPixelProcessor first, IPixelProcessor second) : processors{ first, second } { assert(first && second); }
 
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
 
-	class im_export SerialCompositeProcessor : public IPixelProcessor {
-		IPixelProcessor **processors;
+	IMPLEMENT_INTERFACE(SerialCompositeProcessor2, IPixelProcessor);
+
+	class SerialCompositeProcessor {
+		IPixelProcessor *processors;
 		size_t processorCount;
 		size_t intermediateDataSize = 0;
 
 	public:
-		SerialCompositeProcessor(std::initializer_list<IPixelProcessor *> processors);
+		SerialCompositeProcessor(std::initializer_list<IPixelProcessor> processors);
 
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
 
-	class im_export CopyProcessor : public IPixelProcessor {
+	IMPLEMENT_INTERFACE(SerialCompositeProcessor, IPixelProcessor);
+
+	class CopyProcessor {
 		const PixelDataInfo *output;
 		size_t dataSize;
 
 	public:
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
 
-	class im_export PixelPipeline final {
-		IPixelProcessor *stages[4]{};
+	IMPLEMENT_INTERFACE(CopyProcessor, IPixelProcessor);
+
+	class PixelPipeline final {
+		IPixelProcessor stages[4]{};
 		const PixelDataInfo *outputs[4]{};
 
-		IPixelProcessor *composite2[2]{};
-		IPixelProcessor *composite3 = nullptr;
+		IPixelProcessor composite2[2]{};
+		IPixelProcessor composite3 = nullptr;
 
 		bool linked = false;
 
@@ -247,12 +244,12 @@ namespace Imagina {
 		};
 
 		~PixelPipeline() {
-			delete composite2[0];
-			delete composite2[1];
-			delete composite3;
+			composite2[0].Release();
+			composite2[1].Release();
+			composite3.Release();
 		}
 
-		IPixelProcessor *GetCompositeProcessor(Stage first, Stage last);
+		IPixelProcessor GetCompositeProcessor(Stage first, Stage last);
 
 		static constexpr bool StageValid(Stage stage) { return stage > Stage::None && stage <= Stage::Colorize; }
 
@@ -260,17 +257,17 @@ namespace Imagina {
 		
 		void UseEvaluator(IEvaluator evaluator);
 
-		void UsePreprocessor(IPixelProcessor *processor);
-		void UsePostprocessor(IPixelProcessor *processor);
-		void UseColorizer(IPixelProcessor *processor);
+		void UsePreprocessor(IPixelProcessor processor);
+		void UsePostprocessor(IPixelProcessor processor);
+		void UseColorizer(IPixelProcessor processor);
 
 		void Link();
 
 		inline bool IsLinked() { return linked; }
 
-		inline IPixelProcessor *GetPreprocessor()	{ return stages[1]; }
-		inline IPixelProcessor *GetPostprocessor()	{ return stages[2]; }
-		inline IPixelProcessor *GetColorizer()		{ return stages[3]; }
+		inline IPixelProcessor GetPreprocessor()	{ return stages[1]; }
+		inline IPixelProcessor GetPostprocessor()	{ return stages[2]; }
+		inline IPixelProcessor GetColorizer()		{ return stages[3]; }
 
 		inline size_t PreprocessedDataSize()	const { return outputs[1]->Size; }
 		inline size_t PostprocessedDataSize()	const { return outputs[2]->Size; }
@@ -279,29 +276,33 @@ namespace Imagina {
 		const PixelDataInfo *GetOutputOfStage(Stage stage);
 	};
 
-	class im_export TestProcessor : public IPixelProcessor { // Converts Float64 to Float32
+	class TestProcessor { // Converts Float64 to Float32 // TEMPORARY
 		static const PixelDataInfo OutputInfo;
 		static const FieldInfo OutputFields[1];
 
 		ptrdiff_t sourceOffset;
 
 	public:
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
 
-	class im_export TestProcessor2 : public IPixelProcessor {
+	IMPLEMENT_INTERFACE(TestProcessor, IPixelProcessor);
+
+	class TestProcessor2 {
 		ptrdiff_t iterationsOffset;
 		ptrdiff_t finalZOffset;
 
 	public:
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
 
-	class im_export PaletteLookup : public IPixelProcessor {
+	IMPLEMENT_INTERFACE(TestProcessor2, IPixelProcessor);
+
+	class PaletteLookup {
 		const FieldInfo *inputField;
 		const RGBA *palette;
 		size_t paletteSize;
@@ -312,10 +313,12 @@ namespace Imagina {
 
 		PaletteLookup(const RGBA *palette, size_t paletteSize);
 
-		virtual ~PaletteLookup() override;
+		~PaletteLookup();
 
-		virtual void SetInput(const PixelDataInfo *info) override;
-		virtual const PixelDataInfo *GetOutputInfo() override;
-		virtual void Process(void *output, void *input) const override;
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
 	};
+
+	IMPLEMENT_INTERFACE(PaletteLookup, IPixelProcessor);
 }
