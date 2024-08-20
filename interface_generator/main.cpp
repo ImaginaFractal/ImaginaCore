@@ -49,6 +49,7 @@ struct Identifier {
 struct Function {
 	std::string_view ReturnType;
 	std::string_view Name;
+	std::string_view Qualification;
 	//std::string_view ParameterList;
 	std::vector<Identifier> Parameters;
 };
@@ -93,12 +94,14 @@ Identifier ParseIdentifier(std::string_view declaration) {
 Function ParseFunction(std::string_view declaration) {
 	declaration = TrimWhitespace(declaration);
 
-	if (declaration.empty() || declaration.back() != ')') throw std::invalid_argument("declaration");
+	if (declaration.empty()) throw std::invalid_argument("declaration");
 
 	size_t parameterListBegin = declaration.find('(');
-	if (parameterListBegin == declaration.npos) throw std::invalid_argument("declaration");
+	size_t parameterListEnd = declaration.find_last_of(')');
+	if (parameterListBegin == declaration.npos || parameterListEnd == declaration.npos || parameterListBegin > parameterListEnd) throw std::invalid_argument("declaration");
 
-	std::string_view parameterList = declaration.substr(parameterListBegin + 1, declaration.size() - parameterListBegin - 2);
+	std::string_view parameterList = declaration.substr(parameterListBegin + 1, parameterListEnd - parameterListBegin - 1);
+	std::string_view qualification = declaration.substr(parameterListEnd + 1);
 	declaration = declaration.substr(0, parameterListBegin);
 
 	Identifier identifier = ParseIdentifier(declaration);
@@ -106,6 +109,7 @@ Function ParseFunction(std::string_view declaration) {
 	Function result;
 	result.Name = identifier.Name;
 	result.ReturnType = identifier.Type;
+	result.Qualification = qualification;
 
 	parameterList = TrimWhitespace(parameterList);
 	//result.ParameterList = parameterList;
@@ -118,7 +122,7 @@ Function ParseFunction(std::string_view declaration) {
 			begin = i + 1;
 		}
 	}
- 	result.Parameters.push_back(ParseIdentifier(parameterList.substr(begin, parameterList.size() - begin)));
+ 	result.Parameters.push_back(ParseIdentifier(parameterList.substr(begin)));
 
 	return result;
 }
@@ -194,7 +198,7 @@ void GenerateMemberFunctions(std::ostream &stream, std::string_view indentation,
 			if (++iterator == function.Parameters.end()) break;
 			stream << ", ";
 		}
-		stream << ") {\n";
+		stream << ")" << function.Qualification << " {\n";
 		stream << indentation << "\t\treturn vTable->" << vTable << function.Name << "(instance";
 		for (const Identifier &parameter : function.Parameters) {
 			stream << ", ";
@@ -235,7 +239,7 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 					stream << ", " << parameter.Type << parameter.Name;
 				}
 			}
-			stream << ")>(&T::" << function.Name << ");\n";
+			stream << ")" << function.Qualification << ">(&T::" << function.Name << ");\n";
 		}
 		stream << indentation << '}';
 	}
@@ -331,8 +335,8 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 
 	// Interface
 	stream << indentation << "class " << name << " final {\n";
-	stream << indentation << "\tvoid *instance;\n";
-	stream << indentation << "\tconst " << VTableName << " *vTable;\n\n";
+	stream << indentation << "\tmutable void *instance;\n";
+	stream << indentation << "\tmutable const " << VTableName << " *vTable;\n\n";
 
 	stream << indentation << "public:\n";
 	stream << indentation << '\t' << name << "() = default;\n";
@@ -349,15 +353,18 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << '\t' << name << "(T *instance) : instance(instance), vTable(&" << VTableName << "::value<T>) {}\n\n";
 
-	stream << indentation << '\t' << name << " &operator=(const " << name << " &) = default;\n";
-	stream << indentation << '\t' << name << " &operator=(" << name << " &&) = default;\n\n";
+	stream << indentation << '\t' << name << " &operator=(" << name << " &x) { instance = x.instance; vTable = x.vTable; return *this; }\n";
+	stream << indentation << '\t' << name << " &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }\n\n";
 
-	stream << indentation << "\t" << name << " &operator=(std::nullptr_t) { instance = nullptr; vTable = nullptr; return *this; }\n";
+	stream << indentation << "\tconst " << name << " &operator=(const " << name << " &x) const { instance = x.instance; vTable = x.vTable; return *this; }\n";
+	stream << indentation << "\tconst " << name << " &operator=(std::nullptr_t) const { instance = nullptr; vTable = nullptr; return *this; }\n\n";
+
 	stream << indentation << "\tbool operator==(const " << name << " x) const { return instance == x.instance; }\n";
 	stream << indentation << "\tbool operator!=(const " << name << " x) const { return instance != x.instance; }\n\n";
 
 	stream << indentation << "\toperator IAny() { return IAny(instance, vTable); }\n";
-	stream << indentation << "\toperator bool() { return instance != nullptr; }\n\n";
+	stream << indentation << "\texplicit operator IAny() const { return IAny(instance, vTable); }\n";
+	stream << indentation << "\toperator bool() const { return instance != nullptr; }\n\n";
 
 	stream << indentation << "\ttemplate<" << ImplName << " T>\n";
 	stream << indentation << "\texplicit operator T *() { return (T *)instance; }\n\n";
