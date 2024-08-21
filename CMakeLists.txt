@@ -6,35 +6,7 @@ option(GENERATE_INTERFACES "Generate interfaces" TRUE)
 
 add_subdirectory ("interface_generator")
 
-set(GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include/imagina")
-
-add_custom_command(
-	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interface/pixel_management.i"
-	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/pixel_processing" "${CMAKE_CURRENT_LIST_DIR}/interface/pixel_processing.i"
-	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/controller" "${CMAKE_CURRENT_LIST_DIR}/interface/controller.i"
-	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/location_manager" "${CMAKE_CURRENT_LIST_DIR}/interface/location_manager.i"
-	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/evaluator" "${CMAKE_CURRENT_LIST_DIR}/interface/evaluator.i"
-	DEPENDS InterfaceGenerator
-		"${CMAKE_CURRENT_LIST_DIR}/interface/pixel_management.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interface/pixel_processing.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interface/controller.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interface/location_manager.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interface/evaluator.i"
-	OUTPUT
-		"${GENERATED_INCLUDE_DIR}/interface/pixel_management"
-		"${GENERATED_INCLUDE_DIR}/interface/pixel_processing"
-		"${GENERATED_INCLUDE_DIR}/interface/controller"
-		"${GENERATED_INCLUDE_DIR}/interface/location_manager"
-		"${GENERATED_INCLUDE_DIR}/interface/evaluator"
-)
-
-add_custom_target(Interfaces DEPENDS
-	"${GENERATED_INCLUDE_DIR}/interface/pixel_management"
-	"${GENERATED_INCLUDE_DIR}/interface/pixel_processing"
-	"${GENERATED_INCLUDE_DIR}/interface/controller"
-	"${GENERATED_INCLUDE_DIR}/interface/location_manager"
-	"${GENERATED_INCLUDE_DIR}/interface/evaluator"
-)
+add_interfaces(Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i")
 
 add_library (ImaginaCore SHARED
 	"basic_pixel_manager.cpp"
