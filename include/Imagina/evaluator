@@ -6,6 +6,7 @@
 #include "pixel_processing"
 #include "location_manager"
 #include <imagina/interface/evaluator>
+#include <imagina/interface/pixel_management>
 
 namespace Imagina {
 	class im_export SimpleEvaluator {

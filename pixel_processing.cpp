@@ -1,5 +1,5 @@
 #include <Imagina/pixel_processing>
-#include <Imagina/evaluator>
+#include <Imagina/engine>
 #include <assert.h>
 #include <string.h>
 
@@ -111,8 +111,8 @@ namespace Imagina {
 		}
 	}
 
-	void PixelPipeline::UseEvaluator(IEvaluator evaluator) {
-		outputs[0] = evaluator.GetOutputInfo();
+	void PixelPipeline::UseEngine(IEngine engine) {
+		outputs[0] = engine.GetOutputInfo();
 	}
 	void PixelPipeline::UsePreprocessor(IPixelProcessor processor) {
 		stages[1] = processor;

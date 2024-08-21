@@ -1,0 +1,37 @@
+#pragma once
+
+#include <imagina/interface/engine>
+#include <imagina/interface/pixel_management>
+#include <imagina/interface/controller>
+
+namespace Imagina {
+	class im_export StandardEngine {
+		class EvaluationTask;
+
+		ExecutionContext *precomputeExecutionContext = nullptr;
+		ExecutionContext *pixelExecutionContext = nullptr;
+
+		void CancelTasks();
+
+	protected:
+		HPReal x, y;
+		HRReal radius;
+		StandardEvaluationParameters parameters;
+		IEvaluator evaluator;
+		ILocationManager locationManager;
+
+	public:
+		StandardEngine(IEvaluator evaluator) : evaluator(evaluator), locationManager(evaluator.GetLocationManager()) {}
+
+		const PixelDataInfo *GetOutputInfo();
+		ExecutionContext *AddTask(const HRCircle &circle, IRasterizer rasterizer);
+		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
+
+		bool Ready();
+
+		void SetController(IController controller);
+		void LocationChanged(const HRLocation &location);
+	};
+
+	IMPLEMENT_INTERFACE(StandardEngine, IEngine);
+}

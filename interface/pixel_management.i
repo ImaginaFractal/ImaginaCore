@@ -8,7 +8,7 @@
 #endif
 
 namespace Imagina {
-	interface IEvaluator;
+	interface IEngine;
 
 	struct _GpuTexture;
 	using GpuTexture = _GpuTexture *;
@@ -28,7 +28,7 @@ namespace Imagina {
 	};
 
 	interface IPixelManager {
-		void SetEvaluator(IEvaluator evaluator);
+		void SetEngine(IEngine evaluator);
 		void UsePixelPipeline(PixelPipeline *pipeline);
 		void GetPixelData(void *data, PixelPipeline::Stage stage); // TODO: Add invertY
 		// Interface generator doesn't support overloading yet

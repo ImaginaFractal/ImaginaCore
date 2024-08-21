@@ -6,14 +6,12 @@ namespace Imagina {
 	void FractalContext::Link() {
 		assert(Controller);
 		assert(PixelManager);
-		assert(Evaluator);
-		//assert(LocationManager);
-		LocationManager = Evaluator.GetLocationManager();
+		assert(Engine);
 
 		Controller.SetPixelManager(PixelManager);
-		Controller.SetLocationManager(LocationManager);
-		PixelManager.SetEvaluator(Evaluator);
-		LocationManager.SetController(Controller);
+		Controller.SetEngine(Engine);
+		PixelManager.SetEngine(Engine);
+		Engine.SetController(Controller);
 	}
 
 	void FractalContext::Update(SRReal deltaTime) {

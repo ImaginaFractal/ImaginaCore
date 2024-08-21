@@ -4,7 +4,7 @@ project ("ImaginaCore")
 
 add_subdirectory ("interface_generator")
 
-add_interfaces (Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i")
+add_interfaces (Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i" "engine.i")
 
 add_library (ImaginaIncludes INTERFACE)
 add_dependencies (ImaginaIncludes Interfaces)
@@ -27,6 +27,7 @@ add_library (ImaginaCore SHARED
 	"pixel_management.cpp"
 	"pixel_processing.cpp"
 	"platform_dependent.cpp"
+	"engine.cpp"
 )
 
 target_link_libraries (ImaginaCore INTERFACE ImaginaIncludes ImaginaCoreStatic)

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "pixel_management"
-#include "controller"
-#include "evaluator"
+#include "numerics"
+#include <imagina/interface/pixel_management>
+#include <imagina/interface/controller>
+#include <imagina/interface/engine>
 
 namespace Imagina {
 	class im_export FractalContext {
@@ -10,10 +11,7 @@ namespace Imagina {
 		IController Controller = nullptr;
 		IPixelManager PixelManager = nullptr;
 		IGpuTextureManager GpuTextureManager = nullptr;
-		IEvaluator Evaluator = nullptr;
-		ILocationManager LocationManager = nullptr;
-
-		std::function<void(HRReal, HRReal)> OnReferenceChange;
+		IEngine Engine = nullptr;
 
 		void Link();
 
