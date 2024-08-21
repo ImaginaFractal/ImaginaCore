@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("ImaginaCore")
 
-option(GENERATE_INTERFACES "Generate interfaces" TRUE)
-
 add_subdirectory ("interface_generator")
 
 add_interfaces(Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i")
@@ -24,6 +22,7 @@ add_library (ImaginaCore SHARED
 )
 
 add_library (ImaginaIncludes INTERFACE)
+add_dependencies (ImaginaIncludes Interfaces)
 target_include_directories (ImaginaIncludes SYSTEM INTERFACE "include")
 target_include_directories (ImaginaIncludes SYSTEM INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/include")
 
@@ -34,11 +33,7 @@ target_link_libraries (ImaginaCoreStatic ImaginaIncludes)
 target_link_libraries (ImaginaCore INTERFACE ImaginaIncludes)
 target_link_libraries (ImaginaCore INTERFACE ImaginaCoreStatic)
 
-if (GENERATE_INTERFACES)
-	add_dependencies (ImaginaCore Interfaces)
-	add_dependencies (ImaginaCoreStatic Interfaces)
-endif()
-
+add_dependencies (ImaginaCore Interfaces)
 target_include_directories (ImaginaCore PRIVATE "include")
 target_include_directories (ImaginaCore PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 
