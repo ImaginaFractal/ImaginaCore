@@ -5,7 +5,7 @@
 #include "computation" // TODO: Use declarations instead
 #include "pixel_processing"
 #include "location_manager"
-#include "../../interfaces/evaluator"
+#include <imagina/interface/evaluator>
 
 namespace Imagina {
 	class im_export SimpleEvaluator {

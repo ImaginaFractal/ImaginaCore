@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
-#include "../../interfaces/pixel_processing"
+#include <imagina/interface/pixel_processing>
 
 namespace Imagina {
 	enum class PixelDataType : uint32_t {

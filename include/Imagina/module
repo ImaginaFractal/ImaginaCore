@@ -7,7 +7,7 @@
 #include "declarations"
 #include "interface"
 
-#include "../../interfaces/evaluator"
+#include <imagina/interface/evaluator>
 
 #ifdef _WIN32
 #define IM_DEFAULT_MODULE_EXTENSION = u8".dll"

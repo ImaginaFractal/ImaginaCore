@@ -3,7 +3,7 @@
 #include "declarations"
 #include "pixel_management"
 #include "location_manager"
-#include "../../interfaces/controller"
+#include <imagina/interface/controller>
 
 namespace Imagina {
 	class im_export NavigationController {

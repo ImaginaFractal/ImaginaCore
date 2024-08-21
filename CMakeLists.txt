@@ -6,32 +6,34 @@ option(GENERATE_INTERFACES "Generate interfaces" TRUE)
 
 add_subdirectory ("interface_generator")
 
+set(GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include/imagina")
+
 add_custom_command(
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing" "${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing.i"
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller" "${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager" "${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
-	COMMAND InterfaceGenerator "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator" "${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
+	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/pixel_management" "${CMAKE_CURRENT_LIST_DIR}/interface/pixel_management.i"
+	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/pixel_processing" "${CMAKE_CURRENT_LIST_DIR}/interface/pixel_processing.i"
+	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/controller" "${CMAKE_CURRENT_LIST_DIR}/interface/controller.i"
+	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/location_manager" "${CMAKE_CURRENT_LIST_DIR}/interface/location_manager.i"
+	COMMAND InterfaceGenerator "${GENERATED_INCLUDE_DIR}/interface/evaluator" "${CMAKE_CURRENT_LIST_DIR}/interface/evaluator.i"
 	DEPENDS InterfaceGenerator
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager.i"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interface/pixel_management.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interface/pixel_processing.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interface/controller.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interface/location_manager.i"
+		"${CMAKE_CURRENT_LIST_DIR}/interface/evaluator.i"
 	OUTPUT
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
-		"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
+		"${GENERATED_INCLUDE_DIR}/interface/pixel_management"
+		"${GENERATED_INCLUDE_DIR}/interface/pixel_processing"
+		"${GENERATED_INCLUDE_DIR}/interface/controller"
+		"${GENERATED_INCLUDE_DIR}/interface/location_manager"
+		"${GENERATED_INCLUDE_DIR}/interface/evaluator"
 )
 
 add_custom_target(Interfaces DEPENDS
-	"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_management"
-	"${CMAKE_CURRENT_LIST_DIR}/interfaces/pixel_processing"
-	"${CMAKE_CURRENT_LIST_DIR}/interfaces/controller"
-	"${CMAKE_CURRENT_LIST_DIR}/interfaces/location_manager"
-	"${CMAKE_CURRENT_LIST_DIR}/interfaces/evaluator"
+	"${GENERATED_INCLUDE_DIR}/interface/pixel_management"
+	"${GENERATED_INCLUDE_DIR}/interface/pixel_processing"
+	"${GENERATED_INCLUDE_DIR}/interface/controller"
+	"${GENERATED_INCLUDE_DIR}/interface/location_manager"
+	"${GENERATED_INCLUDE_DIR}/interface/evaluator"
 )
 
 add_library (ImaginaCore SHARED
@@ -49,10 +51,15 @@ add_library (ImaginaCore SHARED
 	"platform_dependent.cpp"
 )
 
+add_library (ImaginaIncludes INTERFACE)
+target_include_directories (ImaginaIncludes SYSTEM INTERFACE "include")
+target_include_directories (ImaginaIncludes SYSTEM INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/include")
+
 add_library (ImaginaCoreStatic STATIC "pixel_processing.cpp")
 set_target_properties (ImaginaCoreStatic PROPERTIES CXX_STANDARD 20)
-target_include_directories (ImaginaCoreStatic PRIVATE "include")
+target_link_libraries (ImaginaCoreStatic ImaginaIncludes)
 
+target_link_libraries (ImaginaCore INTERFACE ImaginaIncludes)
 target_link_libraries (ImaginaCore INTERFACE ImaginaCoreStatic)
 
 if (GENERATE_INTERFACES)
@@ -61,7 +68,7 @@ if (GENERATE_INTERFACES)
 endif()
 
 target_include_directories (ImaginaCore PRIVATE "include")
-target_include_directories (ImaginaCore SYSTEM INTERFACE "include")
+target_include_directories (ImaginaCore PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 set_target_properties (ImaginaCore PROPERTIES PREFIX "")
 set_target_properties (ImaginaCore PROPERTIES OUTPUT_NAME "Imagina")
