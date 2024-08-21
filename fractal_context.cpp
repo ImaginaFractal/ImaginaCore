@@ -1,6 +1,4 @@
-#include <Imagina/controller>
 #include <Imagina/fractal_context>
-#include <Imagina/location_manager>
 
 namespace Imagina {
 	void FractalContext::Link() {

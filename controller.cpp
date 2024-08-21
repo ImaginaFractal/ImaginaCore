@@ -1,6 +1,4 @@
 #include <Imagina/controller>
-#include <Imagina/pixel_management>
-#include <Imagina/location_manager>
 
 namespace Imagina {
 	HRLocation NavigationController::GetRenderLocation() {

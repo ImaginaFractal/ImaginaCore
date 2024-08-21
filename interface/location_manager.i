@@ -1,5 +1,4 @@
 #include <Imagina/types>
-#include <Imagina/declarations>
 
 namespace Imagina {
 	interface IController;

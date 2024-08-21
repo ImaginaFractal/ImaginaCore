@@ -1,7 +1,9 @@
 #include <Imagina/pixel_processing>
-#include <Imagina/engine>
+#include <imagina/interface/engine>
+#include <Imagina/platform_dependent>
 #include <assert.h>
-#include <string.h>
+#include <cstring>
+#include <cmath>
 
 namespace Imagina {
 	const FieldInfo *PixelDataInfo::FindField(const char *name) const {

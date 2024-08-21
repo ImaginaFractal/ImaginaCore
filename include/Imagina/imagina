@@ -5,7 +5,6 @@
 #include "controller"
 #include "pixel_processing"
 #include "pixel_management"
-#include "basic_pixel_manager"
 
 #include "evaluator"
 #include "engine"

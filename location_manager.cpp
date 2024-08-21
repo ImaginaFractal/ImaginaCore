@@ -1,5 +1,4 @@
 #include <Imagina/location_manager>
-#include <Imagina/fractal_context>
 #include <Imagina/floating_point>
 
 namespace Imagina {
