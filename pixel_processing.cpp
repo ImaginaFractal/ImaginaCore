@@ -265,4 +265,66 @@ namespace Imagina {
 		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
 		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
 	}
+
+	BSplineInterpolator::BSplineInterpolator(const RGBA *palette, size_t paletteSize) : paletteSize(paletteSize) {
+		RGBA *temp = new RGBA[paletteSize + 3];
+		memcpy(temp + 1, palette, paletteSize * sizeof(RGBA));
+		temp[0] = temp[paletteSize];
+		temp[paletteSize + 1] = temp[1];
+		temp[paletteSize + 2] = temp[2];
+		this->palette = temp;
+	}
+
+	BSplineInterpolator::~BSplineInterpolator() {
+		delete[]palette;
+	}
+
+	void BSplineInterpolator::SetInput(const PixelDataInfo *info) {
+		inputField = info->FindField("Value");
+
+		assert(inputField);
+		assert(inputField->IsScalar());
+	}
+
+	const PixelDataInfo *BSplineInterpolator::GetOutputInfo() {
+		static const FieldInfo OutputFields[1]{
+			{ "Color", 0, PixelDataType::RGBA32F }
+		};
+
+		static const PixelDataInfo OutputInfo{
+			16, 1, OutputFields
+		};
+
+		return &OutputInfo;
+	}
+	
+	void BSplineInterpolator::Process(void *output, void *input) const {
+		SRReal value = inputField->GetScalar<SRReal>(input);
+	
+		if (!std::isfinite(value)) {
+			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);
+			return;
+		}
+	
+		value *= valueMultiplier;
+		value += valueOffset;
+	
+		value -= floor(value);
+		value *= paletteSize;
+	
+		size_t index = floor(value);
+		float t = value - floor(value);
+		float t2 = t * t;
+		float t3 = t2 * t;
+	
+		*(RGBA *)output = palette[index + 0] * (       -t3 + 3.0f * t2 - 3.0f * t + 1.0f)
+						+ palette[index + 1] * ( 3.0f * t3 - 6.0f * t2            + 4.0f)
+						+ palette[index + 2] * (-3.0f * t3 + 3.0f * t2 + 3.0f * t + 1.0f)
+						+ palette[index + 3] * (        t3								);
+		*(RGBA *)output *= 1.0f / 6.0f;
+	
+		((RGBA *)output)->x = std::sqrt(((RGBA *)output)->x);
+		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
+		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
+	}
 }

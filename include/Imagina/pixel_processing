@@ -321,4 +321,25 @@ namespace Imagina {
 	};
 
 	IMPLEMENT_INTERFACE(PaletteLookup, IPixelProcessor);
+
+	class BSplineInterpolator {
+	protected:
+		const FieldInfo *inputField;
+		const RGBA *palette;
+		size_t paletteSize;
+
+	public:
+		SRReal valueMultiplier = 0x1p-8;
+		SRReal valueOffset = 0.0;
+
+		BSplineInterpolator(const RGBA *palette, size_t paletteSize);
+
+		~BSplineInterpolator();
+
+		void SetInput(const PixelDataInfo *info);
+		const PixelDataInfo *GetOutputInfo();
+		void Process(void *output, void *input) const;
+	};
+
+	IMPLEMENT_INTERFACE(BSplineInterpolator, IPixelProcessor);
 }
