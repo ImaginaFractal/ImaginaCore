@@ -1,6 +1,6 @@
 #include <Imagina/numerics>
 #include <Imagina/computation>
-#include <Imagina/pixel_processing>
+#include <Imagina/pixel_data>
 #include "location_manager"
 
 #ifdef __INTELLISENSE__

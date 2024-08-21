@@ -1,6 +1,6 @@
 #include <Imagina/types>
 #include <Imagina/computation>
-#include <Imagina/pixel_processing>
+#include <Imagina/pixel_data>
 #include <Imagina/declarations>
 #include "evaluator"
 

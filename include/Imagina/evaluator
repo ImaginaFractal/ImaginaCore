@@ -3,7 +3,7 @@
 #include "numerics"
 #include "declarations"
 #include "computation" // TODO: Use declarations instead
-#include "pixel_processing"
+#include "pixel_data"
 #include "location_manager"
 #include <imagina/interface/evaluator>
 #include <imagina/interface/pixel_management>
