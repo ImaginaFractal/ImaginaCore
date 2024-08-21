@@ -48,7 +48,8 @@ namespace Imagina {
 
 		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
 
-		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location); // Return type may change
+		// FIXME: vector can't be safely passed between modules compiled by different compilers
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
 	};
 
 	interface IGpuPixelManager : IPixelManager, IGpuTextureManager {};
