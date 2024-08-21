@@ -6,7 +6,7 @@
 namespace Imagina {
 	void BasicPixelManager::Initialize() {
 		assert(pixelPipeline);
-		assert(evaluator);
+		assert(engine);
 #ifdef _DEBUG
 		if (gpuTextureUploadPoint != PixelPipeline::None) {
 			const PixelDataInfo *finalData = pixelPipeline->GetOutputOfStage(gpuTextureUploadPoint);//postprocessor ? postprocessor->GetOutputInfo() : preprocessedData;
