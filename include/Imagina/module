@@ -8,6 +8,7 @@
 #include "interface"
 
 #include <imagina/interface/evaluator>
+#include <imagina/interface/engine>
 
 #ifdef _WIN32
 #define IM_DEFAULT_MODULE_EXTENSION = u8".dll"
@@ -53,6 +54,16 @@ namespace Imagina {
 				.DisplayName = DisplayName,
 				.Create = [](const char *)->Imagina::IAny { return Imagina::IEvaluator(new T); },
 				.Type = ComponentType::Evaluator,
+			};
+		}
+
+		template<IEngineImpl T>
+		static constexpr ComponentInfo Engine(const char *Name, const char *DisplayName) {
+			return {
+				.Name = Name,
+				.DisplayName = DisplayName,
+				.Create = [](const char *)->Imagina::IAny { return Imagina::IEngine(new T); },
+				.Type = ComponentType::Engine,
 			};
 		}
 	};
