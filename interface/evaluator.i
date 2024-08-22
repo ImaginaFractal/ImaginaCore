@@ -9,6 +9,7 @@
 
 namespace Imagina {
 	interface IRasterizer;
+	interface IRasterizingInterface;
 
 	struct StandardEvaluationParameters {
 		ITUInt Iterations = 1024;
@@ -16,13 +17,19 @@ namespace Imagina {
 		HRReal ConvergentEscapeRadius = 0x1.0p-16;
 	};
 
-	interface IEvaluator { // TODO: virtual void PrepareFor(const HRCircle &circle) = 0;
+	/*interface IEvaluator { // TODO: virtual void PrepareFor(const HRCircle &circle) = 0;
 		ILocationManager GetLocationManager();
 		const PixelDataInfo *GetOutputInfo();
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters); // TEMPORARY
 
 		bool Ready();
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
+	};*/
+
+	interface IEvaluator {
+		const PixelDataInfo *GetOutputInfo();
+		void Precompute(const HPReal &x, const HPReal &y, HRReal radius, const StandardEvaluationParameters &parameters);
+		void Evaluate(IRasterizingInterface rasterizingInterface);
 	};
 
 	//interface StandardEvaluator : IEvaluator {

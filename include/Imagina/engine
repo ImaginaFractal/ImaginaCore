@@ -3,6 +3,7 @@
 #include <imagina/interface/engine>
 #include <imagina/interface/pixel_management>
 #include <imagina/interface/controller>
+#include "location_manager"
 
 namespace Imagina {
 	class im_export StandardEngine {
@@ -11,6 +12,8 @@ namespace Imagina {
 		ExecutionContext *precomputeExecutionContext = nullptr;
 		ExecutionContext *pixelExecutionContext = nullptr;
 
+		StandardLocationManager locationManager;
+
 		void CancelTasks();
 
 	protected:
@@ -18,10 +21,9 @@ namespace Imagina {
 		HRReal radius;
 		StandardEvaluationParameters parameters;
 		IEvaluator evaluator;
-		ILocationManager locationManager;
 
 	public:
-		StandardEngine(IEvaluator evaluator) : evaluator(evaluator), locationManager(evaluator.GetLocationManager()) {}
+		StandardEngine(IEvaluator evaluator);
 
 		const PixelDataInfo *GetOutputInfo();
 		ExecutionContext *AddTask(const HRCircle &circle, IRasterizer rasterizer);
@@ -31,6 +33,7 @@ namespace Imagina {
 
 		void SetController(IController controller);
 		void LocationChanged(const HRLocation &location);
+		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
 	};
 
 	IMPLEMENT_INTERFACE(StandardEngine, IEngine);
