@@ -26,7 +26,7 @@ namespace Imagina {
 	enum class ComponentType : uint32_t {
 		None			= 0,
 		Evaluator		= 1,
-		LocationManager	= 2,
+		Engine			= 2,
 		PixelProcessor	= 3,
 		PixelManager	= 16,
 		Controller		= 20,
@@ -80,7 +80,7 @@ namespace Imagina {
 	template<typename T> inline constexpr ComponentType TypeToComponentType = ComponentType::None;
 
 	template<> inline constexpr ComponentType TypeToComponentType<IEvaluator>		= ComponentType::Evaluator;
-	template<> inline constexpr ComponentType TypeToComponentType<ILocationManager>	= ComponentType::LocationManager;
+	template<> inline constexpr ComponentType TypeToComponentType<IEngine>			= ComponentType::Engine;
 	template<> inline constexpr ComponentType TypeToComponentType<IPixelProcessor>	= ComponentType::PixelProcessor;
 	template<> inline constexpr ComponentType TypeToComponentType<IPixelManager>	= ComponentType::PixelManager;
 	template<> inline constexpr ComponentType TypeToComponentType<IController>		= ComponentType::Controller;
