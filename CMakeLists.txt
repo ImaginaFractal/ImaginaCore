@@ -4,7 +4,7 @@ project ("ImaginaCore")
 
 add_subdirectory ("interface_generator")
 
-add_interfaces (Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i" "engine.i")
+add_interfaces (Interfaces "interface" "imagina/interface" "pixel_management.i" "pixel_processing.i" "controller.i" "location_manager.i" "evaluator.i" "engine.i" "task.i")
 
 add_library (ImaginaIncludes INTERFACE)
 add_dependencies (ImaginaIncludes Interfaces)

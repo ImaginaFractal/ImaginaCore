@@ -85,7 +85,7 @@ namespace Imagina {
 		return ++ReferenceCount;
 	}
 
-	size_t ExecutionContext::Release() {
+	void ExecutionContext::Release() {
 		int32_t NewReferenceCount = --ReferenceCount;
 		if (!NewReferenceCount) {
 			if (!InTaskQueue) {
@@ -95,12 +95,11 @@ namespace Imagina {
 				RemoveFromQueue();
 			}
 		}
-		return NewReferenceCount;
 	}
 
-	size_t ExecutionContext::WaitAndRelease() {
+	void ExecutionContext::WaitAndRelease() {
 		Wait();
-		return Release();
+		Release();
 	}
 
 	size_t Computation::WorkerCount = 0;

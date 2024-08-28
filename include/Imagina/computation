@@ -11,6 +11,7 @@
 #include <chrono>
 #include <functional>
 #include <string_view>
+#include <imagina/interface/task>
 
 namespace Imagina {
 	using std::chrono::steady_clock;
@@ -89,9 +90,11 @@ namespace Imagina {
 		duration GetDuration();
 
 		size_t AddReference();
-		size_t Release();
-		size_t WaitAndRelease();
+		void Release();
+		void WaitAndRelease();
 	};
+
+	IMPLEMENT_INTERFACE(ExecutionContext, ITask);
 
 	class Computation {
 		friend class ExecutionContext;
