@@ -58,6 +58,7 @@ struct Interface {
 	std::string_view Name;
 	std::vector<Interface *> Bases;
 	std::vector<Function> Functions;
+	bool HasCustomRelease = false;
 };
 
 std::unordered_map<std::string_view, Interface> Interfaces;
@@ -227,8 +228,13 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	for (Interface *base : interface.Bases) {
 		stream << " && " << base->Name << "Impl<T>";
 	}
-	if (!functions.empty()) {
+	if (!functions.empty() || interface.HasCustomRelease) {
 		stream << " && requires {\n";
+
+		if (interface.HasCustomRelease) {
+			stream << indentation << "\tstatic_cast<void (T:: *)()>(&T::Release);\n";
+		}
+
 		for (const Function &function : functions) {
 			stream << indentation << "\tstatic_cast<" << function.ReturnType << "(T:: *)(";
 
@@ -248,7 +254,11 @@ void GenerateCode(std::ostream &stream, std::string_view indentation, const Inte
 	// Wrappers
 	stream << indentation << "template<" << ImplName << " T>\n";
 	stream << indentation << "void _IIG_" << name << "_Release(void *instance) {\n";
-	stream << indentation << "\tdelete (T *)instance;\n";
+	if (interface.HasCustomRelease) {
+		stream << indentation << "\t((T *)instance)->T::Release();\n";
+	} else {
+		stream << indentation << "\tdelete (T *)instance;\n";
+	}
 	stream << indentation << "}\n\n";
 
 	for (const Function &function : functions) {
@@ -541,7 +551,13 @@ void ProcessInterface(std::ostream &output, Tokenizer &tokenizer) {
 		if (tokenizer.Peek() == '}') break;
 		token = tokenizer.GetUntil(';');
 		if (tokenizer.Get().content != ";") throw SyntaxError();
-		interface.Functions.push_back(ParseFunction(token.content));
+		Function function = ParseFunction(token.content);
+		if (function.Name == "Release") {
+			if (TrimWhitespace(function.ReturnType) != "void" || !function.Parameters.empty()) throw SyntaxError();
+			interface.HasCustomRelease = true;
+		} else {
+			interface.Functions.push_back(std::move(function));
+		}
 	}
 	tokenizer.Get();
 	if (tokenizer.Get().content != ";") throw SyntaxError();
