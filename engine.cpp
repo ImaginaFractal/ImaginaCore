@@ -45,6 +45,10 @@ namespace Imagina {
 		locationManager.SetEvaluator(this);
 	}
 
+	StandardEngine::~StandardEngine() {
+		evaluator.Release();
+	}
+
 	const PixelDataInfo *StandardEngine::GetOutputInfo() {
 		return evaluator.GetOutputInfo();
 	}

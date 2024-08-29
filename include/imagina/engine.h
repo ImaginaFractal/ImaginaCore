@@ -25,6 +25,7 @@ namespace Imagina {
 
 	public:
 		StandardEngine(IEvaluator evaluator);
+		~StandardEngine();
 
 		const PixelDataInfo *GetOutputInfo();
 		ITask AddTask(const HRCircle &circle, IRasterizer rasterizer);
