@@ -49,7 +49,7 @@ namespace Imagina {
 		return evaluator.GetOutputInfo();
 	}
 
-	ExecutionContext *StandardEngine::AddTask(const HRCircle &circle, IRasterizer rasterizer) {
+	ITask StandardEngine::AddTask(const HRCircle &circle, IRasterizer rasterizer) {
 		if (pixelExecutionContext) pixelExecutionContext->WaitAndRelease();
 		pixelExecutionContext = Computation::AddTask(new EvaluationTask(evaluator, rasterizer));
 		pixelExecutionContext->AddReference();

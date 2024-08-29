@@ -5,7 +5,7 @@
 #include "declarations"
 #include "types"
 #include "pixel_management"
-#include "computation" // TODO: Replace with declarations
+#include <imagina/interface/task>
 #include <imagina/interface/engine>
 
 namespace Imagina {
@@ -23,7 +23,7 @@ namespace Imagina {
 
 		HRLocation location;
 
-		ExecutionContext *executionContext = nullptr;
+		ITask task = nullptr;
 
 		bool initialized = false, valid = false;
 

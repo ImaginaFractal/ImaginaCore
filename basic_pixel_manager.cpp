@@ -134,12 +134,12 @@ namespace Imagina {
 		if (!valid && engine) {
 			//Evaluator evaluator;
 			//evaluator->Evaluate(*this);
-			if (executionContext) CancelAndWait();
+			if (task) CancelAndWait();
 
 			if (engine.Ready()) {
 				i = 0;
 				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-				executionContext = engine.AddTask(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
+				task = engine.AddTask(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
 
 				valid = true;
 			}
@@ -164,16 +164,16 @@ namespace Imagina {
 	}
 	void BasicPixelManager::Cancel() {
 		i = pixelCount;
-		if (executionContext) {
-			if (!executionContext->Terminated()) executionContext->Cancel();
+		if (task) {
+			if (!task.Terminated()) task.Cancel();
 		}
 	}
 	void BasicPixelManager::CancelAndWait() {
 		i = pixelCount;
-		if (executionContext) {
-			if (!executionContext->Terminated()) executionContext->Cancel();
-			executionContext->WaitAndRelease();
-			executionContext = nullptr;
+		if (task) {
+			if (!task.Terminated()) task.Cancel();
+			task.Wait();
+			task.Release();
 		}
 	}
 	IRasterizingInterface BasicPixelManager::GetRasterizingInterface() {

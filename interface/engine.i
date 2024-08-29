@@ -1,8 +1,8 @@
 #include <Imagina/types>
-#include <Imagina/computation>
 #include <Imagina/pixel_data>
 #include <Imagina/declarations>
 #include "evaluator"
+#include "task"
 
 #ifdef __INTELLISENSE__
 #define interface class
@@ -21,7 +21,7 @@ namespace Imagina {
 	interface IEngine {
 		const PixelDataInfo *GetOutputInfo();
 
-		ExecutionContext *AddTask(const HRCircle &circle, IRasterizer rasterizer);
+		ITask AddTask(const HRCircle &circle, IRasterizer rasterizer);
 
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters); // TODO: Set parameter when adding task
 
