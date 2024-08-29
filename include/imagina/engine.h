@@ -3,6 +3,7 @@
 #include <imagina/interface/engine.h>
 #include <imagina/interface/pixel_management.h>
 #include <imagina/interface/controller.h>
+#include "computation.h"
 #include "location_manager.h"
 
 namespace Imagina {
