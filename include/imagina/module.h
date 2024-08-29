@@ -4,11 +4,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <iterator>
-#include "declarations"
-#include "interface"
+#include "declarations.h"
+#include "interface.h"
 
-#include <imagina/interface/evaluator>
-#include <imagina/interface/engine>
+#include <imagina/interface/evaluator.h>
+#include <imagina/interface/engine.h>
 
 #ifdef _WIN32
 #define IM_DEFAULT_MODULE_EXTENSION = u8".dll"

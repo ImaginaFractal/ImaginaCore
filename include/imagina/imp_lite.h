@@ -1,9 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include "multi-precision"
-#include "floating_point"
-//#include "floating_point.h"
+#include "multi-precision.h"
+#include "floating_point.h"
 
 namespace Imagina::MPLite {
 	class im_export Float {

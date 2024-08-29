@@ -1,5 +1,5 @@
-#include <Imagina/location_manager>
-#include <Imagina/floating_point>
+#include <imagina/location_manager.h>
+#include <imagina/floating_point.h>
 
 namespace Imagina {
 	void StandardLocationManager::SetController(IController controller) {

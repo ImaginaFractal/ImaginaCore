@@ -1,11 +1,11 @@
-#include <Imagina/imp_lite>
+#include <imagina/imp_lite.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <bit>
 #include <utility>
-#include <Imagina/floating_point>
-#include <Imagina/math>
+#include <imagina/floating_point.h>
+#include <imagina/math.h>
 
 namespace Imagina::MPLite {
 	uint32_t PrecisionToSize(uintptr_t precision) {

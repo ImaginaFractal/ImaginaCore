@@ -2,11 +2,11 @@
 
 #include <atomic>
 
-#include "declarations"
-#include "types"
-#include "pixel_management"
-#include <imagina/interface/task>
-#include <imagina/interface/engine>
+#include "declarations.h"
+#include "types.h"
+#include "pixel_management.h"
+#include <imagina/interface/task.h>
+#include <imagina/interface/engine.h>
 
 namespace Imagina {
 	class BasicRasterizingInterface;

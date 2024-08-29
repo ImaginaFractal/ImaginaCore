@@ -1,4 +1,4 @@
-#include <Imagina/multi-precision>
+#include <imagina/multi-precision.h>
 #include <algorithm>
 
 namespace Imagina::inline Numerics {

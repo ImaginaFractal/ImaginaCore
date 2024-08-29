@@ -1,7 +1,7 @@
-#include <Imagina/numerics>
-#include <Imagina/computation>
-#include <Imagina/pixel_data>
-#include "location_manager"
+#include <imagina/numerics.h>
+#include <imagina/computation.h>
+#include <imagina/pixel_data.h>
+#include "location_manager.h"
 
 #ifdef __INTELLISENSE__
 #define interface class

@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <vector>
-#include <Imagina/types>
-#include <Imagina/pixel_processing>
+#include <imagina/types.h>
+#include <imagina/pixel_processing.h>
 
 #ifdef __INTELLISENSE__
 #define interface class

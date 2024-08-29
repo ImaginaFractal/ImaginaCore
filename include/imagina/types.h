@@ -1,9 +1,9 @@
 #pragma once
 
 #include <exception>
-#include "numerics"
-#include "constants"
-#include "math"
+#include "numerics.h"
+#include "constants.h"
+#include "math.h"
 
 namespace Imagina {
 	//template<intmax_t factor, typename type>

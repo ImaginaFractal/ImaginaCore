@@ -1,8 +1,8 @@
-#include <Imagina/types>
-#include <Imagina/pixel_data>
-#include <Imagina/declarations>
-#include "evaluator"
-#include "task"
+#include <imagina/types.h>
+#include <imagina/pixel_data.h>
+#include <imagina/declarations.h>
+#include "evaluator.h"
+#include "task.h"
 
 #ifdef __INTELLISENSE__
 #define interface class

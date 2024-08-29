@@ -1,6 +1,6 @@
 #pragma once
 
-#include "declarations"
+#include "declarations.h"
 
 #include <thread>
 #include <deque>
@@ -11,7 +11,7 @@
 #include <chrono>
 #include <functional>
 #include <string_view>
-#include <imagina/interface/task>
+#include <imagina/interface/task.h>
 
 namespace Imagina {
 	using std::chrono::steady_clock;

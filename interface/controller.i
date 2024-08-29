@@ -1,4 +1,4 @@
-#include <Imagina/numerics>
+#include <imagina/numerics.h>
 
 namespace Imagina {
 	interface IPixelManager;

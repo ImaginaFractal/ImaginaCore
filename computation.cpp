@@ -1,6 +1,6 @@
-#include <Imagina/computation>
-#include <Imagina/platform_dependent>
-#include <Imagina/types>
+#include <imagina/computation.h>
+#include <imagina/platform_dependent.h>
+#include <imagina/types.h>
 
 namespace Imagina {
 	bool Task::IsSynchronous() {

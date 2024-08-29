@@ -5,8 +5,8 @@
 #include <concepts>
 #include <limits>
 #include <cassert>
-#include "numerics"
-#include "constants"
+#include "numerics.h"
+#include "constants.h"
 
 namespace Imagina {
 	using std::abs;

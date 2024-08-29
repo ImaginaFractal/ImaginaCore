@@ -1,9 +1,9 @@
 #pragma once
 
-#include <imagina/interface/engine>
-#include <imagina/interface/pixel_management>
-#include <imagina/interface/controller>
-#include "location_manager"
+#include <imagina/interface/engine.h>
+#include <imagina/interface/pixel_management.h>
+#include <imagina/interface/controller.h>
+#include "location_manager.h"
 
 namespace Imagina {
 	class im_export StandardEngine {

@@ -1,5 +1,5 @@
-#include <Imagina/engine>
-#include <Imagina/module>
+#include <imagina/engine.h>
+#include <imagina/module.h>
 
 namespace Imagina {
 	class StandardEngine::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {

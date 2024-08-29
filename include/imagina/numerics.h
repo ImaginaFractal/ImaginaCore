@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include "basic_types"
-#include "multi-precision"
-#include "floating_point"
-#include "complex"
-#include "vector"
+#include "basic_types.h"
+#include "multi-precision.h"
+#include "floating_point.h"
+#include "complex.h"
+#include "vector.h"
 
 namespace Imagina::inline Numerics {
 	using HRReal = FloatF64eI64; // Real type for fractal with standard precision and highest range

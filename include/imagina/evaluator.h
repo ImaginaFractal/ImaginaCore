@@ -1,12 +1,12 @@
 #pragma once
 
-#include "numerics"
-#include "declarations"
-#include "computation" // TODO: Use declarations instead
-#include "pixel_data"
-#include "location_manager"
-#include <imagina/interface/evaluator>
-#include <imagina/interface/pixel_management>
+#include "numerics.h"
+#include "declarations.h"
+#include "computation.h" // TODO: Use declarations instead
+#include "pixel_data.h"
+#include "location_manager.h"
+#include <imagina/interface/evaluator.h>
+#include <imagina/interface/pixel_management.h>
 
 namespace Imagina {
 	class im_export SimpleEvaluator {

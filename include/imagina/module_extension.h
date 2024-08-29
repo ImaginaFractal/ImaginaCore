@@ -1,6 +1,6 @@
 #pragma once
 
-#include "module"
+#include "module.h"
 
 namespace Imagina {
 	class IModuleExtension {

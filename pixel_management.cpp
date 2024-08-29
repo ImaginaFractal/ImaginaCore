@@ -1,4 +1,4 @@
-#include <Imagina/pixel_management>
+#include <imagina/pixel_management.h>
 
 namespace Imagina {
 	/*void IRasterizer::Cancel() {}

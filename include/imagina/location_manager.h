@@ -1,8 +1,8 @@
 #pragma once
 
-#include <imagina/interface/location_manager>
-#include <imagina/interface/evaluator>
-#include <imagina/interface/controller>
+#include <imagina/interface/location_manager.h>
+#include <imagina/interface/evaluator.h>
+#include <imagina/interface/controller.h>
 
 namespace Imagina {
 	class im_export StandardLocationManager {

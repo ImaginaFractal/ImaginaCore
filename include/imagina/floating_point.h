@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bit>
-#include "basic_types"
+#include "basic_types.h"
 
 namespace Imagina::inline Numerics {
 	struct _FloatF64eI64 {

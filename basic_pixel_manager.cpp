@@ -1,6 +1,6 @@
-#include <Imagina/basic_pixel_manager>
-#include <Imagina/evaluator>
-#include <Imagina/platform_dependent>
+#include <imagina/basic_pixel_manager.h>
+#include <imagina/evaluator.h>
+#include <imagina/platform_dependent.h>
 #include <assert.h>
 
 namespace Imagina {

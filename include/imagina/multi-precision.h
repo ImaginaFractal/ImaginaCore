@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <cassert>
-#include "declarations"
-#include "floating_point"
+#include "declarations.h"
+#include "floating_point.h"
 
 namespace Imagina::inline Numerics {
 	struct MPReal;

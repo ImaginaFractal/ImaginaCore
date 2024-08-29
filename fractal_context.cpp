@@ -1,4 +1,4 @@
-#include <Imagina/fractal_context>
+#include <imagina/fractal_context.h>
 
 namespace Imagina {
 	void FractalContext::Link() {

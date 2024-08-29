@@ -1,6 +1,6 @@
-#include <Imagina/pixel_processing>
-#include <imagina/interface/engine>
-#include <Imagina/platform_dependent>
+#include <imagina/pixel_processing.h>
+#include <imagina/interface/engine.h>
+#include <imagina/platform_dependent.h>
 #include <assert.h>
 #include <cstring>
 #include <cmath>

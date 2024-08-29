@@ -1,9 +1,9 @@
 #pragma once
 
-#include "numerics"
-#include <imagina/interface/pixel_management>
-#include <imagina/interface/controller>
-#include <imagina/interface/engine>
+#include "numerics.h"
+#include <imagina/interface/pixel_management.h>
+#include <imagina/interface/controller.h>
+#include <imagina/interface/engine.h>
 
 namespace Imagina {
 	class im_export FractalContext {

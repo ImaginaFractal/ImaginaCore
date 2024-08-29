@@ -1,4 +1,4 @@
-#include <Imagina/controller>
+#include <imagina/controller.h>
 
 namespace Imagina {
 	HRLocation NavigationController::GetRenderLocation() {

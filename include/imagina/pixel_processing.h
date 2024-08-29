@@ -1,11 +1,11 @@
 #pragma once
 
-#include "declarations"
-#include "numerics"
-#include "pixel_data"
+#include "declarations.h"
+#include "numerics.h"
+#include "pixel_data.h"
 #include <initializer_list>
 #include <cassert>
-#include <imagina/interface/pixel_processing>
+#include <imagina/interface/pixel_processing.h>
 
 namespace Imagina {
 	// A special case of SerialCompositeProcessor
