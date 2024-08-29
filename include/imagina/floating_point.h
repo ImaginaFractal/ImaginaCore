@@ -12,6 +12,9 @@ namespace Imagina::inline Numerics {
 	constexpr ExpInt ExponentOf(double x)	{ return ExpInt((std::bit_cast<uint64_t>(x) >> 52) & 0x7FF) - 0x3FF; }
 	constexpr ExpInt ExponentOf(float x)	{ return ExpInt((std::bit_cast<uint32_t>(x) >> 23) & 0x0FF) - 0x07F; }
 
+	// Make sure double have the correct format
+	static_assert(std::bit_cast<uint64_t, double>(0x1.3456789ABCDEFp-1005) == 0x0123'4567'89AB'CDEF);
+
 	struct FloatF64eI64 : _FloatF64eI64 {
 		constexpr int64_t MantissaI64() { return std::bit_cast<int64_t>(Mantissa); }
 		constexpr void MantissaI64(int64_t x) { Mantissa = std::bit_cast<double>(x); }
