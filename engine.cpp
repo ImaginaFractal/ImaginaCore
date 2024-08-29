@@ -61,7 +61,7 @@ namespace Imagina {
 		this->parameters = parameters;
 		if (x.Valid()) {
 			precomputeExecutionContext = Computation::AddTask([this]() {
-				evaluator.Precompute(x, y, radius, this->parameters);
+				evaluator.Prepare(x, y, radius, this->parameters);
 			});
 		}
 	}
@@ -88,6 +88,6 @@ namespace Imagina {
 		this->x |= x;
 		this->y |= y;
 		this->radius = radius;
-		precomputeExecutionContext = Computation::AddTask([this]() { evaluator.Precompute(this->x, this->y, this->radius, parameters); });
+		precomputeExecutionContext = Computation::AddTask([this]() { evaluator.Prepare(this->x, this->y, this->radius, parameters); });
 	}
 }

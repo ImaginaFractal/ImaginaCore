@@ -28,7 +28,7 @@ namespace Imagina {
 
 	interface IEvaluator {
 		const PixelDataInfo *GetOutputInfo();
-		void Precompute(const HPReal &x, const HPReal &y, HRReal radius, const StandardEvaluationParameters &parameters);
+		void Prepare(const HPReal &x, const HPReal &y, HRReal radius, const StandardEvaluationParameters &parameters);
 		void Evaluate(IRasterizingInterface rasterizingInterface);
 	};
 

@@ -69,14 +69,14 @@ namespace Imagina {
 		this->x |= x;
 		this->y |= y;
 		this->radius = radius;
-		precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Precompute, this));
+		precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Prepare, this));
 	}
 
 	void SimpleEvaluator::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
 		CancelTasks();
 		this->parameters = parameters;
 		if (x.Valid()) {
-			precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Precompute, this));
+			precomputeExecutionContext = Computation::AddTask(std::bind(&SimpleEvaluator::Prepare, this));
 		}
 	}
 
@@ -168,7 +168,7 @@ namespace Imagina {
 		IM_GET_OUTPUT_INFO_IMPL(Output, Value);
 	}
 
-	void TestSimpleEvaluator::Precompute() {
+	void TestSimpleEvaluator::Prepare() {
 		delete[] reference;
 		//reference = new SRComplex[parameters.Iterations + 1];
 		reference = new complex[parameters.Iterations + 1];
