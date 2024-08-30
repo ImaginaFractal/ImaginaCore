@@ -4,7 +4,7 @@
 #include <assert.h>
 
 namespace Imagina {
-	void BasicPixelManager::Initialize() {
+	bool BasicPixelManager::Initialize() {
 		assert(pixelPipeline);
 		assert(engine);
 #ifdef _DEBUG
@@ -13,6 +13,11 @@ namespace Imagina {
 			//assert(finalData->Size == 4 && finalData->FieldCount == 1 && finalData->Fields[0].Offset == 0 && finalData->Fields[0].Type == PixelDataType::Float32);
 		}
 #endif
+		initialized = false;
+		valid = false;
+		i = 0;
+
+		if (width == 0 || height == 0) return false;
 
 		if (preprocessedPixels) {
 			delete[] preprocessedPixels;
@@ -48,6 +53,7 @@ namespace Imagina {
 		finalPixels = new uint32_t[pixelCount];
 
 		initialized = true;
+		return true;
 	}
 
 	void BasicPixelManager::ActivateGpu(IGraphics graphics) {
@@ -129,7 +135,7 @@ namespace Imagina {
 
 	void BasicPixelManager::Update() {
 		if (!initialized) {
-			Initialize();
+			if (!Initialize()) return;
 		}
 		if (!valid && engine) {
 			//Evaluator evaluator;

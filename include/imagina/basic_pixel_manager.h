@@ -39,7 +39,7 @@ namespace Imagina {
 		const IPixelProcessor finalProcessor = nullptr;
 		CopyProcessor copyProcessor; // used as preprocessor if no preprocessor is provided
 
-		void Initialize();
+		bool Initialize();
 
 	public:
 		void ActivateGpu(IGraphics graphics);
