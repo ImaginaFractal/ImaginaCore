@@ -86,23 +86,8 @@ namespace Imagina {
 		template <typename T>
 		T GetScalar(void *base) const;
 
-		uint32_t GetRGBA8(void *base) const;
-
-	private:
-		static float clamp01(float x) { return (x < 0.0f) ? 0.0f : (x > 1.0f) ? 1.0f : x; }
-
-		static uint32_t RGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) {
-			return uint32_t(r)
-				| (uint32_t(g) << 8)
-				| (uint32_t(b) << 16)
-				| (uint32_t(b) << 24);
-		}
-		static uint32_t RGBA8(float r, float g, float b, float a = 1.0) {
-			return (uint32_t)std::round(clamp01(r) * 255.0f)
-				| ((uint32_t)std::round(clamp01(g) * 255.0f) << 8)
-				| ((uint32_t)std::round(clamp01(b) * 255.0f) << 16)
-				| ((uint32_t)std::round(clamp01(a) * 255.0f) << 24);
-		}
+		template <typename T> // TODO: Constrain T
+		T GetColor(void *base) const;
 	};
 
 	template<typename T>
@@ -140,26 +125,16 @@ namespace Imagina {
 		}
 	}
 
-	inline uint32_t FieldInfo::GetRGBA8(void *base) const {
+	template <typename T>
+	T FieldInfo::GetColor(void *base) const {
 		switch (Type) {
-			case PixelDataType::RGB8: return RGBA8(
-				GetField<uint8_t>(base, Offset),
-				GetField<uint8_t>(base, Offset + 1),
-				GetField<uint8_t>(base, Offset + 2));
-			case PixelDataType::RGB32F: return RGBA8(
-				GetField<float>(base, Offset),
-				GetField<float>(base, Offset + 4),
-				GetField<float>(base, Offset + 8));
-			
-			
-			case PixelDataType::RGBA8: return GetField<uint32_t>(base, Offset);
-			case PixelDataType::RGBA32F: return RGBA8(
-				GetField<float>(base, Offset),
-				GetField<float>(base, Offset + 4),
-				GetField<float>(base, Offset + 8),
-				GetField<float>(base, Offset + 12));
+			case PixelDataType::RGB8: return GetField<RGB8>(base, Offset);
+			case PixelDataType::RGB32F: return GetField<RGB>(base, Offset);
 
-			default: return 0; // FIXME
+			case PixelDataType::RGBA8: return GetField<RGBA8>(base, Offset);
+			case PixelDataType::RGBA32F: return GetField<RGBA>(base, Offset);
+
+			default: return T(); // FIXME
 		}
 	}
 
