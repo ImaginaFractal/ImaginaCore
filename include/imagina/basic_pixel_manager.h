@@ -61,6 +61,8 @@ namespace Imagina {
 
 		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
 
+		bool Finished();
+		void Wait();
 		void Cancel();
 		void CancelAndWait();
 		IRasterizingInterface GetRasterizingInterface();

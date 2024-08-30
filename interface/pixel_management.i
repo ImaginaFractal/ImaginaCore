@@ -40,6 +40,9 @@ namespace Imagina {
 
 		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
 		void Update();
+
+		bool Finished(); // TODO: Consider changing it to Status()
+		void Wait();
 	};
 
 	interface IGpuTextureManager {

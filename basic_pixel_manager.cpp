@@ -168,6 +168,18 @@ namespace Imagina {
 
 		return TextureMappings;
 	}
+	bool BasicPixelManager::Finished() {
+		if (!valid) return false;
+
+		return i >= pixelCount;
+	}
+	void BasicPixelManager::Wait() {
+		if (task) {
+			task.Wait();
+			task.Release();
+		}
+		assert(!valid || i >= pixelCount);
+	}
 	void BasicPixelManager::Cancel() {
 		i = pixelCount;
 		if (task) {
