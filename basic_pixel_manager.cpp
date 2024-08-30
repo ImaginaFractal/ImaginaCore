@@ -56,7 +56,7 @@ namespace Imagina {
 		return true;
 	}
 
-	void BasicPixelManager::ActivateGpu(IGraphics graphics) {
+	void BasicPixelManager::ActivateGpu(IGraphics graphics) { // FIXME: Called after initialization
 		this->graphics = graphics;
 
 		gpuTexture = graphics.CreateTexture();
@@ -71,7 +71,7 @@ namespace Imagina {
 		gpuTexture = nullptr;
 	}
 
-	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) {
+	void BasicPixelManager::UsePixelPipeline(PixelPipeline *pipeline) { // FIXME: Called while rendering
 		pixelPipeline = pipeline;
 		valid = false;
 		initialized = false;
@@ -80,7 +80,7 @@ namespace Imagina {
 	void BasicPixelManager::GetPixelData(void *data, PixelPipeline::Stage stage) {
 		if (pixelPipeline->Equivalent(stage, PixelPipeline::Preprocessed)) {
 			memcpy(data, preprocessedPixels, pixelCount * preprocessedDataSize);
-		} else if (pixelPipeline->Equivalent(stage, gpuTextureUploadPoint)) {
+		} else if (pixelPipeline->Equivalent(stage, gpuTextureUploadPoint) && graphics) {
 			memcpy(data, finalPixels, pixelCount * sizeof(*finalPixels));
 		} else {
 			IPixelProcessor processor = pixelPipeline->GetCompositeProcessor(PixelPipeline::Postprocess, stage);
@@ -116,7 +116,7 @@ namespace Imagina {
 	}
 
 	void BasicPixelManager::SetResolution(GRInt width, GRInt height) {
-		this->width = width;
+		this->width = width; // FIXME: Use separate variable and/or cancel tasks
 		this->height = height;
 		valid = false;
 		initialized = false;

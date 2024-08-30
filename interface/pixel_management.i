@@ -27,7 +27,7 @@ namespace Imagina {
 		HRRectangle FractalRectangle;
 	};
 
-	interface IPixelManager {
+	interface IPixelManager { // TODO: Add init
 		void SetEngine(IEngine evaluator);
 		void UsePixelPipeline(PixelPipeline *pipeline);
 		void GetPixelData(void *data, PixelPipeline::Stage stage); // TODO: Add invertY
