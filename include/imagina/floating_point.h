@@ -32,19 +32,32 @@ namespace Imagina::inline Numerics {
 		static constexpr int64_t ZeroOffsetShifted = ZeroOffset << 52;
 		static constexpr int64_t NormalizedExponentShifted = NormalizedExponent << 52;
 
-		static constexpr int64_t ZeroExponent = -0x2000'0000'0000'0000;
-		static constexpr int64_t ZeroExponentThreshold = -0x1000'0000'0000'0000;
+		static constexpr int64_t ZeroInfExponent = 0x2800'0000'0000'0000;
+		static constexpr int64_t ZeroInfExponentThreshold = 0x1000'0000'0000'0000;
 
-		FloatF64eI64() : _FloatF64eI64{ .Mantissa = 1.0, .Exponent = ZeroExponent } {}
+		FloatF64eI64() : _FloatF64eI64{ .Mantissa = 1.0, .Exponent = ~ZeroInfExponentThreshold } {}
 
 		constexpr void Normalize() {
 			uint64_t MantissaI64 = std::bit_cast<uint64_t>(Mantissa);
 
-			if (Mantissa == 0.0 || Exponent <= ZeroExponentThreshold) {
-				Exponent = ZeroExponent;
+#ifndef FLOAT_F64_E_I64_INFINITY
+			if (Mantissa == 0.0 || Exponent <= ~ZeroInfExponentThreshold) {
+				Exponent = ~ZeroInfExponent;
 			} else {
 				Exponent += int64_t((MantissaI64 >> 52) & MaxExponent) - NormalizedExponent;
 			}
+#else
+			if (Mantissa == 0.0) [[unlikely]] {
+				Exponent = ~ZeroInfExponent;
+			} else {
+				Exponent += int64_t((MantissaI64 >> 52) & MaxExponent) - NormalizedExponent;
+
+				int64_t sign = Exponent >> 63;
+				if ((Exponent ^ sign) >= ZeroInfExponentThreshold) {
+					Exponent = ZeroInfExponent ^ sign;
+				}
+			}
+#endif
 
 			MantissaI64 = (MantissaI64 & ~ExponentMask) | NormalizedExponentShifted;
 			Mantissa = std::bit_cast<double>(MantissaI64);
@@ -61,8 +74,8 @@ namespace Imagina::inline Numerics {
 		//constexpr FloatF64eI64(int64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
 		//constexpr FloatF64eI64(uint64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
 
-		constexpr FloatF64eI64(double mantissa, int64_t exponent) : _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } { Normalize(); }
-		constexpr FloatF64eI64(double mantissa, int64_t exponent, int) : _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } {}
+		constexpr FloatF64eI64(double mantissa, int64_t exponent)		: _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } { Normalize(); }
+		constexpr FloatF64eI64(double mantissa, int64_t exponent, int)	: _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } {}
 
 		constexpr explicit operator double() const {
 			int64_t MantissaI64 = std::bit_cast<int64_t>(Mantissa);
@@ -79,7 +92,7 @@ namespace Imagina::inline Numerics {
 		}
 
 		constexpr bool IsZero() const {
-			return Exponent <= ZeroExponentThreshold;
+			return Exponent <= ~ZeroInfExponentThreshold;
 		}
 
 		constexpr FloatF64eI64 operator+() const {
