@@ -10,6 +10,7 @@ function(add_interfaces TargetName SourceDir GeneratedDir)
 	message("TargetName: ${TargetName}")
 	set(AbsoluteSourceDir "${CMAKE_CURRENT_LIST_DIR}/${SourceDir}")
 	set(AbsoluteGeneratedDir "${CMAKE_CURRENT_BINARY_DIR}/include/${GeneratedDir}")
+	file(MAKE_DIRECTORY ${AbsoluteGeneratedDir})
 	foreach(FileName IN LISTS ARGN)
 		string(REGEX REPLACE "\\.[^.]*$" ".h" DstFileName ${FileName}) # remove file extension
 
@@ -23,6 +24,5 @@ function(add_interfaces TargetName SourceDir GeneratedDir)
 	list(TRANSFORM ARGN REPLACE "\\.[^.]*$" ".h")
 	list(TRANSFORM ARGN PREPEND "${AbsoluteGeneratedDir}/")
 
-	message(${ARGN})
 	add_custom_target("${TargetName}" DEPENDS ${ARGN})
 endfunction()
