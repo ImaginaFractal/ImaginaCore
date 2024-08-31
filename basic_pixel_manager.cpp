@@ -57,6 +57,11 @@ namespace Imagina {
 		return true;
 	}
 
+	BasicPixelManager::~BasicPixelManager() {
+		delete[] preprocessedPixels;
+		delete[] finalPixels;
+	}
+
 	void BasicPixelManager::ActivateGpu(IGraphics graphics) { // FIXME: Called after initialization
 		this->graphics = graphics;
 
@@ -203,7 +208,11 @@ namespace Imagina {
 	}
 
 	bool BasicRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
-		size_t i = pixelManager->i++;
+		i++;
+		if (i >= end) {
+			i = pixelManager->i.fetch_add(groupSize);
+			end = i + groupSize;
+		}
 		if (i >= pixelManager->pixelCount) return false;
 
 		pixelX = i % pixelManager->width;

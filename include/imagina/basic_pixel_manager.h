@@ -42,6 +42,8 @@ namespace Imagina {
 		bool Initialize();
 
 	public:
+		~BasicPixelManager();
+
 		void ActivateGpu(IGraphics graphics);
 		void DeactivateGpu(bool cleanup = true);
 
@@ -76,6 +78,9 @@ namespace Imagina {
 		PixelPipeline *pixelPipeline;
 		BasicRasterizingInterface(BasicPixelManager *pixelManager) : pixelManager(pixelManager), pixelPipeline(pixelManager->pixelPipeline) {}
 
+		static constexpr size_t groupSize = 16;
+
+		size_t i = 0, end = 0;
 		int pixelX, pixelY;
 
 	public:
