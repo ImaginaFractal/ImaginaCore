@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+#include <cstddef>
 #include <cassert>
 #include "declarations.h"
 #include "floating_point.h"
