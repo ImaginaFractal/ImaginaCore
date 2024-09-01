@@ -46,6 +46,7 @@ namespace Imagina {
 	}
 
 	StandardEngine::~StandardEngine() {
+		CancelTasks();
 		evaluator.Release();
 	}
 
