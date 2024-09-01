@@ -7,6 +7,15 @@
 
 namespace Imagina {
 	class im_export NavigationController {
+	public:
+		enum TransitionFunction {
+			Linear,
+			Power5_3,
+			Quadratic,
+			CubicHermite,
+			QuinticHermite,
+		};
+
 	private:
 		HRLocation targetLocation = HRLocation(0.0, 0.0, 2.0);
 		HRLocation renderLocation = HRLocation(0.0, 0.0, 2.0);
@@ -16,10 +25,19 @@ namespace Imagina {
 		IEngine engine = nullptr;
 
 		bool zooming = false;
+		SRReal animationDuration = 0.25;
 		SRReal remainingZoomTime = 0.0;
+		SRReal zoomVelocity = 0.0;
+		SRReal zoomAcceleration = 0.0;
+		TransitionFunction transitionFunction = Power5_3;
+
+		SRReal UpdateZoomAnimation(SRReal deltaTime);
 
 	public:
 		HRLocation GetRenderLocation();
+
+		void SetAnimationDuration(SRReal duration) { animationDuration = duration; }
+		void SetTransitionFunction(TransitionFunction function) { transitionFunction = function; }
 
 		void SetPixelManager(IPixelManager pixelManager);
 		void SetEngine(IEngine engine);
