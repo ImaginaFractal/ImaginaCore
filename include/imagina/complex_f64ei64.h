@@ -4,7 +4,7 @@
 #include "complex.h"
 
 namespace Imagina::inline Numerics {
-	struct ComplexF64eI64 {
+	struct _ComplexF64eI64Base {
 		double re, im;
 		int64_t exponent;
 
@@ -24,19 +24,61 @@ namespace Imagina::inline Numerics {
 		static constexpr int64_t ZeroInfExponent = 0x2800'0000'0000'0000;
 		static constexpr int64_t ZeroInfExponentThreshold = 0x1000'0000'0000'0000;
 
+		_ComplexF64eI64Base() = default;
+
+		constexpr _ComplexF64eI64Base(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) {}
+	};
+
+	template<size_t max_exp>
+	struct _ComplexF64eI64U : _ComplexF64eI64Base {
+		_ComplexF64eI64U() = default;
+		//constexpr _ComplexF64eI64U(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
+		//
+		//constexpr _ComplexF64eI64U(double re) noexcept : ComplexF64eI64(FloatF64eI64(re)) {}
+		//constexpr _ComplexF64eI64U(double re, double im) noexcept : re(re), im(im), exponent(0) { Normalize(); }
+		//
+		//constexpr _ComplexF64eI64U(Complex<double> x) noexcept : ComplexF64eI64(x.re, x.im) {}
+		//
+		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) { Normalize(); }
+		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent, int) : re(re), im(im), exponent(exponent) {}
+
+		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) {}
+
+		using _ComplexF64eI64Base::_ComplexF64eI64Base;
+
+		constexpr _ComplexF64eI64U(const _ComplexF64eI64Base &x) : _ComplexF64eI64Base(x) {}
+		
+		constexpr _ComplexF64eI64U operator-() const {
+			return _ComplexF64eI64U{ -re, -im, exponent };
+		}
+	};
+
+	struct ComplexF64eI64 : _ComplexF64eI64U<0> {
 		//ComplexF64eI64() : re(1.0), im(1.0), Exponent(~ZeroInfExponentThreshold) {}
 		ComplexF64eI64() = default;
 
-		constexpr ComplexF64eI64(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
+		//constexpr ComplexF64eI64(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
+		//
+		//constexpr ComplexF64eI64(double re) noexcept : ComplexF64eI64(FloatF64eI64(re)) {}
+		//constexpr ComplexF64eI64(double re, double im) noexcept : re(re), im(im), exponent(0) { Normalize(); }
+		//
+		//constexpr ComplexF64eI64(Complex<double> x) noexcept : ComplexF64eI64(x.re, x.im) {}
+		//
+		//constexpr ComplexF64eI64(double re, double im, int64_t exponent)		: re(re), im(im), exponent(exponent) { Normalize(); }
+		//constexpr ComplexF64eI64(double re, double im, int64_t exponent, int)	: re(re), im(im), exponent(exponent) {}
+
+		constexpr ComplexF64eI64(FloatF64eI64 re) noexcept : _ComplexF64eI64U(re.Mantissa, 0.0, re.Exponent) {}
 
 		constexpr ComplexF64eI64(double re) noexcept : ComplexF64eI64(FloatF64eI64(re)) {}
-		constexpr ComplexF64eI64(double re, double im) noexcept : re(re), im(im), exponent(0) { Normalize(); }
+		constexpr ComplexF64eI64(double re, double im) noexcept : _ComplexF64eI64U(re, im, 0) { Normalize(); }
 
 		constexpr ComplexF64eI64(Complex<double> x) noexcept : ComplexF64eI64(x.re, x.im) {}
 
-		constexpr ComplexF64eI64(double re, double im, int64_t exponent)		: re(re), im(im), exponent(exponent) { Normalize(); }
-		constexpr ComplexF64eI64(double re, double im, int64_t exponent, int)	: re(re), im(im), exponent(exponent) {}
+		constexpr ComplexF64eI64(double re, double im, int64_t exponent)		: _ComplexF64eI64U(re, im, exponent) { Normalize(); }
+		constexpr ComplexF64eI64(double re, double im, int64_t exponent, int)	: _ComplexF64eI64U(re, im, exponent) {}
 
+		template<size_t max_exp>
+		constexpr ComplexF64eI64(const _ComplexF64eI64U<max_exp> &x) : _ComplexF64eI64U(x.re, x.im, x.exponent) { Normalize(); }
 
 		constexpr void Normalize() {
 			double max = std::max(std::abs(re), std::abs(im));
@@ -78,7 +120,7 @@ namespace Imagina::inline Numerics {
 			return ComplexF64eI64(-re, -im, exponent, 0);
 		}
 
-		constexpr ComplexF64eI64 &operator+=(const ComplexF64eI64 &x) {
+		/*constexpr ComplexF64eI64 &operator+=(const ComplexF64eI64 &x) {
 			const ComplexF64eI64 *large, *small;
 
 			if (exponent >= x.exponent) {
@@ -120,7 +162,7 @@ namespace Imagina::inline Numerics {
 			exponent += x.exponent;
 
 			return *this;
-		}
+		}*/
 
 		constexpr ComplexF64eI64 &operator/=(const ComplexF64eI64 &x) {
 			double new_re = re * x.re + im * x.im;
@@ -135,10 +177,48 @@ namespace Imagina::inline Numerics {
 		}
 	};
 
-	constexpr ComplexF64eI64 operator+(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a += b; }
-	constexpr ComplexF64eI64 operator-(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a -= b; }
-	constexpr ComplexF64eI64 operator*(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a *= b; }
+	//constexpr ComplexF64eI64 operator+(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a += b; }
+	//constexpr ComplexF64eI64 operator-(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a -= b; }
+	//constexpr ComplexF64eI64 operator*(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a *= b; }
 	constexpr ComplexF64eI64 operator/(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a /= b; }
+
+	// TODO: Limit maximum max_exp
+	// FIXME: Return value may be zero
+	template<size_t max_exp1, size_t max_exp2>
+	constexpr _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40> operator+(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
+		const _ComplexF64eI64Base *large, *small;
+
+		if (x.exponent >= y.exponent) {
+			large = &x;
+			small = &y;
+		} else {
+			large = &y;
+			small = &x;
+		}
+
+		int64_t ExponentDifference = large->exponent - small->exponent;
+
+		if (ExponentDifference > std::max(max_exp1, max_exp2) + 0x40) {
+			return *large;
+		}
+
+		double re = small->re + std::bit_cast<double>(std::bit_cast<int64_t>(large->re) + (ExponentDifference << 52));
+		double im = small->im + std::bit_cast<double>(std::bit_cast<int64_t>(large->im) + (ExponentDifference << 52));
+
+		int64_t exponent = small->exponent;
+
+		return _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40>{ re, im, exponent };
+	}
+
+	template<size_t max_exp1, size_t max_exp2>
+	constexpr _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40> operator-(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
+		return x + (-y);
+	}
+
+	template<size_t max_exp1, size_t max_exp2>
+	constexpr _ComplexF64eI64U<max_exp1 + max_exp2 + 1> operator*(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
+		return _ComplexF64eI64U<max_exp1 + max_exp2 + 1>(x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re, x.exponent + y.exponent);
+	}
 
 	constexpr FloatF64eI64 norm(const ComplexF64eI64 &x) {
 		return FloatF64eI64(x.re * x.re + x.im * x.im, x.exponent * 2);
