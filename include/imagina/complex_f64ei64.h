@@ -35,17 +35,6 @@ namespace Imagina::inline Numerics {
 	template<size_t exp_deviation>
 	struct _ComplexF64eI64U : _ComplexF64eI64Base {
 		_ComplexF64eI64U() = default;
-		//constexpr _ComplexF64eI64U(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
-		//
-		//constexpr _ComplexF64eI64U(double re) noexcept : ComplexF64eI64(FloatF64eI64(re)) {}
-		//constexpr _ComplexF64eI64U(double re, double im) noexcept : re(re), im(im), exponent(0) { Normalize(); }
-		//
-		//constexpr _ComplexF64eI64U(Complex<double> x) noexcept : ComplexF64eI64(x.re, x.im) {}
-		//
-		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) { Normalize(); }
-		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent, int) : re(re), im(im), exponent(exponent) {}
-
-		//constexpr _ComplexF64eI64U(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) {}
 
 		using _ComplexF64eI64Base::_ComplexF64eI64Base;
 
@@ -57,18 +46,7 @@ namespace Imagina::inline Numerics {
 	};
 
 	struct ComplexF64eI64 : _ComplexF64eI64U<0> {
-		//ComplexF64eI64() : re(1.0), im(1.0), Exponent(~ZeroInfExponentThreshold) {}
 		ComplexF64eI64() = default;
-
-		//constexpr ComplexF64eI64(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
-		//
-		//constexpr ComplexF64eI64(double re) noexcept : ComplexF64eI64(FloatF64eI64(re)) {}
-		//constexpr ComplexF64eI64(double re, double im) noexcept : re(re), im(im), exponent(0) { Normalize(); }
-		//
-		//constexpr ComplexF64eI64(Complex<double> x) noexcept : ComplexF64eI64(x.re, x.im) {}
-		//
-		//constexpr ComplexF64eI64(double re, double im, int64_t exponent)		: re(re), im(im), exponent(exponent) { Normalize(); }
-		//constexpr ComplexF64eI64(double re, double im, int64_t exponent, int)	: re(re), im(im), exponent(exponent) {}
 
 		constexpr ComplexF64eI64(FloatF64eI64 re) noexcept : _ComplexF64eI64U(re.Mantissa, 0.0, re.Exponent) {}
 
@@ -125,62 +103,6 @@ namespace Imagina::inline Numerics {
 			return ComplexF64eI64(-re, -im, exponent, 0);
 		}
 
-		/*constexpr ComplexF64eI64 &operator+=(const ComplexF64eI64 &x) {
-			const ComplexF64eI64 *large, *small;
-
-			if (exponent >= x.exponent) {
-				large = this;
-				small = &x;
-			} else {
-				large = &x;
-				small = this;
-			}
-
-			int64_t ExponentDifference = large->exponent - small->exponent;
-
-			if (ExponentDifference > 0x80) {
-				*this = *large;
-				Normalize(); // TODO: Optimize this
-				return *this;
-			}
-
-			re = small->re + std::bit_cast<double>(std::bit_cast<int64_t>(large->re) + (ExponentDifference << 52));
-			im = small->im + std::bit_cast<double>(std::bit_cast<int64_t>(large->im) + (ExponentDifference << 52));
-
-			exponent = small->exponent;
-
-			Normalize();
-
-			return *this;
-		}
-
-		constexpr ComplexF64eI64 &operator-=(const ComplexF64eI64 &x) {
-			return *this += -x;
-		}
-
-		constexpr ComplexF64eI64 &operator*=(const ComplexF64eI64 &x) {
-			double new_re = re * x.re - im * x.im;
-			double new_im = re * x.im + im * x.re;
-
-			re = new_re;
-			im = new_im;
-			exponent += x.exponent;
-
-			return *this;
-		}
-
-		constexpr ComplexF64eI64 &operator/=(const ComplexF64eI64 &x) {
-			double new_re = re * x.re + im * x.im;
-			double new_im = im * x.re - re * x.im;
-			double x_norm = x.re * x.re + x.im * x.im;
-
-			re = new_re / x_norm;
-			im = new_im / x_norm;
-			exponent -= x.exponent;
-
-			return *this;
-		}*/
-
 		static constexpr size_t exp_deviation_after_add(size_t exp_deviation1, size_t exp_deviation2) {
 			return std::max(exp_deviation1, exp_deviation2) * 2 + 0x40;
 		}
@@ -211,11 +133,6 @@ namespace Imagina::inline Numerics {
 
 	static_assert(ComplexF64eI64::exp_deviation_after_add(ComplexF64eI64::MaxExpDeviation, ComplexF64eI64::MaxExpDeviation) < 0x3FF);
 	static_assert(ComplexF64eI64::exp_deviation_after_mul(ComplexF64eI64::MaxExpDeviation, ComplexF64eI64::MaxExpDeviation) < 0x3FF);
-
-	//constexpr ComplexF64eI64 operator+(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a += b; }
-	//constexpr ComplexF64eI64 operator-(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a -= b; }
-	//constexpr ComplexF64eI64 operator*(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a *= b; }
-	//constexpr ComplexF64eI64 operator/(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a /= b; }
 
 	// FIXME: Return value may have zero mantissa
 	template<size_t exp_deviation1, size_t exp_deviation2>
@@ -270,6 +187,11 @@ namespace Imagina::inline Numerics {
 
 		return { re / y_norm, im / y_norm, x.exponent - y.exponent };
 	}
+
+	template<size_t exp_deviation> constexpr ComplexF64eI64 &operator+=(ComplexF64eI64 &x, const _ComplexF64eI64U<exp_deviation> &y) { return x = x + y; }
+	template<size_t exp_deviation> constexpr ComplexF64eI64 &operator-=(ComplexF64eI64 &x, const _ComplexF64eI64U<exp_deviation> &y) { return x = x - y; }
+	template<size_t exp_deviation> constexpr ComplexF64eI64 &operator*=(ComplexF64eI64 &x, const _ComplexF64eI64U<exp_deviation> &y) { return x = x * y; }
+	template<size_t exp_deviation> constexpr ComplexF64eI64 &operator/=(ComplexF64eI64 &x, const _ComplexF64eI64U<exp_deviation> &y) { return x = x / y; }
 
 	constexpr FloatF64eI64 norm(const ComplexF64eI64 &x) {
 		return FloatF64eI64(x.re * x.re + x.im * x.im, x.exponent * 2);
