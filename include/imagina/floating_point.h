@@ -19,15 +19,13 @@ namespace Imagina::inline Numerics {
 		constexpr int64_t MantissaI64() { return std::bit_cast<int64_t>(Mantissa); }
 		constexpr void MantissaI64(int64_t x) { Mantissa = std::bit_cast<double>(x); }
 
-		static constexpr bool NormalizeTo0x400 = false;
-
 		static constexpr int64_t SignMask = 1LL << 63;
 		static constexpr int64_t ExponentMask = 0x7FFLL << 52;
 		static constexpr int64_t MantissaMask = (1LL << 52) - 1;
 
 		static constexpr int64_t ZeroOffset = 0x3FFLL;
 		static constexpr int64_t MaxExponent = 0x7FFLL;
-		static constexpr int64_t NormalizedExponent = NormalizeTo0x400 ? 0x400LL : 0x3FFLL;
+		static constexpr int64_t NormalizedExponent = 0x3FFLL;
 
 		static constexpr int64_t ZeroOffsetShifted = ZeroOffset << 52;
 		static constexpr int64_t NormalizedExponentShifted = NormalizedExponent << 52;
@@ -223,5 +221,5 @@ namespace Imagina::inline Numerics {
 	//inline mpf_class operator*=(const mpf_class &a, const FloatF64eI64 &b) { return a * b.operator mpf_class(); }
 	//inline mpf_class operator/=(const mpf_class &a, const FloatF64eI64 &b) { return a / b.operator mpf_class(); }
 
-	constexpr ExpInt ExponentOf(FloatF64eI64 x) { return x.Exponent + FloatF64eI64::NormalizeTo0x400; }
+	constexpr ExpInt ExponentOf(FloatF64eI64 x) { return x.Exponent; }
 }

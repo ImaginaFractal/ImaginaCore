@@ -9,15 +9,13 @@ namespace Imagina::inline Numerics {
 		double re, im;
 		int64_t exponent;
 
-		static constexpr bool NormalizeTo0x400 = false;
-
 		static constexpr int64_t SignMask = 1LL << 63;
 		static constexpr int64_t ExponentMask = 0x7FFLL << 52;
 		static constexpr int64_t MantissaMask = (1LL << 52) - 1;
 
 		static constexpr int64_t ZeroOffset = 0x3FFLL;
 		static constexpr int64_t MaxExponent = 0x7FFLL;
-		static constexpr int64_t NormalizedExponent = NormalizeTo0x400 ? 0x400LL : 0x3FFLL;
+		static constexpr int64_t NormalizedExponent = 0x3FFLL;
 
 		static constexpr int64_t ZeroOffsetShifted = ZeroOffset << 52;
 		static constexpr int64_t NormalizedExponentShifted = NormalizedExponent << 52;
