@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include "floating_point.h"
 #include "complex.h"
 
@@ -24,12 +25,14 @@ namespace Imagina::inline Numerics {
 		static constexpr int64_t ZeroInfExponent = 0x2800'0000'0000'0000;
 		static constexpr int64_t ZeroInfExponentThreshold = 0x1000'0000'0000'0000;
 
+		static constexpr int64_t MaxExpDeviation = 0x1D0; // 0x1D0 * 2 + 0x40 < 0x3FF
+
 		_ComplexF64eI64Base() = default;
 
 		constexpr _ComplexF64eI64Base(double re, double im, int64_t exponent) : re(re), im(im), exponent(exponent) {}
 	};
 
-	template<size_t max_exp>
+	template<size_t exp_deviation>
 	struct _ComplexF64eI64U : _ComplexF64eI64Base {
 		_ComplexF64eI64U() = default;
 		//constexpr _ComplexF64eI64U(FloatF64eI64 re) noexcept : re(re.Mantissa), im(0.0), exponent(re.Exponent) {}
@@ -77,8 +80,10 @@ namespace Imagina::inline Numerics {
 		constexpr ComplexF64eI64(double re, double im, int64_t exponent)		: _ComplexF64eI64U(re, im, exponent) { Normalize(); }
 		constexpr ComplexF64eI64(double re, double im, int64_t exponent, int)	: _ComplexF64eI64U(re, im, exponent) {}
 
-		template<size_t max_exp>
-		constexpr ComplexF64eI64(const _ComplexF64eI64U<max_exp> &x) : _ComplexF64eI64U(x.re, x.im, x.exponent) { Normalize(); }
+		constexpr ComplexF64eI64(const _ComplexF64eI64Base &x) : _ComplexF64eI64U(x.re, x.im, x.exponent) { Normalize(); }
+
+		template<size_t exp_deviation>
+		constexpr ComplexF64eI64(const _ComplexF64eI64U<exp_deviation> &x) : _ComplexF64eI64U(x.re, x.im, x.exponent) { Normalize(); }
 
 		constexpr void Normalize() {
 			double max = std::max(std::abs(re), std::abs(im));
@@ -162,7 +167,7 @@ namespace Imagina::inline Numerics {
 			exponent += x.exponent;
 
 			return *this;
-		}*/
+		}
 
 		constexpr ComplexF64eI64 &operator/=(const ComplexF64eI64 &x) {
 			double new_re = re * x.re + im * x.im;
@@ -174,18 +179,48 @@ namespace Imagina::inline Numerics {
 			exponent -= x.exponent;
 
 			return *this;
+		}*/
+
+		static constexpr size_t exp_deviation_after_add(size_t exp_deviation1, size_t exp_deviation2) {
+			return std::max(exp_deviation1, exp_deviation2) * 2 + 0x40;
 		}
+
+		static constexpr size_t exp_deviation_after_mul(size_t exp_deviation1, size_t exp_deviation2) {
+			return exp_deviation1 + exp_deviation2 + 1;
+		}
+
+		template<size_t exp_deviation1, size_t exp_deviation2, size_t (*deviation_calc_func)(size_t, size_t)>
+		using arithmetic_result_t = std::conditional_t<
+			(deviation_calc_func(exp_deviation1, exp_deviation2) > MaxExpDeviation),
+			ComplexF64eI64, // Normalization done on construction
+			_ComplexF64eI64U<deviation_calc_func(exp_deviation1, exp_deviation2)> >;
+
+		template<size_t exp_deviation1, size_t exp_deviation2>
+		using add_result_t = arithmetic_result_t<exp_deviation1, exp_deviation2, exp_deviation_after_add>;
+
+		template<size_t exp_deviation1, size_t exp_deviation2>
+		using sub_result_t = add_result_t<exp_deviation1, exp_deviation2>;
+
+		template<size_t exp_deviation1, size_t exp_deviation2>
+		using mul_result_t = arithmetic_result_t<exp_deviation1, exp_deviation2, exp_deviation_after_mul>;
+
+		template<size_t exp_deviation1, size_t exp_deviation2>
+		using div_result_t = ComplexF64eI64; // TODO: Improve this
+		// The problem with division is it can introduce negative deviation which other operations can't handel (yet)
 	};
+
+	static_assert(ComplexF64eI64::exp_deviation_after_add(ComplexF64eI64::MaxExpDeviation, ComplexF64eI64::MaxExpDeviation) < 0x3FF);
+	static_assert(ComplexF64eI64::exp_deviation_after_mul(ComplexF64eI64::MaxExpDeviation, ComplexF64eI64::MaxExpDeviation) < 0x3FF);
 
 	//constexpr ComplexF64eI64 operator+(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a += b; }
 	//constexpr ComplexF64eI64 operator-(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a -= b; }
 	//constexpr ComplexF64eI64 operator*(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a *= b; }
-	constexpr ComplexF64eI64 operator/(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a /= b; }
+	//constexpr ComplexF64eI64 operator/(ComplexF64eI64 a, const ComplexF64eI64 &b) { return a /= b; }
 
-	// TODO: Limit maximum max_exp
-	// FIXME: Return value may be zero
-	template<size_t max_exp1, size_t max_exp2>
-	constexpr _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40> operator+(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
+	// FIXME: Return value may have zero mantissa
+	template<size_t exp_deviation1, size_t exp_deviation2>
+	constexpr ComplexF64eI64::add_result_t<exp_deviation1, exp_deviation2>
+		operator+(const _ComplexF64eI64U<exp_deviation1> &x, const _ComplexF64eI64U<exp_deviation2> &y) {
 		const _ComplexF64eI64Base *large, *small;
 
 		if (x.exponent >= y.exponent) {
@@ -198,7 +233,7 @@ namespace Imagina::inline Numerics {
 
 		int64_t ExponentDifference = large->exponent - small->exponent;
 
-		if (ExponentDifference > std::max(max_exp1, max_exp2) + 0x40) {
+		if (ExponentDifference > std::max(exp_deviation1, exp_deviation2) + 0x40) {
 			return *large;
 		}
 
@@ -207,17 +242,33 @@ namespace Imagina::inline Numerics {
 
 		int64_t exponent = small->exponent;
 
-		return _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40>{ re, im, exponent };
+		return { re, im, exponent };
 	}
 
-	template<size_t max_exp1, size_t max_exp2>
-	constexpr _ComplexF64eI64U<std::max(max_exp1, max_exp2) * 2 + 0x40> operator-(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
+	template<size_t exp_deviation1, size_t exp_deviation2>
+	constexpr ComplexF64eI64::sub_result_t<exp_deviation1, exp_deviation2>
+		operator-(const _ComplexF64eI64U<exp_deviation1> &x, const _ComplexF64eI64U<exp_deviation2> &y) {
 		return x + (-y);
 	}
 
-	template<size_t max_exp1, size_t max_exp2>
-	constexpr _ComplexF64eI64U<max_exp1 + max_exp2 + 1> operator*(const _ComplexF64eI64U<max_exp1> &x, const _ComplexF64eI64U<max_exp2> &y) {
-		return _ComplexF64eI64U<max_exp1 + max_exp2 + 1>(x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re, x.exponent + y.exponent);
+	template<size_t exp_deviation1, size_t exp_deviation2>
+	constexpr ComplexF64eI64::mul_result_t<exp_deviation1, exp_deviation2>
+		operator*(const _ComplexF64eI64U<exp_deviation1> &x, const _ComplexF64eI64U<exp_deviation2> &y) {
+		return {
+			x.re * y.re - x.im * y.im,
+			x.re * y.im + x.im * y.re,
+			x.exponent + y.exponent
+		};
+	}
+
+	template<size_t exp_deviation1, size_t exp_deviation2>
+	constexpr ComplexF64eI64::div_result_t<exp_deviation1, exp_deviation2>
+		operator/(const _ComplexF64eI64U<exp_deviation1> &x, const _ComplexF64eI64U<exp_deviation2> &y) {
+		double re = x.re * y.re + x.im * y.im;
+		double im = x.im * y.re - x.re * y.im;
+		double y_norm = y.re * y.re + y.im * y.im;
+
+		return { re / y_norm, im / y_norm, x.exponent - y.exponent };
 	}
 
 	constexpr FloatF64eI64 norm(const ComplexF64eI64 &x) {
