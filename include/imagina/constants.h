@@ -4,19 +4,14 @@
 #include <utility>
 
 namespace Imagina::inline Numerics::Constants {
-	//template<typename type, intmax_t value>
-	//constexpr type Integer() noexcept { return type(value); }
-	//
-	//template<typename type> constexpr type Zero()	noexcept { return Integer<type, 0>(); }
-	//template<typename type> constexpr type One()	noexcept { return Integer<type, 1>(); }
-	//template<typename type> constexpr type Two()	noexcept { return Integer<type, 2>(); }
-
 	template<intmax_t value>
 	struct IntegerConstant {
-		//template<typename type> constexpr explicit(!std::is_convertible_v<intmax_t, type>)
-		//	operator type() const { return type(value); }
-		constexpr operator double() const { return value; }
-		constexpr operator intmax_t() const { return value; }
+		template<typename type>
+		consteval explicit operator type() const requires std::integral<type> || std::floating_point<type> {
+			return type(value);
+		} // Unfortunately, if it can be implicitly coverted to multiple types, there will be overload ambiguity problem
+
+		consteval operator intmax_t() const { return value; }
 	};
 
 	template<intmax_t value> constexpr IntegerConstant<value> Integer;
@@ -28,9 +23,34 @@ namespace Imagina::inline Numerics::Constants {
 	template<intmax_t value>
 	struct IntegerRCPConstant {
 		static_assert(value > 1 || value < -1);
-		constexpr operator double() const { return 1.0 / value; }
+
+		template<std::floating_point type>
+		consteval explicit operator type() const {
+			return type(1.0) / type(value);
+		}
+
+		consteval operator double() const { return 1.0 / value; }
 	};
 
 	constexpr IntegerRCPConstant<2> Half;
 	constexpr IntegerRCPConstant<3> Third;
+
+	template<typename T> constexpr bool is_power_of_two = false;
+	template<intmax_t value> constexpr bool is_power_of_two<IntegerConstant<value> > = (value & (value - 1)) == 0 && value != 0;
+	template<intmax_t value> constexpr bool is_power_of_two<IntegerRCPConstant<value> > = (value & (value - 1)) == 0 && value != 0;
+
+	template<typename T>
+	concept PowerOfTwo = is_power_of_two<T>;
+
+	static_assert( PowerOfTwo<IntegerConstant<2>>);
+	static_assert(!PowerOfTwo<IntegerConstant<3>>);
+	static_assert( PowerOfTwo<IntegerConstant<4>>);
+	static_assert(!PowerOfTwo<IntegerConstant<5>>);
+	static_assert(!PowerOfTwo<IntegerConstant<6>>);
+	
+	static_assert( PowerOfTwo<IntegerRCPConstant<2>>);
+	static_assert(!PowerOfTwo<IntegerRCPConstant<3>>);
+	static_assert( PowerOfTwo<IntegerRCPConstant<4>>);
+	static_assert(!PowerOfTwo<IntegerRCPConstant<5>>);
+	static_assert(!PowerOfTwo<IntegerRCPConstant<6>>);
 }
