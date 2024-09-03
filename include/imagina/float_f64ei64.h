@@ -1,12 +1,13 @@
 #pragma once
 
 #include <bit>
+#include <cmath>
 #include "basic_types.h"
 #include "constants.h"
 
 namespace Imagina::inline Numerics {
-	constexpr ExpInt ExponentOf(double x)	{ return ExpInt((std::bit_cast<uint64_t>(x) >> 52) & 0x7FF) - 0x3FF; }
-	constexpr ExpInt ExponentOf(float x)	{ return ExpInt((std::bit_cast<uint32_t>(x) >> 23) & 0x0FF) - 0x07F; }
+	constexpr ExpInt exponent_of(double x)	{ return ExpInt((std::bit_cast<uint64_t>(x) >> 52) & 0x7FF) - 0x3FF; }
+	constexpr ExpInt exponent_of(float x)	{ return ExpInt((std::bit_cast<uint32_t>(x) >> 23) & 0x0FF) - 0x07F; }
 
 	// Make sure double have the correct format
 	static_assert(std::bit_cast<uint64_t, double>(0x1.3456789ABCDEFp-1005) == 0x0123'4567'89AB'CDEF);
@@ -195,5 +196,16 @@ namespace Imagina::inline Numerics {
 	constexpr float_f64ei64 operator*(float_f64ei64 a, const float_f64ei64 &b) { return a *= b; }
 	constexpr float_f64ei64 operator/(float_f64ei64 a, const float_f64ei64 &b) { return a /= b; }
 
-	constexpr ExpInt ExponentOf(float_f64ei64 x) { return x.exponent; }
+	constexpr ExpInt exponent_of(float_f64ei64 x) { return x.exponent; }
+	
+	constexpr int ilogb(float_f64ei64 x) {
+		if (x.exponent <= ~float_f64ei64::zero_inf_exponent_threshold) {
+			return FP_ILOGB0;
+		} else if (x.exponent >= float_f64ei64::zero_inf_exponent_threshold || x.exponent > INT_MAX) {
+			return INT_MAX;
+		} else if (x.exponent < INT_MIN) {
+			return INT_MIN;
+		}
+		return x.exponent;
+	}
 }
