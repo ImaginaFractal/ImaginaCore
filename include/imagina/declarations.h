@@ -40,7 +40,7 @@ namespace Imagina {
 	class PixelPipeline;
 
 	inline namespace Numerics {
-		struct MultiPrecisionMutable;
-		using MultiPrecision = const MultiPrecisionMutable;
+		struct multi_precision_mutable;
+		using multi_precision = const multi_precision_mutable;
 	}
 }

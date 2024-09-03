@@ -40,7 +40,7 @@ namespace Imagina {
 		}
 	}
 
-	SimpleEvaluator::SimpleEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
+	SimpleEvaluator::SimpleEvaluator() : locationManager(*(multi_precision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);
 	}
 
@@ -133,7 +133,7 @@ namespace Imagina {
 	}
 
 	
-	LowPrecisionEvaluator::LowPrecisionEvaluator() : locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
+	LowPrecisionEvaluator::LowPrecisionEvaluator() : locationManager(*(multi_precision *)(void *)CreateComponent(ComponentType::MultiPrecision)) {
 		locationManager.SetEvaluator(this);
 	}
 

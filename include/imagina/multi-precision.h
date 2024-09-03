@@ -7,169 +7,169 @@
 #include "float_f64ei64.h"
 
 namespace Imagina::inline Numerics {
-	struct MPReal;
+	struct imp_real;
 
-	typedef void		(*pMultiPrecision_InitContent)		(MPReal *, mp_uint_bc); // Do not use directly, use Init instead.
-	typedef void		(*pMultiPrecision_InitContentCopy)	(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
+	typedef void		(*p_multi_precision_init)			(imp_real *, mp_uint_bc);
+	typedef void		(*p_multi_precision_init_copy)		(imp_real *, const imp_real *);
 
-	typedef void		(*pMultiPrecision_ClearContent)		(MPReal *); // Do not use directly, use Clear instead.
+	typedef void		(*p_multi_precision_clear)			(imp_real *);
 
-	typedef mp_uint_bc	(*pMultiPrecision_GetPrecision)		(const MPReal *);
-	typedef void		(*pMultiPrecision_SetPrecision)		(MPReal *, mp_uint_bc);
+	typedef mp_uint_bc	(*p_multi_precision_get_precision)	(const imp_real *);
+	typedef void		(*p_multi_precision_set_precision)	(imp_real *, mp_uint_bc);
 
-	typedef void		(*pMultiPrecision_Set)				(MPReal *, const MPReal *);
-	typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
-	typedef void		(*pMultiPrecision_SetDouble)		(MPReal *, double);
-	typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, float_f64ei64);
-	typedef bool		(*pMultiPrecision_SetString)		(MPReal *, const char *, int);
+	typedef void		(*p_multi_precision_set)			(imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_copy)			(imp_real *, const imp_real *); // Set value and precision
+	typedef void		(*p_multi_precision_set_double)		(imp_real *, double);
+	typedef void		(*p_multi_precision_set_float_f64ei64)	(imp_real *, float_f64ei64);
+	typedef bool		(*p_multi_precision_set_string)		(imp_real *, const char *, int);
 
-	typedef double		(*pMultiPrecision_GetDouble)		(const MPReal *);
-	typedef float_f64ei64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
+	typedef double		(*p_multi_precision_get_double)		(const imp_real *);
+	typedef float_f64ei64(*p_multi_precision_get_float_f64ei64)	(const imp_real *);
 
-	typedef void		(*pMultiPrecision_Add)				(MPReal *, const MPReal *, const MPReal *);
-	typedef void		(*pMultiPrecision_Sub)				(MPReal *, const MPReal *, const MPReal *);
-	typedef void		(*pMultiPrecision_Mul)				(MPReal *, const MPReal *, const MPReal *);
-	typedef void		(*pMultiPrecision_Div)				(MPReal *, const MPReal *, const MPReal *);
+	typedef void		(*p_multi_precision_add)			(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_sub)			(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_mul)			(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_div)			(imp_real *, const imp_real *, const imp_real *);
 	
-	typedef size_t		(*pMultiPrecision_CalcSize)			(mp_uint_bc);
-	typedef void		(*pMultiPrecision_PlacementInit)	(MPReal *, mp_uint_bc, void *); // Construct MPReal using preallocated memory.
+	typedef size_t		(*p_multi_precision_calc_size)		(mp_uint_bc);
+	typedef void		(*p_multi_precision_placement_init)	(imp_real *, mp_uint_bc, void *); // Construct imp_real using preallocated memory.
 
-	struct _MultiPrecisionMutable { // TODO: Reorder
+	struct _multi_precision_mutable { // TODO: Reorder
 		const char *Name;
 
-		pMultiPrecision_InitContent		InitContent;
-		pMultiPrecision_InitContentCopy	InitContentCopy;
+		p_multi_precision_init				_init; // Do not use directly, use init instead.
+		p_multi_precision_init_copy			_init_copy; // Do not use directly, use init_copy instead.
 
-		pMultiPrecision_ClearContent	ClearContent;
+		p_multi_precision_clear				_clear; // Do not use directly, use clear instead.
 
-		pMultiPrecision_GetPrecision	GetPrecision;
-		pMultiPrecision_SetPrecision	SetPrecision;
+		p_multi_precision_get_precision		get_precision;
+		p_multi_precision_set_precision		set_precision;
 
-		pMultiPrecision_Set				Set;
-		pMultiPrecision_Copy			Copy;
-		pMultiPrecision_SetDouble		SetDouble;
-		pMultiPrecision_SetFloatF64eI64	SetFloatF64eI64;
-		pMultiPrecision_SetString		SetString;
+		p_multi_precision_set				set;
+		p_multi_precision_copy				copy;
+		p_multi_precision_set_double		set_double;
+		p_multi_precision_set_float_f64ei64	set_float_f64ei64;
+		p_multi_precision_set_string		set_string;
 
-		pMultiPrecision_GetDouble		GetDouble;
-		pMultiPrecision_GetFloatF64eI64	GetFloatF64eI64;
+		p_multi_precision_get_double		get_double;
+		p_multi_precision_get_float_f64ei64		get_float_f64ei64;
 
-		pMultiPrecision_Add				Add;
-		pMultiPrecision_Sub				Sub;
-		pMultiPrecision_Mul				Mul;
-		pMultiPrecision_Div				Div;
+		p_multi_precision_add				add;
+		p_multi_precision_sub				sub;
+		p_multi_precision_mul				mul;
+		p_multi_precision_div				div;
 
-		pMultiPrecision_CalcSize		CalcSize;
-		pMultiPrecision_PlacementInit	PlacementInit;
+		p_multi_precision_calc_size			calc_size;
+		p_multi_precision_placement_init	placement_init;
 	};
 
-	struct MultiPrecisionMutable : _MultiPrecisionMutable {
-		operator MultiPrecisionMutable *() { return this; }
-		operator const MultiPrecisionMutable *() const { return this; }
+	struct multi_precision_mutable : _multi_precision_mutable {
+		operator multi_precision_mutable *() { return this; }
+		operator const multi_precision_mutable *() const { return this; }
 
-		MultiPrecisionMutable(_MultiPrecisionMutable &&mp) : _MultiPrecisionMutable(mp) {}
-		MultiPrecisionMutable(const MultiPrecisionMutable &) = delete;
-		MultiPrecisionMutable(MultiPrecisionMutable &&) = delete;
+		multi_precision_mutable(_multi_precision_mutable &&mp) : _multi_precision_mutable(mp) {}
+		multi_precision_mutable(const multi_precision_mutable &) = delete;
+		multi_precision_mutable(multi_precision_mutable &&) = delete;
 
-		void Init(MPReal *x, mp_uint_bc precision) const;
-		void InitCopy(MPReal *dst, const MPReal *src) const;
+		void Init(imp_real *x, mp_uint_bc precision) const;
+		void InitCopy(imp_real *dst, const imp_real *src) const;
 
-		void Clear(MPReal *x) const;
+		void Clear(imp_real *x) const;
 	};
 
 	//using MultiPrecision = const MultiPrecisionMutable;
 
-	struct MPReal {
+	struct imp_real {
 		const void *PlaceHolder[7]; // This is for saving the contents of the actual number type (like mpf_t or mpfr_t)
-		MultiPrecision *const MP = nullptr;
+		multi_precision *const MP = nullptr;
 
-		MPReal() = default;
-		MPReal(MultiPrecision *mp, mp_uint_bc precision)					: MP(mp) { mp->InitContent(this, precision); }
-		MPReal(double x, MultiPrecision *mp)							: MP(mp) { mp->InitContent(this, 53);			mp->SetDouble(this, x); }
-		MPReal(double x, MultiPrecision *mp, mp_uint_bc precision)		: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
-		MPReal(float_f64ei64 x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetFloatF64eI64(this, x); }
-		MPReal(float_f64ei64 x, MultiPrecision *mp, mp_uint_bc precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetFloatF64eI64(this, x); }
-		//MPReal(const MPReal &x) : MP(x.MP) { MP->InitContent(this, x.GetPrecision()); MP->Set(this, x); }
-		MPReal(const MPReal &x)											: MP(x.MP) { MP->InitContentCopy(this, x); }
-		~MPReal() { if (MP) MP->ClearContent(this); }
+		imp_real() = default;
+		imp_real(multi_precision *mp, mp_uint_bc precision)						: MP(mp) { mp->_init(this, precision); }
+		imp_real(double x, multi_precision *mp)									: MP(mp) { mp->_init(this, 53);			mp->set_double(this, x); }
+		imp_real(double x, multi_precision *mp, mp_uint_bc precision)			: MP(mp) { mp->_init(this, precision);	mp->set_double(this, x); }
+		imp_real(float_f64ei64 x, multi_precision *mp)							: MP(mp) { mp->_init(this, 53);			mp->set_float_f64ei64(this, x); }
+		imp_real(float_f64ei64 x, multi_precision *mp, mp_uint_bc precision)	: MP(mp) { mp->_init(this, precision);	mp->set_float_f64ei64(this, x); }
+		//imp_real(const imp_real &x)											: MP(x.MP) { MP->_init(this, x.get_precision()); MP->Set(this, x); }
+		imp_real(const imp_real &x)												: MP(x.MP) { MP->_init_copy(this, x); }
+		~imp_real() { if (MP) MP->_clear(this); }
 
 		bool Valid() { return MP != nullptr; }
 
-		operator MPReal *() { return this; }
-		operator const MPReal *() const { return this; }
+		operator imp_real *() { return this; }
+		operator const imp_real *() const { return this; }
 
-		MPReal &operator=(const MPReal &x) { assert(MP == x.MP); MP->Set(this, x); return *this; } // Assign
-		MPReal &operator&=(const MPReal &x); // Copy (set precision and assign)
-		MPReal &operator|=(const MPReal &x); // Set MP and copy
-		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
-		MPReal &operator=(float_f64ei64 x) { MP->SetFloatF64eI64(this, x); return *this; }
+		imp_real &operator=(const imp_real &x) { assert(MP == x.MP); MP->set(this, x); return *this; } // Assign
+		imp_real &operator&=(const imp_real &x); // Copy (set precision and assign)
+		imp_real &operator|=(const imp_real &x); // Set MP and copy
+		imp_real &operator=(double x) { MP->set_double(this, x); return *this; }
+		imp_real &operator=(float_f64ei64 x) { MP->set_float_f64ei64(this, x); return *this; }
 
-		explicit operator double() const { return MP->GetDouble(this); }
-		explicit operator float_f64ei64() const { return MP->GetFloatF64eI64(this); };
+		explicit operator double() const { return MP->get_double(this); }
+		explicit operator float_f64ei64() const { return MP->get_float_f64ei64(this); };
 
-		mp_uint_bc GetPrecision() const { return MP->GetPrecision(this); }
-		void SetPrecision(mp_uint_bc precision) { MP->SetPrecision(this, precision); }
+		mp_uint_bc get_precision() const { return MP->get_precision(this); }
+		void set_precision(mp_uint_bc precision) { MP->set_precision(this, precision); }
 
-		MPReal &operator+=(const MPReal &x) { assert(MP == x.MP); MP->Add(this, this, x); return *this; }
-		MPReal &operator-=(const MPReal &x) { assert(MP == x.MP); MP->Sub(this, this, x); return *this; }
-		MPReal &operator*=(const MPReal &x) { assert(MP == x.MP); MP->Mul(this, this, x); return *this; }
-		MPReal &operator/=(const MPReal &x) { assert(MP == x.MP); MP->Div(this, this, x); return *this; }
+		imp_real &operator+=(const imp_real &x) { assert(MP == x.MP); MP->add(this, this, x); return *this; }
+		imp_real &operator-=(const imp_real &x) { assert(MP == x.MP); MP->sub(this, this, x); return *this; }
+		imp_real &operator*=(const imp_real &x) { assert(MP == x.MP); MP->mul(this, this, x); return *this; }
+		imp_real &operator/=(const imp_real &x) { assert(MP == x.MP); MP->div(this, this, x); return *this; }
 
-		MPReal &operator+=(double x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
-		MPReal &operator-=(double x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
+		imp_real &operator+=(double x) { MP->add(this, this, imp_real(x, MP)); return *this; }
+		imp_real &operator-=(double x) { MP->sub(this, this, imp_real(x, MP)); return *this; }
 
-		MPReal &operator+=(float_f64ei64 x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
-		MPReal &operator-=(float_f64ei64 x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
+		imp_real &operator+=(float_f64ei64 x) { MP->add(this, this, imp_real(x, MP)); return *this; }
+		imp_real &operator-=(float_f64ei64 x) { MP->sub(this, this, imp_real(x, MP)); return *this; }
 
-		void CopyFrom(const MPReal &x) {
+		void CopyFrom(const imp_real &x) {
 			if_likely (MP == x.MP) {
-				MP->Copy(this, x);
+				MP->copy(this, x);
 			} else {
-				if (MP) MP->ClearContent(this);
+				if (MP) MP->_clear(this);
 
 				x.MP->InitCopy(this, x);
 			}
 		}
 	};
 
-	inline void MultiPrecisionMutable::Init(MPReal *x, mp_uint_bc precision) const {
-		InitContent(x, precision);
-		const_cast<MultiPrecision *&>(x->MP) = this;
+	inline void multi_precision_mutable::Init(imp_real *x, mp_uint_bc precision) const {
+		_init(x, precision);
+		const_cast<multi_precision *&>(x->MP) = this;
 	}
 
-	inline void MultiPrecisionMutable::InitCopy(MPReal *dst, const MPReal *src) const {
-		InitContentCopy(dst, src);
-		const_cast<MultiPrecision *&>(dst->MP) = this;
+	inline void multi_precision_mutable::InitCopy(imp_real *dst, const imp_real *src) const {
+		_init_copy(dst, src);
+		const_cast<multi_precision *&>(dst->MP) = this;
 	}
 
-	inline void MultiPrecisionMutable::Clear(MPReal *x) const {
-		ClearContent(x);
-		const_cast<MultiPrecision *&>(x->MP) = nullptr;
+	inline void multi_precision_mutable::Clear(imp_real *x) const {
+		_clear(x);
+		const_cast<multi_precision *&>(x->MP) = nullptr;
 	}
 
-	// Copy operator. MPReal does not support bitwise and operation
-	inline MPReal &MPReal::operator&=(const MPReal &x) {
-		MP->Copy(this, x);
+	// Copy operator. imp_real does not support bitwise and operation
+	inline imp_real &imp_real::operator&=(const imp_real &x) {
+		MP->copy(this, x);
 		return *this;
 	}
 
-	// Copy operator. (Re)init if needed. MPReal does not support bitwise or operation
-	inline MPReal &MPReal::operator|=(const MPReal &x) {
+	// Copy operator. (Re)init if needed. imp_real does not support bitwise or operation
+	inline imp_real &imp_real::operator|=(const imp_real &x) {
 		if (MP != x.MP) [[unlikely]] {
-			if (MP) MP->ClearContent(this);
+			if (MP) MP->_clear(this);
 
 			x.MP->InitCopy(this, x);
 		} else {
-			MP->Copy(this, x);
+			MP->copy(this, x);
 		}
 		return *this;
 	}
 
 	// TODO: Eliminate temporary variable
-	inline MPReal operator+(MPReal x, const MPReal &y) { return x += y; }
-	inline MPReal operator-(MPReal x, const MPReal &y) { return x -= y; }
-	inline MPReal operator*(MPReal x, const MPReal &y) { return x *= y; }
-	inline MPReal operator/(MPReal x, const MPReal &y) { return x /= y; }
+	inline imp_real operator+(imp_real x, const imp_real &y) { return x += y; }
+	inline imp_real operator-(imp_real x, const imp_real &y) { return x -= y; }
+	inline imp_real operator*(imp_real x, const imp_real &y) { return x *= y; }
+	inline imp_real operator/(imp_real x, const imp_real &y) { return x /= y; }
 
-	extern im_export MultiPrecision MPDouble;
+	extern im_export multi_precision MPDouble;
 }

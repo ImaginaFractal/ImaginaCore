@@ -31,31 +31,31 @@ namespace Imagina::inline Numerics {
 	void DoubleMul(double *dst, const double *x, const double *y) { *dst = *x * *y; }
 	void DoubleDiv(double *dst, const double *x, const double *y) { *dst = *x / *y; }
 
-	MultiPrecision MPDouble{ {
+	multi_precision MPDouble{ {
 		.Name = "double",
 
-		//.InitContent = (void (*)(MPReal *))DoubleInitContent,
-		//.InitContentWithPrecision = (void (*)(MPReal *, mp_uint_bc))DoubleInitContentWithPrecision,
-		.InitContent = (void (*)(MPReal *, mp_uint_bc))DoubleInitContent,
-		.InitContentCopy = (void (*)(MPReal *, const MPReal *))DoubleInitContentCopy,
+		//._init = (void (*)(imp_real *))DoubleInitContent,
+		//.InitContentWithPrecision = (void (*)(imp_real *, mp_uint_bc))DoubleInitContentWithPrecision,
+		._init = (void (*)(imp_real *, mp_uint_bc))DoubleInitContent,
+		._init_copy = (void (*)(imp_real *, const imp_real *))DoubleInitContentCopy,
 
 
-		.ClearContent = (void (*)(MPReal *))DoubleClearContent,
+		._clear = (void (*)(imp_real *))DoubleClearContent,
 
-		.GetPrecision = (mp_uint_bc(*)(const MPReal *))DoubleGetPrecision,
-		.SetPrecision = (void (*)(MPReal *, mp_uint_bc))DoubleSetPrecision,
+		.get_precision = (mp_uint_bc(*)(const imp_real *))DoubleGetPrecision,
+		.set_precision = (void (*)(imp_real *, mp_uint_bc))DoubleSetPrecision,
 
-		.Set = (void (*)(MPReal *, const MPReal *))DoubleSet,
-		.Copy = (void (*)(MPReal *, const MPReal *))DoubleSet,
-		.SetDouble = (void (*)(MPReal *, double))DoubleSetDouble,
-		.SetFloatF64eI64 = (void (*)(MPReal *, float_f64ei64)) DoubleSetFloatF64eI64,
+		.set = (void (*)(imp_real *, const imp_real *))DoubleSet,
+		.copy = (void (*)(imp_real *, const imp_real *))DoubleSet,
+		.set_double = (void (*)(imp_real *, double))DoubleSetDouble,
+		.set_float_f64ei64 = (void (*)(imp_real *, float_f64ei64)) DoubleSetFloatF64eI64,
 
-		.GetDouble = (double (*)(const MPReal *))DoubleGetDouble,
-		.GetFloatF64eI64 = (float_f64ei64 (*)(const MPReal *))DoubleGetFloatF64eI64,
+		.get_double = (double (*)(const imp_real *))DoubleGetDouble,
+		.get_float_f64ei64 = (float_f64ei64 (*)(const imp_real *))DoubleGetFloatF64eI64,
 
-		.Add = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleAdd,
-		.Sub = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleSub,
-		.Mul = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleMul,
-		.Div = (void (*)(MPReal *, const MPReal *, const MPReal *))DoubleDiv,
+		.add = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleAdd,
+		.sub = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleSub,
+		.mul = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleMul,
+		.div = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleDiv,
 	} };
 }

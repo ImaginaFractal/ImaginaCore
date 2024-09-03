@@ -33,28 +33,28 @@ namespace Imagina::MPLite {
 
 		static void Clear(Float *x);
 
-		static uintptr_t GetPrecision(const Float *x);
-		static void SetPrecision(Float *x, uintptr_t precision);
+		static uintptr_t get_precision(const Float *x);
+		static void set_precision(Float *x, uintptr_t precision);
 
-		static void Set(Float *x, const Float *src);
-		static void Copy(Float *x, const Float *src);
+		static void set(Float *x, const Float *src);
+		static void copy(Float *x, const Float *src);
 		static void SetU32(Float *x, uint32_t u32);
-		static void SetDouble(Float *x, double d);
-		static void SetFloatF64eI64(Float *x, Imagina::float_f64ei64 f);
-		static void SetString(Float *x, const char *str, int base);
+		static void set_double(Float *x, double d);
+		static void set_float_f64ei64(Float *x, Imagina::float_f64ei64 f);
+		static void set_string(Float *x, const char *str, int base);
 
-		static double GetDouble(const Float *x);
-		static Imagina::float_f64ei64 GetFloatF64eI64(const Float *x);
+		static double get_double(const Float *x);
+		static Imagina::float_f64ei64 get_float_f64ei64(const Float *x);
 
 		static void MulU32(Float *result, const Float *x, uint32_t y);
 		static void U32PowU32(Float *result, uint32_t x, uint32_t y);
 
 		static void Neg(Float *result, const Float *x);
 		static void Abs(Float *result, const Float *x);
-		static void Add(Float *result, const Float *x, const Float *y);
-		static void Sub(Float *result, const Float *x, const Float *y);
-		static void Mul(Float *result, const Float *x, const Float *y);
-		static void Div(Float *result, const Float *x, const Float *y);
+		static void add(Float *result, const Float *x, const Float *y);
+		static void sub(Float *result, const Float *x, const Float *y);
+		static void mul(Float *result, const Float *x, const Float *y);
+		static void div(Float *result, const Float *x, const Float *y);
 
 		static bool MagnitudeGreater(const Float *x, const Float *y);
 
@@ -70,5 +70,5 @@ namespace Imagina::MPLite {
 }
 
 namespace Imagina {
-	extern im_export MultiPrecision IMPLite;
+	extern im_export multi_precision IMPLite;
 }

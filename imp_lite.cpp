@@ -50,11 +50,11 @@ namespace Imagina::MPLite {
 		x->SignSize = 0;
 	}
 
-	uintptr_t Float::GetPrecision(const Float *x) {
+	uintptr_t Float::get_precision(const Float *x) {
 		return SizeToPrecision(x->Size);
 	}
 
-	void Float::SetPrecision(Float *x, uintptr_t precision) {
+	void Float::set_precision(Float *x, uintptr_t precision) {
 		uint32_t size = x->Size;
 		uint32_t newSize = PrecisionToSize(precision);
 		if (size == newSize) return;
@@ -112,13 +112,13 @@ namespace Imagina::MPLite {
 		memcpy(dstData, srcData, srcSize * sizeof(uint32_t));
 	}
 
-	void Float::Set(Float *x, const Float *src) {
+	void Float::set(Float *x, const Float *src) {
 		x->Sign = src->Sign;
 
 		UnsignedSet(x, src);
 	}
 
-	void Float::Copy(Float *x, const Float *src) {
+	void Float::copy(Float *x, const Float *src) {
 		uint32_t size = x->Size, newSize = src->Size;
 		if (size != newSize) {
 			if (size > BufferSize) free(x->Pointer);
@@ -148,7 +148,7 @@ namespace Imagina::MPLite {
 		memset(data, 0, (size - 1) * sizeof(uint32_t));
 	}
 
-	void Float::SetDouble(Float *x, double d) { // FIXME: Denormal
+	void Float::set_double(Float *x, double d) { // FIXME: Denormal
 		if_unlikely (d == 0.0) {
 			x->Exponent = INT32_MIN;
 			return;
@@ -169,12 +169,12 @@ namespace Imagina::MPLite {
 		memset(data, 0, (size - 2) * sizeof(uint32_t));
 	}
 
-	void Float::SetFloatF64eI64(Float *x, Imagina::float_f64ei64 f) {
+	void Float::set_float_f64ei64(Float *x, Imagina::float_f64ei64 f) {
 		if_unlikely (f.is_zero()) {
 			x->Exponent = INT32_MIN;
 			return;
 		}
-		SetDouble(x, f.mantissa);
+		set_double(x, f.mantissa);
 		x->Exponent += f.exponent;
 	}
 
@@ -211,7 +211,7 @@ namespace Imagina::MPLite {
 		return carry;
 	}
 
-	void Float::SetString(Float *x, const char *str, int base) {
+	void Float::set_string(Float *x, const char *str, int base) {
 		assert(base == 10); // FIXME
 		int32_t exponent = 0;
 
@@ -293,24 +293,24 @@ namespace Imagina::MPLite {
 
 		if (exponent == 0) return;
 
-		bool div = false;
+		bool divide = false;
 		if (exponent < 0) {
 			exponent = -exponent;
-			div = true;
+			divide = true;
 		}
 
 		Float temp;
 		_Init(&temp, size + 1);
 		U32PowU32(&temp, 10, exponent);
-		if (div) {
-			Div(x, x, &temp);
+		if (divide) {
+			div(x, x, &temp);
 		} else {
-			Mul(x, x, &temp);
+			mul(x, x, &temp);
 		}
 		Clear(&temp);
 	}
 
-	double Float::GetDouble(const Float *x) {
+	double Float::get_double(const Float *x) {
 		uint64_t result;
 		if (x->Exponent >= 0x7FF - 0x3FE) {
 			//return std::bit_cast<double>(0x7FF0'0000'0000'0000ULL | (uint64_t(x->Sign) << 63));
@@ -331,7 +331,7 @@ namespace Imagina::MPLite {
 		return std::bit_cast<double>(result);
 	}
 
-	Imagina::float_f64ei64 Float::GetFloatF64eI64(const Float *x) {
+	Imagina::float_f64ei64 Float::get_float_f64ei64(const Float *x) {
 		if_unlikely(x->Exponent == INT32_MIN) {
 			return Imagina::float_f64ei64();
 		}
@@ -396,7 +396,7 @@ namespace Imagina::MPLite {
 		if_unlikely (y == 0) SetU32(result, 1);
 		SetU32(result, x);
 		for (uint32_t i = std::countl_zero(y) + 1; i < 32; i++) {
-			Mul(result, result, result);
+			mul(result, result, result);
 			if ((y << i) & 0x8000'0000) {
 				MulU32(result, result, x);
 			}
@@ -413,7 +413,7 @@ namespace Imagina::MPLite {
 		result->Sign = 0;
 	}
 
-	void Float::Add(Float *result, const Float *x, const Float *y) {
+	void Float::add(Float *result, const Float *x, const Float *y) {
 		if (x->Sign == y->Sign) {
 			UnsignedAdd(result, x, y);
 		} else {
@@ -421,7 +421,7 @@ namespace Imagina::MPLite {
 		}
 	}
 
-	void Float::Sub(Float *result, const Float *x, const Float *y) {
+	void Float::sub(Float *result, const Float *x, const Float *y) {
 		if (x->Sign == y->Sign) {
 			UnsignedSub(result, x, y);
 		} else {
@@ -429,7 +429,7 @@ namespace Imagina::MPLite {
 		}
 	}
 
-	void Float::Mul(Float *result, const Float *x, const Float *y) {
+	void Float::mul(Float *result, const Float *x, const Float *y) {
 		if_unlikely(x->Exponent == INT32_MIN || y->Exponent == INT32_MIN) {
 			result->Exponent = INT32_MIN;
 			return;
@@ -511,7 +511,7 @@ namespace Imagina::MPLite {
 		}
 	}
 
-	void Float::Div(Float *result, const Float *x, const Float *y) {
+	void Float::div(Float *result, const Float *x, const Float *y) {
 		if_unlikely(x->Exponent == INT32_MIN) {
 			result->Exponent = INT32_MIN;
 			return;
@@ -870,30 +870,30 @@ namespace Imagina::MPLite {
 }
 
 namespace Imagina {
-	MultiPrecision IMPLite{ {
+	multi_precision IMPLite{ {
 		.Name = "IMPLite",
 
-		.InitContent		= (pMultiPrecision_InitContent)		MPLite::Float::Init,
-		.InitContentCopy	= (pMultiPrecision_InitContentCopy)	MPLite::Float::InitCopy,
+		._init				= (p_multi_precision_init)				MPLite::Float::Init,
+		._init_copy			= (p_multi_precision_init_copy)			MPLite::Float::InitCopy,
 
-		.ClearContent		= (pMultiPrecision_ClearContent)	MPLite::Float::Clear,
+		._clear				= (p_multi_precision_clear)				MPLite::Float::Clear,
 
-		.GetPrecision		= (pMultiPrecision_GetPrecision)	MPLite::Float::GetPrecision,
-		.SetPrecision		= (pMultiPrecision_SetPrecision)	MPLite::Float::SetPrecision,
+		.get_precision		= (p_multi_precision_get_precision)		MPLite::Float::get_precision,
+		.set_precision		= (p_multi_precision_set_precision)		MPLite::Float::set_precision,
 
-		.Set				= (pMultiPrecision_Set)				MPLite::Float::Set,
-		.Copy				= (pMultiPrecision_Copy)			MPLite::Float::Copy,
-		.SetDouble			= (pMultiPrecision_SetDouble)		MPLite::Float::SetDouble,
-		.SetFloatF64eI64	= (pMultiPrecision_SetFloatF64eI64)	MPLite::Float::SetFloatF64eI64,
-		.SetString			= (pMultiPrecision_SetString)		MPLite::Float::SetString,
+		.set				= (p_multi_precision_set)				MPLite::Float::set,
+		.copy				= (p_multi_precision_copy)				MPLite::Float::copy,
+		.set_double			= (p_multi_precision_set_double)		MPLite::Float::set_double,
+		.set_float_f64ei64	= (p_multi_precision_set_float_f64ei64)	MPLite::Float::set_float_f64ei64,
+		.set_string			= (p_multi_precision_set_string)		MPLite::Float::set_string,
 
-		.GetDouble			= (pMultiPrecision_GetDouble)		MPLite::Float::GetDouble,
-		.GetFloatF64eI64	= (pMultiPrecision_GetFloatF64eI64)	MPLite::Float::GetFloatF64eI64,
+		.get_double			= (p_multi_precision_get_double)		MPLite::Float::get_double,
+		.get_float_f64ei64	= (p_multi_precision_get_float_f64ei64)		MPLite::Float::get_float_f64ei64,
 
-		.Add				= (pMultiPrecision_Add)				MPLite::Float::Add,
-		.Sub				= (pMultiPrecision_Sub)				MPLite::Float::Sub,
-		.Mul				= (pMultiPrecision_Mul)				MPLite::Float::Mul,
-		.Div				= (pMultiPrecision_Div)				MPLite::Float::Div,
+		.add				= (p_multi_precision_add)				MPLite::Float::add,
+		.sub				= (p_multi_precision_sub)				MPLite::Float::sub,
+		.mul				= (p_multi_precision_mul)				MPLite::Float::mul,
+		.div				= (p_multi_precision_div)				MPLite::Float::div,
 	} };
 
 }

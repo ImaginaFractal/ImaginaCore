@@ -40,7 +40,7 @@ namespace Imagina {
 	IMPLEMENT_INTERFACE(StandardEngine, IComplexLocationSink);
 
 	StandardEngine::StandardEngine(IEvaluator evaluator) :
-		locationManager(*(MultiPrecision *)(void *)CreateComponent(ComponentType::MultiPrecision)),
+		locationManager(*(multi_precision *)(void *)CreateComponent(ComponentType::MultiPrecision)),
 		evaluator(evaluator) {
 		locationManager.SetEvaluator(this);
 	}

@@ -95,7 +95,7 @@ namespace Imagina {
 	template<> inline constexpr ComponentType TypeToComponentType<IPixelProcessor>	= ComponentType::PixelProcessor;
 	template<> inline constexpr ComponentType TypeToComponentType<IPixelManager>	= ComponentType::PixelManager;
 	template<> inline constexpr ComponentType TypeToComponentType<IController>		= ComponentType::Controller;
-	template<> inline constexpr ComponentType TypeToComponentType<MultiPrecision>	= ComponentType::MultiPrecision;
+	template<> inline constexpr ComponentType TypeToComponentType<multi_precision>	= ComponentType::MultiPrecision;
 
 	imcore_api void Imagina_LoadBuiltinComponents();
 

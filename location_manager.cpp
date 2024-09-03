@@ -15,9 +15,9 @@ namespace Imagina {
 		real_hr distance = max(abs(location.X), abs(location.Y));
 		uint_bc precision = max<int_exp>(0, -exponent_of(location.HalfHeight)) + 32;
 
-		if (distance > 64.0 * location.HalfHeight || precision > referenceX.GetPrecision()) {
-			referenceX.SetPrecision(precision + 16);
-			referenceY.SetPrecision(precision + 16);
+		if (distance > 64.0 * location.HalfHeight || precision > referenceX.get_precision()) {
+			referenceX.set_precision(precision + 16);
+			referenceY.set_precision(precision + 16);
 
 			referenceX += location.X;
 			referenceY += location.Y;

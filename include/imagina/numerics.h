@@ -9,7 +9,7 @@
 
 namespace Imagina::inline Numerics {
 	using real_hr = float_f64ei64; // Real type for fractal with standard precision and highest range
-	using real_hp = MPReal; // Real type for fractal with high precision
+	using real_hp = imp_real; // Real type for fractal with high precision
 
 	using complex_sr = Complex<real_sr>;
 	using complex_hr = Complex<real_hr>;
