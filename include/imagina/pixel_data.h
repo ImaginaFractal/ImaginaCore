@@ -65,8 +65,8 @@ namespace Imagina {
 		real_sr = Float64,
 		real_hr = FloatHR,
 
-		SRComplex = Vector2 | real_sr,
-		HRComplex = Vector2 | real_hr,
+		complex_sr = Vector2 | real_sr,
+		complex_hr = Vector2 | real_hr,
 	};
 
 	struct FieldInfo {

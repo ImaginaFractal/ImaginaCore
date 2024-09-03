@@ -70,16 +70,16 @@ namespace Imagina {
 
 	class im_export TestSimpleEvaluator : public SimpleEvaluator {
 		using real = real_sr;
-		using complex = SRComplex;
+		using complex = complex_sr;
 		struct Output {
 			double Value;
 		};
 
 		uint64_t referenceLength;
-		//SRComplex reference[1025];
-		//SRComplex *reference = nullptr;
+		//complex_sr reference[1025];
+		//complex_sr *reference = nullptr;
 		complex *reference = nullptr;
-		//SRComplex referenceC;
+		//complex_sr referenceC;
 
 	public:
 		const PixelDataInfo *GetOutputInfo();
@@ -92,7 +92,7 @@ namespace Imagina {
 	class im_export TestEvaluator : public LowPrecisionEvaluator {
 		struct Output {
 			uint64_t Iterations;
-			SRComplex FinalZ;
+			complex_sr FinalZ;
 		};
 
 	public:

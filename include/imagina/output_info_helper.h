@@ -54,7 +54,7 @@ namespace Imagina {
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<float>  = PixelDataType::Float32;
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<double> = PixelDataType::Float64;
 
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<SRComplex> = PixelDataType::SRComplex;
-		//template<> constexpr PixelDataType DataTypeToEnumValue<HRComplex> = PixelDataType::HRComplex;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<complex_sr> = PixelDataType::complex_sr;
+		//template<> constexpr PixelDataType DataTypeToEnumValue<complex_hr> = PixelDataType::complex_hr;
 	}
 }

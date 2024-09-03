@@ -11,13 +11,13 @@ namespace Imagina::inline Numerics {
 	using real_hr = float_f64ei64; // Real type for fractal with standard precision and highest range
 	using real_hp = MPReal; // Real type for fractal with high precision
 
-	using SRComplex = Complex<real_sr>;
-	using HRComplex = Complex<real_hr>;
-	using HPComplex = Complex<real_hp>;
+	using complex_sr = Complex<real_sr>;
+	using complex_hr = Complex<real_hr>;
+	using complex_hp = Complex<real_hp>;
 
-	using GRVector3 = Vector3<real_gr>;
-	using GRVector4 = Vector4<real_gr>;
+	using vector3_gr = Vector3<real_gr>;
+	using vector4_gr = Vector4<real_gr>;
 
-	using RGB = GRVector3;
-	using RGBA = GRVector4;
+	using RGB = vector3_gr;
+	using RGBA = vector4_gr;
 }

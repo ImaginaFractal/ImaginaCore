@@ -183,7 +183,7 @@ namespace Imagina {
 		const FieldInfo *finalZField = info->FindField("FinalZ");
 
 		assert(iterationsField->Type == PixelDataType::UInt64);
-		assert(finalZField->Type == PixelDataType::SRComplex);
+		assert(finalZField->Type == PixelDataType::complex_sr);
 
 		iterationsOffset = iterationsField->Offset;
 		finalZOffset = finalZField->Offset;
@@ -202,7 +202,7 @@ namespace Imagina {
 	}
 
 	void TestProcessor2::Process(void *output, void *input) const {
-		const SRComplex &finalZ = GetField<SRComplex>(input, finalZOffset);
+		const complex_sr &finalZ = GetField<complex_sr>(input, finalZOffset);
 		real_sr finalMagnitude = norm(finalZ);
 		double Iterations = GetField<uint64_t>(input, iterationsOffset);
 
