@@ -162,7 +162,7 @@ namespace Imagina {
 	};
 
 	const FieldInfo TestProcessor::OutputFields[1]{
-		{ "Value", 0, PixelDataType::Float32 }
+		{ "Value", 0, PixelDataType::float32 }
 	};
 
 	void TestProcessor::SetInput(const PixelDataInfo *info) {
@@ -191,7 +191,7 @@ namespace Imagina {
 	const PixelDataInfo *TestProcessor2::GetOutputInfo() {
 		using namespace std;
 		static const FieldInfo OutputFields[1]{
-			{ "Value", 0, PixelDataType::Float64 }
+			{ "Value", 0, PixelDataType::float64 }
 		};
 
 		static const PixelDataInfo OutputInfo{
@@ -232,7 +232,7 @@ namespace Imagina {
 
 	const PixelDataInfo *PaletteLookup::GetOutputInfo() {
 		static const FieldInfo OutputFields[1]{
-			{ "Color", 0, PixelDataType::RGBA32F }
+			{ "Color", 0, PixelDataType::rgba32f }
 		};
 
 		static const PixelDataInfo OutputInfo{
@@ -290,7 +290,7 @@ namespace Imagina {
 
 	const PixelDataInfo *BSplineInterpolator::GetOutputInfo() {
 		static const FieldInfo OutputFields[1]{
-			{ "Color", 0, PixelDataType::RGBA32F }
+			{ "Color", 0, PixelDataType::rgba32f }
 		};
 
 		static const PixelDataInfo OutputInfo{

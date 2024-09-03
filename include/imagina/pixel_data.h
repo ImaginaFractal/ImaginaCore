@@ -6,67 +6,67 @@
 
 namespace Imagina {
 	enum class PixelDataType : uint32_t {
-		Invalid = 0x0,
+		invalid = 0x0,
 
 		VectorSizeMask = 0xF000'0000,
-		Vector2 = 0x1000'0000,
-		Vector3 = 0x2000'0000,
-		Vector4 = 0x3000'0000,
+		vector2 = 0x1000'0000,
+		vector3 = 0x2000'0000,
+		vector4 = 0x3000'0000,
 
 		ScalarTypeMask = 0x0FFF'FFFF,
 
 		// Integer
 		// Signed
-		Int8 = 0x10000,
-		Int16,
-		Int32,
-		Int64,
+		int8 = 0x10000,
+		int16,
+		int32,
+		int64,
 
 		// Unsigned
-		UInt8 = 0x10010,
-		UInt16,
-		UInt32,
-		UInt64,
+		uint8 = 0x10010,
+		uint16,
+		uint32,
+		uint64,
 
 		// Fixed point
 		// Fractional part, unsigned integers normalized to [0, 1) (divided by 2^bits)
-		Fract8 = 0x20000,
-		Fract16,
-		Fract32,
-		Fract64,
+		fract8 = 0x20000,
+		fract16,
+		fract32,
+		fract64,
 
 		// Color, unsigned integers normalized to [0, 1] (divided by 2^bits - 1)
-		Monochrome8 = 0x30000,
-		Monochrome16,
+		monochrome8 = 0x30000,
+		monochrome16,
 
 		// Floating point
-		Float16 = 0x40000, // Reserved
-		Float32,
-		Float64,
-		FloatHR,
+		float16 = 0x40000, // Reserved
+		float32,
+		float64,
+		float_hr,
 
 
 
 		//RG8 = Vector2 | Monochrome8,
 		//RG16 = Vector2 | Monochrome16,
 
-		rgb8 = Vector3 | Monochrome8,
-		RGB16 = Vector3 | Monochrome16,
+		rgb8  = vector3 | monochrome8,
+		rgb16 = vector3 | monochrome16,
 		
-		rgba8 = Vector4 | Monochrome8,
-		RGBA16 = Vector4 | Monochrome16,
+		rgba8  = vector4 | monochrome8,
+		rgba16 = vector4 | monochrome16,
 
-		RGB16F = Vector3 | Float16,
-		RGB32F = Vector3 | Float32,
+		rgb16f = vector3 | float16,
+		rgb32f = vector3 | float32,
 
-		RGBA16F = Vector4 | Float16,
-		RGBA32F = Vector4 | Float32,
+		rgba16f = vector4 | float16,
+		rgba32f = vector4 | float32,
 
-		real_sr = Float64,
-		real_hr = FloatHR,
+		real_sr = float64,
+		real_hr = float_hr,
 
-		complex_sr = Vector2 | real_sr,
-		complex_hr = Vector2 | real_hr,
+		complex_sr = vector2 | real_sr,
+		complex_hr = vector2 | real_hr,
 	};
 
 	struct FieldInfo {
@@ -80,8 +80,8 @@ namespace Imagina {
 		bool IsColor() const {
 			PixelDataType vectorSize = (PixelDataType)((uint32_t)Type & (uint32_t)PixelDataType::VectorSizeMask);
 			PixelDataType scalarType = (PixelDataType)((uint32_t)Type & (uint32_t)PixelDataType::ScalarTypeMask);
-			return (vectorSize == PixelDataType::Vector3 || vectorSize == PixelDataType::Vector4) &&
-				(scalarType == PixelDataType::Monochrome8 || scalarType == PixelDataType::Monochrome16 || scalarType == PixelDataType::Float16 || scalarType == PixelDataType::Float32);
+			return (vectorSize == PixelDataType::vector3 || vectorSize == PixelDataType::vector4) &&
+				(scalarType == PixelDataType::monochrome8 || scalarType == PixelDataType::monochrome16 || scalarType == PixelDataType::float16 || scalarType == PixelDataType::float32);
 		}
 		template <typename T>
 		T GetScalar(void *base) const;
@@ -98,27 +98,27 @@ namespace Imagina {
 	template <typename T>
 	T FieldInfo::GetScalar(void *base) const {
 		switch (Type) {
-			case PixelDataType::Int8:			return GetField<int8_t>		(base, Offset);
-			case PixelDataType::Int16:			return GetField<int16_t>	(base, Offset);
-			case PixelDataType::Int32:			return GetField<int32_t>	(base, Offset);
-			case PixelDataType::Int64:			return GetField<int64_t>	(base, Offset);
+			case PixelDataType::int8:			return GetField<int8_t>		(base, Offset);
+			case PixelDataType::int16:			return GetField<int16_t>	(base, Offset);
+			case PixelDataType::int32:			return GetField<int32_t>	(base, Offset);
+			case PixelDataType::int64:			return GetField<int64_t>	(base, Offset);
 
-			case PixelDataType::UInt8:			return GetField<uint8_t>	(base, Offset);
-			case PixelDataType::UInt16:			return GetField<uint16_t>	(base, Offset);
-			case PixelDataType::UInt32:			return GetField<uint32_t>	(base, Offset);
-			case PixelDataType::UInt64:			return GetField<uint64_t>	(base, Offset);
+			case PixelDataType::uint8:			return GetField<uint8_t>	(base, Offset);
+			case PixelDataType::uint16:			return GetField<uint16_t>	(base, Offset);
+			case PixelDataType::uint32:			return GetField<uint32_t>	(base, Offset);
+			case PixelDataType::uint64:			return GetField<uint64_t>	(base, Offset);
 
-			case PixelDataType::Fract8:			return GetField<uint8_t>	(base, Offset) * 0x1p-8;
-			case PixelDataType::Fract16:		return GetField<uint16_t>	(base, Offset) * 0x1p-16;
-			case PixelDataType::Fract32:		return GetField<uint32_t>	(base, Offset) * 0x1p-32;
-			case PixelDataType::Fract64:		return GetField<uint64_t>	(base, Offset) * 0x1p-64;
+			case PixelDataType::fract8:			return GetField<uint8_t>	(base, Offset) * 0x1p-8;
+			case PixelDataType::fract16:		return GetField<uint16_t>	(base, Offset) * 0x1p-16;
+			case PixelDataType::fract32:		return GetField<uint32_t>	(base, Offset) * 0x1p-32;
+			case PixelDataType::fract64:		return GetField<uint64_t>	(base, Offset) * 0x1p-64;
 
-			case PixelDataType::Monochrome8:	return GetField<uint8_t>	(base, Offset) / 0xFFp0;
-			case PixelDataType::Monochrome16:	return GetField<uint16_t>	(base, Offset) / 0xFFFFp0;
+			case PixelDataType::monochrome8:	return GetField<uint8_t>	(base, Offset) / 0xFFp0;
+			case PixelDataType::monochrome16:	return GetField<uint16_t>	(base, Offset) / 0xFFFFp0;
 
 			//case PixelDataType::Float16:		not supported yet
-			case PixelDataType::Float32:		return GetField<float>		(base, Offset);
-			case PixelDataType::Float64:		return GetField<double>		(base, Offset);
+			case PixelDataType::float32:		return GetField<float>		(base, Offset);
+			case PixelDataType::float64:		return GetField<double>		(base, Offset);
 			//case PixelDataType::FloatHR:		not supported yet
 
 			default: return T(); // FIXME
@@ -129,10 +129,10 @@ namespace Imagina {
 	T FieldInfo::GetColor(void *base) const {
 		switch (Type) {
 			case PixelDataType::rgb8: return GetField<rgb8>(base, Offset);
-			case PixelDataType::RGB32F: return GetField<rgb32f>(base, Offset);
+			case PixelDataType::rgb32f: return GetField<rgb32f>(base, Offset);
 
 			case PixelDataType::rgba8: return GetField<rgba8>(base, Offset);
-			case PixelDataType::RGBA32F: return GetField<rgba32f>(base, Offset);
+			case PixelDataType::rgba32f: return GetField<rgba32f>(base, Offset);
 
 			default: return T(); // FIXME
 		}

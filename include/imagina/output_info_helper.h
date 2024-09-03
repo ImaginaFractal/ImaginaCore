@@ -41,18 +41,18 @@ namespace Imagina {
 	namespace OutputInfoHelper {
 		template<typename T> inline constexpr PixelDataType DataTypeToEnumValue = PixelDataType(0);
 
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<int8_t>  = PixelDataType::Int8;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<int16_t> = PixelDataType::Int16;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<int32_t> = PixelDataType::Int32;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<int64_t> = PixelDataType::Int64;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<int8_t>  = PixelDataType::int8;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<int16_t> = PixelDataType::int16;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<int32_t> = PixelDataType::int32;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<int64_t> = PixelDataType::int64;
 
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint8_t>  = PixelDataType::UInt8;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint16_t> = PixelDataType::UInt16;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint32_t> = PixelDataType::UInt32;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint64_t> = PixelDataType::UInt64;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint8_t>  = PixelDataType::uint8;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint16_t> = PixelDataType::uint16;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint32_t> = PixelDataType::uint32;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<uint64_t> = PixelDataType::uint64;
 
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<float>  = PixelDataType::Float32;
-		template<> inline constexpr PixelDataType DataTypeToEnumValue<double> = PixelDataType::Float64;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<float>  = PixelDataType::float32;
+		template<> inline constexpr PixelDataType DataTypeToEnumValue<double> = PixelDataType::float64;
 
 		template<> inline constexpr PixelDataType DataTypeToEnumValue<complex_sr> = PixelDataType::complex_sr;
 		//template<> constexpr PixelDataType DataTypeToEnumValue<complex_hr> = PixelDataType::complex_hr;
