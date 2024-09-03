@@ -12,13 +12,13 @@ namespace Imagina {
 	//}
 
 	struct GRRectangle {
-		GRReal MinX, MinY, MaxX, MaxY;
+		real_gr MinX, MinY, MaxX, MaxY;
 
 		GRRectangle() = default;
-		GRRectangle(GRReal MinX, GRReal MinY, GRReal MaxX, GRReal MaxY) : MinX(MinX), MinY(MinY), MaxX(MaxX), MaxY(MaxY) {}
+		GRRectangle(real_gr MinX, real_gr MinY, real_gr MaxX, real_gr MaxY) : MinX(MinX), MinY(MinY), MaxX(MaxX), MaxY(MaxY) {}
 
-		GRReal Width()	const { return MaxX - MinX; }
-		GRReal Height()	const { return MaxY - MinY; }
+		real_gr Width()	const { return MaxX - MinX; }
+		real_gr Height()	const { return MaxY - MinY; }
 	};
 
 	template <typename real>
@@ -109,15 +109,15 @@ namespace Imagina {
 			return Rectangle<real>(X, Y, HalfWidth(aspectRatio), HalfHeight);
 		}
 		
-		Location ZoomIn(SRReal centerX, SRReal centerY) const {
-			HRReal newHalfHeight = HalfHeight * 0.5; // TODO: replace "* 0.5"
+		Location ZoomIn(real_sr centerX, real_sr centerY) const {
+			real_hr newHalfHeight = HalfHeight * 0.5; // TODO: replace "* 0.5"
 			return Location(
 				X + centerX * newHalfHeight,
 				Y + centerY * newHalfHeight,
 				newHalfHeight);
 		}
 
-		Location ZoomOut(SRReal centerX, SRReal centerY) const {
+		Location ZoomOut(real_sr centerX, real_sr centerY) const {
 			return Location(
 				X - centerX * HalfHeight,
 				Y - centerY * HalfHeight,
@@ -133,14 +133,14 @@ namespace Imagina {
 		}
 	};
 
-	using SRCircle = Circle<SRReal>;
-	using HRCircle = Circle<HRReal>;
+	using SRCircle = Circle<real_sr>;
+	using HRCircle = Circle<real_hr>;
 
-	using SRRectangle = Rectangle<SRReal>;
-	using HRRectangle = Rectangle<HRReal>;
+	using SRRectangle = Rectangle<real_sr>;
+	using HRRectangle = Rectangle<real_hr>;
 
-	using SRLocation = Location<SRReal>;
-	using HRLocation = Location<HRReal>;
+	using SRLocation = Location<real_sr>;
+	using HRLocation = Location<real_hr>;
 
 	class not_implemented : public std::exception {
 	public:

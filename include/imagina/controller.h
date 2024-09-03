@@ -25,30 +25,30 @@ namespace Imagina {
 		IEngine engine = nullptr;
 
 		bool zooming = false;
-		SRReal animationDuration = 0.25;
-		SRReal remainingZoomTime = 0.0;
-		SRReal zoomVelocity = 0.0;
-		SRReal zoomAcceleration = 0.0;
+		real_sr animationDuration = 0.25;
+		real_sr remainingZoomTime = 0.0;
+		real_sr zoomVelocity = 0.0;
+		real_sr zoomAcceleration = 0.0;
 		TransitionFunction transitionFunction = Power5_3;
 
-		SRReal UpdateZoomAnimation(SRReal deltaTime);
+		real_sr UpdateZoomAnimation(real_sr deltaTime);
 
 	public:
 		HRLocation GetRenderLocation();
 
-		void SetAnimationDuration(SRReal duration) { animationDuration = duration; }
+		void SetAnimationDuration(real_sr duration) { animationDuration = duration; }
 		void SetTransitionFunction(TransitionFunction function) { transitionFunction = function; }
 
 		void SetPixelManager(IPixelManager pixelManager);
 		void SetEngine(IEngine engine);
 
-		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY);
 
-		void Update(SRReal deltaTime);
+		void Update(real_sr deltaTime);
 
-		void ZoomIn(SRReal centerX, SRReal centerY);
-		void ZoomOut(SRReal centerX, SRReal centerY);
-		void Move(SRReal x, SRReal y);
+		void ZoomIn(real_sr centerX, real_sr centerY);
+		void ZoomOut(real_sr centerX, real_sr centerY);
+		void Move(real_sr x, real_sr y);
 	};
 
 	IMPLEMENT_INTERFACE(NavigationController, IController);

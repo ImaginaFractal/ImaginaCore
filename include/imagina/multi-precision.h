@@ -9,13 +9,13 @@
 namespace Imagina::inline Numerics {
 	struct MPReal;
 
-	typedef void		(*pMultiPrecision_InitContent)		(MPReal *, MPBCUInt); // Do not use directly, use Init instead.
+	typedef void		(*pMultiPrecision_InitContent)		(MPReal *, mp_uint_bc); // Do not use directly, use Init instead.
 	typedef void		(*pMultiPrecision_InitContentCopy)	(MPReal *, const MPReal *); // Do not use directly, use InitCopy instead.
 
 	typedef void		(*pMultiPrecision_ClearContent)		(MPReal *); // Do not use directly, use Clear instead.
 
-	typedef MPBCUInt	(*pMultiPrecision_GetPrecision)		(const MPReal *);
-	typedef void		(*pMultiPrecision_SetPrecision)		(MPReal *, MPBCUInt);
+	typedef mp_uint_bc	(*pMultiPrecision_GetPrecision)		(const MPReal *);
+	typedef void		(*pMultiPrecision_SetPrecision)		(MPReal *, mp_uint_bc);
 
 	typedef void		(*pMultiPrecision_Set)				(MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
@@ -31,8 +31,8 @@ namespace Imagina::inline Numerics {
 	typedef void		(*pMultiPrecision_Mul)				(MPReal *, const MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Div)				(MPReal *, const MPReal *, const MPReal *);
 	
-	typedef size_t		(*pMultiPrecision_CalcSize)			(MPBCUInt);
-	typedef void		(*pMultiPrecision_PlacementInit)	(MPReal *, MPBCUInt, void *); // Construct MPReal using preallocated memory.
+	typedef size_t		(*pMultiPrecision_CalcSize)			(mp_uint_bc);
+	typedef void		(*pMultiPrecision_PlacementInit)	(MPReal *, mp_uint_bc, void *); // Construct MPReal using preallocated memory.
 
 	struct _MultiPrecisionMutable { // TODO: Reorder
 		const char *Name;
@@ -71,7 +71,7 @@ namespace Imagina::inline Numerics {
 		MultiPrecisionMutable(const MultiPrecisionMutable &) = delete;
 		MultiPrecisionMutable(MultiPrecisionMutable &&) = delete;
 
-		void Init(MPReal *x, MPBCUInt precision) const;
+		void Init(MPReal *x, mp_uint_bc precision) const;
 		void InitCopy(MPReal *dst, const MPReal *src) const;
 
 		void Clear(MPReal *x) const;
@@ -84,11 +84,11 @@ namespace Imagina::inline Numerics {
 		MultiPrecision *const MP = nullptr;
 
 		MPReal() = default;
-		MPReal(MultiPrecision *mp, MPBCUInt precision)					: MP(mp) { mp->InitContent(this, precision); }
+		MPReal(MultiPrecision *mp, mp_uint_bc precision)					: MP(mp) { mp->InitContent(this, precision); }
 		MPReal(double x, MultiPrecision *mp)							: MP(mp) { mp->InitContent(this, 53);			mp->SetDouble(this, x); }
-		MPReal(double x, MultiPrecision *mp, MPBCUInt precision)		: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
+		MPReal(double x, MultiPrecision *mp, mp_uint_bc precision)		: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
 		MPReal(float_f64ei64 x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetFloatF64eI64(this, x); }
-		MPReal(float_f64ei64 x, MultiPrecision *mp, MPBCUInt precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetFloatF64eI64(this, x); }
+		MPReal(float_f64ei64 x, MultiPrecision *mp, mp_uint_bc precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetFloatF64eI64(this, x); }
 		//MPReal(const MPReal &x) : MP(x.MP) { MP->InitContent(this, x.GetPrecision()); MP->Set(this, x); }
 		MPReal(const MPReal &x)											: MP(x.MP) { MP->InitContentCopy(this, x); }
 		~MPReal() { if (MP) MP->ClearContent(this); }
@@ -107,8 +107,8 @@ namespace Imagina::inline Numerics {
 		explicit operator double() const { return MP->GetDouble(this); }
 		explicit operator float_f64ei64() const { return MP->GetFloatF64eI64(this); };
 
-		MPBCUInt GetPrecision() const { return MP->GetPrecision(this); }
-		void SetPrecision(MPBCUInt precision) { MP->SetPrecision(this, precision); }
+		mp_uint_bc GetPrecision() const { return MP->GetPrecision(this); }
+		void SetPrecision(mp_uint_bc precision) { MP->SetPrecision(this, precision); }
 
 		MPReal &operator+=(const MPReal &x) { assert(MP == x.MP); MP->Add(this, this, x); return *this; }
 		MPReal &operator-=(const MPReal &x) { assert(MP == x.MP); MP->Sub(this, this, x); return *this; }
@@ -132,7 +132,7 @@ namespace Imagina::inline Numerics {
 		}
 	};
 
-	inline void MultiPrecisionMutable::Init(MPReal *x, MPBCUInt precision) const {
+	inline void MultiPrecisionMutable::Init(MPReal *x, mp_uint_bc precision) const {
 		InitContent(x, precision);
 		const_cast<MultiPrecision *&>(x->MP) = this;
 	}

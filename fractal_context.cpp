@@ -12,7 +12,7 @@ namespace Imagina {
 		Engine.SetController(Controller);
 	}
 
-	void FractalContext::Update(SRReal deltaTime) {
+	void FractalContext::Update(real_sr deltaTime) {
 		Controller.Update(deltaTime);
 		PixelManager.Update();
 	}

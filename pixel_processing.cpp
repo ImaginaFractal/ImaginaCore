@@ -203,7 +203,7 @@ namespace Imagina {
 
 	void TestProcessor2::Process(void *output, void *input) const {
 		const SRComplex &finalZ = GetField<SRComplex>(input, finalZOffset);
-		SRReal finalMagnitude = norm(finalZ);
+		real_sr finalMagnitude = norm(finalZ);
 		double Iterations = GetField<uint64_t>(input, iterationsOffset);
 
 		if (finalMagnitude > 4096.0) {
@@ -243,7 +243,7 @@ namespace Imagina {
 	}
 
 	void PaletteLookup::Process(void *output, void *input) const {
-		SRReal value = inputField->GetScalar<SRReal>(input);
+		real_sr value = inputField->GetScalar<real_sr>(input);
 
 		if (!std::isfinite(value)) {
 			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);
@@ -262,7 +262,7 @@ namespace Imagina {
 
 		value -= floor(value);
 
-		*(RGBA *)output = lerp(palette[index1], palette[index2], (GRReal)value);
+		*(RGBA *)output = lerp(palette[index1], palette[index2], (real_gr)value);
 		((RGBA *)output)->x = std::sqrt(((RGBA *)output)->x);
 		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
 		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
@@ -301,7 +301,7 @@ namespace Imagina {
 	}
 	
 	void BSplineInterpolator::Process(void *output, void *input) const {
-		SRReal value = inputField->GetScalar<SRReal>(input);
+		real_sr value = inputField->GetScalar<real_sr>(input);
 	
 		if (!std::isfinite(value)) {
 			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);

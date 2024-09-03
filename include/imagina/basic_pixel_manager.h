@@ -12,7 +12,7 @@ namespace Imagina {
 	class BasicRasterizingInterface;
 	class BasicPixelManager {
 		friend class BasicRasterizingInterface;
-		GRInt width = 0, height = 0;
+		int_gr width = 0, height = 0;
 		size_t pixelCount;
 		static_assert(sizeof(std::atomic_size_t) == sizeof(size_t));
 		std::atomic_size_t i = 0;
@@ -55,10 +55,10 @@ namespace Imagina {
 
 		void SetEngine(IEngine engine);
 		void SetImmediateTarget(const HRLocation &location);
-		void SetResolution(GRInt width, GRInt height);
+		void SetResolution(int_gr width, int_gr height);
 		void InvalidatePixels();
 
-		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY);
 		void Update();
 
 		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
@@ -84,9 +84,9 @@ namespace Imagina {
 		int pixelX, pixelY;
 
 	public:
-		bool GetPixel(HRReal &x, HRReal &y);
-		void GetDdx(HRReal &x, HRReal &y);
-		void GetDdy(HRReal &x, HRReal &y);
+		bool GetPixel(real_hr &x, real_hr &y);
+		void GetDdx(real_hr &x, real_hr &y);
+		void GetDdy(real_hr &x, real_hr &y);
 		void WriteResults(void *value);
 	};
 

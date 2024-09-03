@@ -13,9 +13,9 @@ namespace Imagina {
 	interface IController;
 
 	/*struct StandardEvaluationParameters {
-		ITUInt Iterations = 1024;
-		HRReal DivergentEscapeRadius = 0x1.0p8;
-		HRReal ConvergentEscapeRadius = 0x1.0p-16;
+		uint_iter Iterations = 1024;
+		real_hr DivergentEscapeRadius = 0x1.0p8;
+		real_hr ConvergentEscapeRadius = 0x1.0p-16;
 	};*/
 
 	interface IEngine {

@@ -11,7 +11,7 @@ namespace Imagina {
     void NavigationController::SetEngine(IEngine engine) {
 		this->engine = engine;
     }
-	void NavigationController::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
+	void NavigationController::UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY) {
 		targetLocation.X += differenceX;
 		targetLocation.Y += differenceY;
 		renderLocation.X += differenceX;
@@ -22,11 +22,11 @@ namespace Imagina {
 		pixelManager.UpdateRelativeCoordinates(differenceX, differenceY);
 	}
 
-	SRReal NavigationController::UpdateZoomAnimation(SRReal deltaTime) {
-		SRReal t = deltaTime / remainingZoomTime;
-		SRReal ratio = SRReal(targetLocation.HalfHeight / renderLocation.HalfHeight);
+	real_sr NavigationController::UpdateZoomAnimation(real_sr deltaTime) {
+		real_sr t = deltaTime / remainingZoomTime;
+		real_sr ratio = real_sr(targetLocation.HalfHeight / renderLocation.HalfHeight);
 
-		SRReal zoomFactor;
+		real_sr zoomFactor;
 
 		switch (transitionFunction) {
 			default:
@@ -47,10 +47,10 @@ namespace Imagina {
 				break;
 			}
 			case CubicHermite: {
-				SRReal depthDifference = log2(ratio);
-				SRReal t2 = t * t;
-				SRReal t3 = t2 * t;
-				SRReal x
+				real_sr depthDifference = log2(ratio);
+				real_sr t2 = t * t;
+				real_sr t3 = t2 * t;
+				real_sr x
 					= (     t3 - 2 * t2 + t) * zoomVelocity * remainingZoomTime
 					+ (-2 * t3 + 3 * t2    ) * depthDifference;
 
@@ -62,22 +62,22 @@ namespace Imagina {
 				break;
 			}
 			case QuinticHermite: {
-				SRReal depthDifference = log2(ratio);
-				SRReal t2 = t * t;
-				SRReal t3 = t2 * t;
-				SRReal t4 = t2 * t2;
-				SRReal t5 = t3 * t2;
-				SRReal x
+				real_sr depthDifference = log2(ratio);
+				real_sr t2 = t * t;
+				real_sr t3 = t2 * t;
+				real_sr t4 = t2 * t2;
+				real_sr t5 = t3 * t2;
+				real_sr x
 					= (t          -  6.0*t3 +   8.0*t4 -   3.0*t5) * zoomVelocity * remainingZoomTime
 					+ (    0.5*t2 -  1.5*t3 +   1.5*t4 -   0.5*t5) * zoomAcceleration * remainingZoomTime * remainingZoomTime
 					+ (           + 10.0*t3 -  15.0*t4 +   6.0*t5) * depthDifference;
 
-				SRReal velocity
+				real_sr velocity
 					= (1          - 18.0*t2 +  32.0*t3 -  15.0*t4) * zoomVelocity
 					+ (        t  -  4.5*t2 +   6.0*t3 -   2.5*t4) * zoomAcceleration * remainingZoomTime
 					+ (           + 30.0*t2 -  60.0*t3 +  30.0*t4) * depthDifference / remainingZoomTime;
 
-				SRReal acceleration
+				real_sr acceleration
 					= (           - 36.0*t  +  96.0*t2 +  60.0*t3) * zoomVelocity / remainingZoomTime
 					+ (         1 -  9.0*t  +  18.0*t2 -  10.0*t3) * zoomAcceleration
 					+ (           + 60.0*t  - 180.0*t2 + 120.0*t3) * depthDifference / (remainingZoomTime * remainingZoomTime);
@@ -95,14 +95,14 @@ namespace Imagina {
 		return zoomFactor;
 	}
 
-	void NavigationController::Update(SRReal deltaTime) {
+	void NavigationController::Update(real_sr deltaTime) {
 		bool immediateTargetChanged = false;
 		if (zooming) {
-			SRReal zoomFactor = UpdateZoomAnimation(deltaTime);
+			real_sr zoomFactor = UpdateZoomAnimation(deltaTime);
 
 			if (remainingZoomTime > 0.0) {
-				HRReal ratio = renderLocation.HalfHeight / targetLocation.HalfHeight;
-				HRReal a = (ratio * (1.0 - zoomFactor)) / (ratio - 1.0);
+				real_hr ratio = renderLocation.HalfHeight / targetLocation.HalfHeight;
+				real_hr a = (ratio * (1.0 - zoomFactor)) / (ratio - 1.0);
 				renderLocation.HalfHeight *= zoomFactor;
 				renderLocation.X += (targetLocation.X - renderLocation.X) * a;
 				renderLocation.Y += (targetLocation.Y - renderLocation.Y) * a;
@@ -112,9 +112,9 @@ namespace Imagina {
 					if (immediateTarget.HalfHeight <= targetLocation.HalfHeight) {
 						immediateTarget = targetLocation;
 					} else {
-						HRReal r2 = renderLocation.HalfHeight / targetLocation.HalfHeight;
-						HRReal fac2 = immediateTarget.HalfHeight / renderLocation.HalfHeight;
-						HRReal a2 = (r2 * (1.0 - fac2)) / (r2 - 1.0);
+						real_hr r2 = renderLocation.HalfHeight / targetLocation.HalfHeight;
+						real_hr fac2 = immediateTarget.HalfHeight / renderLocation.HalfHeight;
+						real_hr a2 = (r2 * (1.0 - fac2)) / (r2 - 1.0);
 						immediateTarget.X = renderLocation.X + (targetLocation.X - renderLocation.X) * a2;
 						immediateTarget.Y = renderLocation.Y + (targetLocation.Y - renderLocation.Y) * a2;
 					}
@@ -124,9 +124,9 @@ namespace Imagina {
 					if (immediateTarget.HalfHeight >= targetLocation.HalfHeight) {
 						immediateTarget = targetLocation;
 					} else {
-						HRReal r2 = renderLocation.HalfHeight / targetLocation.HalfHeight;
-						HRReal fac2 = immediateTarget.HalfHeight / renderLocation.HalfHeight;
-						HRReal a2 = (r2 * (1.0 - fac2)) / (r2 - 1.0);
+						real_hr r2 = renderLocation.HalfHeight / targetLocation.HalfHeight;
+						real_hr fac2 = immediateTarget.HalfHeight / renderLocation.HalfHeight;
+						real_hr a2 = (r2 * (1.0 - fac2)) / (r2 - 1.0);
 						immediateTarget.X = renderLocation.X + (targetLocation.X - renderLocation.X) * a2;
 						immediateTarget.Y = renderLocation.Y + (targetLocation.Y - renderLocation.Y) * a2;
 					}
@@ -162,7 +162,7 @@ namespace Imagina {
 			}
 		}
 	}
-	void NavigationController::ZoomIn(SRReal centerX, SRReal centerY) {
+	void NavigationController::ZoomIn(real_sr centerX, real_sr centerY) {
 		//targetLocation = targetLocation.ZoomIn(centerX, centerY);
 		targetLocation.HalfHeight *= 0.5;
 		targetLocation.X = renderLocation.X + centerX * (renderLocation.HalfHeight - targetLocation.HalfHeight);
@@ -170,7 +170,7 @@ namespace Imagina {
 		zooming = true;
 		remainingZoomTime = animationDuration;
 	}
-	void NavigationController::ZoomOut(SRReal centerX, SRReal centerY) {
+	void NavigationController::ZoomOut(real_sr centerX, real_sr centerY) {
 		//targetLocation = targetLocation.ZoomOut(centerX, centerY);
 		targetLocation.HalfHeight *= 2.0;
 		targetLocation.X = renderLocation.X + centerX * (renderLocation.HalfHeight - targetLocation.HalfHeight);
@@ -178,7 +178,7 @@ namespace Imagina {
 		zooming = true;
 		remainingZoomTime = animationDuration;
 	}
-	void NavigationController::Move(SRReal x, SRReal y) {
+	void NavigationController::Move(real_sr x, real_sr y) {
 		if (zooming) return;
 		targetLocation.X += x * targetLocation.HalfHeight;
 		targetLocation.Y += y * targetLocation.HalfHeight;

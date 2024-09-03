@@ -12,7 +12,7 @@ namespace Imagina {
 			: evaluator(evaluator), rasterizer(rasterizer) {}
 		//virtual std::string_view GetDescription() const override;
 		virtual void Execute() override;
-		//virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const override;
+		//virtual bool GetProgress(real_sr &Numerator, real_sr &Denoninator) const override;
 		virtual void Cancel() override;
 	};
 
@@ -64,7 +64,7 @@ namespace Imagina {
 		return pixelExecutionContext;
 	}
 
-	void SimpleEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
+	void SimpleEvaluator::SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius) {
 		CancelTasks();
 		this->x |= x;
 		this->y |= y;
@@ -82,30 +82,30 @@ namespace Imagina {
 
 	class LowPrecisionEvaluator::LPRasterizingInterface {
 		IRasterizingInterface rasterizingInterface;
-		SRReal referenceX, referenceY;
+		real_sr referenceX, referenceY;
 
 	public:
-		LPRasterizingInterface(IRasterizingInterface rasterizingInterface, SRReal referenceX, SRReal referenceY)
+		LPRasterizingInterface(IRasterizingInterface rasterizingInterface, real_sr referenceX, real_sr referenceY)
 			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
 
-		bool GetPixel(HRReal &x, HRReal &y);
-		void GetDdx(HRReal &x, HRReal &y);
-		void GetDdy(HRReal &x, HRReal &y);
+		bool GetPixel(real_hr &x, real_hr &y);
+		void GetDdx(real_hr &x, real_hr &y);
+		void GetDdy(real_hr &x, real_hr &y);
 		void WriteResults(void *value);
 	};
 
 	IMPLEMENT_INTERFACE(LowPrecisionEvaluator::LPRasterizingInterface, IRasterizingInterface);
 
-	bool LowPrecisionEvaluator::LPRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
+	bool LowPrecisionEvaluator::LPRasterizingInterface::GetPixel(real_hr &x, real_hr &y) {
 		bool result = rasterizingInterface.GetPixel(x, y);
 		x += referenceX;
 		y += referenceY;
 		return result;
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdx(HRReal &x, HRReal &y) {
+	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdx(real_hr &x, real_hr &y) {
 		rasterizingInterface.GetDdx(x, y);
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdy(HRReal &x, HRReal &y) {
+	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdy(real_hr &x, real_hr &y) {
 		rasterizingInterface.GetDdy(x, y);
 	}
 	void LowPrecisionEvaluator::LPRasterizingInterface::WriteResults(void *value) {
@@ -116,13 +116,13 @@ namespace Imagina {
 	class LowPrecisionEvaluator::EvaluationTask : public ParallelTask/*, public ProgressTrackable*/ {
 		LowPrecisionEvaluator *evaluator;
 		IRasterizer rasterizer;
-		SRReal referenceX, referenceY;
+		real_sr referenceX, referenceY;
 	public:
-		EvaluationTask(LowPrecisionEvaluator *evaluator, IRasterizer rasterizer, SRReal referenceX, SRReal referenceY)
+		EvaluationTask(LowPrecisionEvaluator *evaluator, IRasterizer rasterizer, real_sr referenceX, real_sr referenceY)
 			: evaluator(evaluator), rasterizer(rasterizer), referenceX(referenceX), referenceY(referenceY) {}
 		//virtual std::string_view GetDescription() const override;
 		virtual void Execute() override;
-		//virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const override;
+		//virtual bool GetProgress(real_sr &Numerator, real_sr &Denoninator) const override;
 	};
 
 	void LowPrecisionEvaluator::EvaluationTask::Execute() {
@@ -152,9 +152,9 @@ namespace Imagina {
 		return currentExecutionContext;
 	}
 
-	void LowPrecisionEvaluator::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal) {
-		referenceX = SRReal(x);
-		referenceY = SRReal(y);
+	void LowPrecisionEvaluator::SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr) {
+		referenceX = real_sr(x);
+		referenceY = real_sr(y);
 	}
 
 	void LowPrecisionEvaluator::SetEvaluationParameters(const StandardEvaluationParameters &parameters) {
@@ -173,7 +173,7 @@ namespace Imagina {
 		//reference = new SRComplex[parameters.Iterations + 1];
 		reference = new complex[parameters.Iterations + 1];
 		HPComplex C = HPComplex(x, y);
-		//referenceC = SRComplex(SRReal(x), SRReal(y));
+		//referenceC = SRComplex(real_sr(x), real_sr(y));
 
 		reference[0] = real(0.0);
 		reference[1] = complex(real(x), real(y));
@@ -196,12 +196,12 @@ namespace Imagina {
 	}
 
 	void TestSimpleEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
-		HRReal x, y;
+		real_hr x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
 			complex dc = { real(x), real(y) };
 			complex Z = real(0.0), z = real(0.0), dz = real(0.0);
 
-			ITUInt i = 0, j = 0;
+			uint_iter i = 0, j = 0;
 			while (i < parameters.Iterations) {
 				dz = dz * (Z + z) + dc;
 				i++; j++;
@@ -249,12 +249,12 @@ namespace Imagina {
 	}
 
 	void TestEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
-		HRReal x, y;
+		real_hr x, y;
 		while (rasterizingInterface.GetPixel(x, y)) {
-			SRComplex c = { SRReal(x), SRReal(y) };
+			SRComplex c = { real_sr(x), real_sr(y) };
 			SRComplex z = 0.0;
 
-			ITUInt i;
+			uint_iter i;
 			for (i = 0; i < parameters.Iterations; i++) {
 				z = z * z + c;
 				if (norm(z) > 4096.0) break;

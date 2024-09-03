@@ -18,8 +18,8 @@ namespace Imagina {
 		void CancelTasks();
 
 	protected:
-		HPReal x, y;
-		HRReal radius;
+		real_hp x, y;
+		real_hr radius;
 		StandardEvaluationParameters parameters;
 		IEvaluator evaluator;
 
@@ -35,7 +35,7 @@ namespace Imagina {
 
 		void SetController(IController controller);
 		void LocationChanged(const HRLocation &location);
-		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
+		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 	};
 
 	IMPLEMENT_INTERFACE(StandardEngine, IEngine);

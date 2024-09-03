@@ -121,7 +121,7 @@ namespace Imagina {
 		valid = false;
 	}
 
-	void BasicPixelManager::SetResolution(GRInt width, GRInt height) {
+	void BasicPixelManager::SetResolution(int_gr width, int_gr height) {
 		this->width = width; // FIXME: Use separate variable and/or cancel tasks
 		this->height = height;
 		valid = false;
@@ -132,7 +132,7 @@ namespace Imagina {
 		valid = false;
 	}
 
-	void BasicPixelManager::UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY) {
+	void BasicPixelManager::UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY) {
 		CancelAndWait();
 
 		location.X += differenceX;
@@ -150,8 +150,8 @@ namespace Imagina {
 
 			if (engine.Ready()) {
 				i = 0;
-				//evaluator->RunTaskForRectangle(location.ToRectangle((SRReal)width / height), this)->WaitAndRelease();
-				task = engine.AddTask(location.ToRectangle((SRReal)width / height).Circumcircle(), *this);
+				//evaluator->RunTaskForRectangle(location.ToRectangle((real_sr)width / height), this)->WaitAndRelease();
+				task = engine.AddTask(location.ToRectangle((real_sr)width / height).Circumcircle(), *this);
 
 				valid = true;
 			}
@@ -169,7 +169,7 @@ namespace Imagina {
 		TextureMappings.resize(1);
 
 		TextureMappings[0].Texture = gpuTexture;
-		TextureMappings[0].FractalRectangle = this->location.ToRectangle((SRReal)width / height);
+		TextureMappings[0].FractalRectangle = this->location.ToRectangle((real_sr)width / height);
 		TextureMappings[0].TextureRectangle = GRRectangle{ 0.0f, 0.0f, 1.0f, 1.0f };
 
 		return TextureMappings;
@@ -207,7 +207,7 @@ namespace Imagina {
 		delete (BasicRasterizingInterface *)Interface;
 	}
 
-	bool BasicRasterizingInterface::GetPixel(HRReal &x, HRReal &y) {
+	bool BasicRasterizingInterface::GetPixel(real_hr &x, real_hr &y) {
 		i++;
 		if (i >= end) {
 			i = pixelManager->i.fetch_add(groupSize);
@@ -218,8 +218,8 @@ namespace Imagina {
 		pixelX = i % pixelManager->width;
 		pixelY = i / pixelManager->width;
 
-		SRReal xsr = (SRReal)(pixelX * 2 + 1 - pixelManager->width) / pixelManager->height; // Map to (-AspectRatio, AspectRatio)
-		SRReal ysr = (SRReal)(pixelY * 2 + 1 - pixelManager->height) / pixelManager->height; // Map to (-1, 1)
+		real_sr xsr = (real_sr)(pixelX * 2 + 1 - pixelManager->width) / pixelManager->height; // Map to (-AspectRatio, AspectRatio)
+		real_sr ysr = (real_sr)(pixelY * 2 + 1 - pixelManager->height) / pixelManager->height; // Map to (-1, 1)
 
 		x = xsr * pixelManager->location.HalfHeight + pixelManager->location.X;
 		y = ysr * pixelManager->location.HalfHeight + pixelManager->location.Y;
@@ -232,12 +232,12 @@ namespace Imagina {
 		return true;
 	}
 
-	void BasicRasterizingInterface::GetDdx(HRReal &x, HRReal &y) {
+	void BasicRasterizingInterface::GetDdx(real_hr &x, real_hr &y) {
 		x = pixelManager->location.Height() / pixelManager->height;
 		y = 0.0;
 	}
 
-	void BasicRasterizingInterface::GetDdy(HRReal &x, HRReal &y) {
+	void BasicRasterizingInterface::GetDdy(real_hr &x, real_hr &y) {
 		x = 0.0;
 		y = pixelManager->location.Height() / pixelManager->height;
 	}

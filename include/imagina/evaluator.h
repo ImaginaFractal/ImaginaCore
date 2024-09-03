@@ -20,8 +20,8 @@ namespace Imagina {
 		void CancelTasks();
 
 	protected:
-		HPReal x, y;
-		HRReal radius;
+		real_hp x, y;
+		real_hr radius;
 		StandardEvaluationParameters parameters;
 
 	public:
@@ -31,7 +31,7 @@ namespace Imagina {
 		ILocationManager GetLocationManager();
 		bool Ready();
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
-		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
+		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
 		virtual void Prepare() = 0;
@@ -45,7 +45,7 @@ namespace Imagina {
 		class EvaluationTask;
 		friend struct IRasterizingInterfaceVTable;
 
-		SRReal referenceX = 0.0, referenceY = 0.0;
+		real_sr referenceX = 0.0, referenceY = 0.0;
 		ExecutionContext *currentExecutionContext = nullptr;
 
 		StandardLocationManager locationManager;
@@ -60,7 +60,7 @@ namespace Imagina {
 		ILocationManager GetLocationManager();
 		bool Ready();
 		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
-		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius);
+		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
 		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
@@ -69,7 +69,7 @@ namespace Imagina {
 	IMPLEMENT_INTERFACE(LowPrecisionEvaluator, IComplexLocationSink);
 
 	class im_export TestSimpleEvaluator : public SimpleEvaluator {
-		using real = SRReal;
+		using real = real_sr;
 		using complex = SRComplex;
 		struct Output {
 			double Value;

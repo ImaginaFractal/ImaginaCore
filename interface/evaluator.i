@@ -10,19 +10,19 @@ namespace Imagina {
 	interface IRasterizingInterface;
 
 	struct StandardEvaluationParameters {
-		ITUInt Iterations = 1024;
-		HRReal DivergentEscapeRadius = 0x1.0p8;
-		HRReal ConvergentEscapeRadius = 0x1.0p-16;
+		uint_iter Iterations = 1024;
+		real_hr DivergentEscapeRadius = 0x1.0p8;
+		real_hr ConvergentEscapeRadius = 0x1.0p-16;
 	};
 
 	interface IEvaluator {
 		const PixelDataInfo *GetOutputInfo();
-		void Prepare(const HPReal &x, const HPReal &y, HRReal radius, const StandardEvaluationParameters &parameters);
+		void Prepare(const real_hp &x, const real_hp &y, real_hr radius, const StandardEvaluationParameters &parameters);
 		void Evaluate(IRasterizingInterface rasterizingInterface);
 	};
 
 	interface IComplexLocationSink {
-		void SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius); // TEMPORARY
+		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius); // TEMPORARY
 	};
 }
 

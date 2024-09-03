@@ -10,8 +10,8 @@ namespace Imagina {
 		void SetPixelManager(IPixelManager pixelManager);
 		void SetEngine(IEngine engine);
 
-		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY);
 
-		void Update(SRReal deltaTime);
+		void Update(real_sr deltaTime);
 	};
 }

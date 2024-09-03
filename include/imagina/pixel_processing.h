@@ -139,8 +139,8 @@ namespace Imagina {
 		size_t paletteSize;
 
 	public:
-		SRReal valueMultiplier = 0x1p-8;
-		SRReal valueOffset = 0.0;
+		real_sr valueMultiplier = 0x1p-8;
+		real_sr valueOffset = 0.0;
 
 		PaletteLookup(const RGBA *palette, size_t paletteSize);
 
@@ -160,8 +160,8 @@ namespace Imagina {
 		size_t paletteSize;
 
 	public:
-		SRReal valueMultiplier = 0x1p-8;
-		SRReal valueOffset = 0.0;
+		real_sr valueMultiplier = 0x1p-8;
+		real_sr valueOffset = 0.0;
 
 		BSplineInterpolator(const RGBA *palette, size_t paletteSize);
 

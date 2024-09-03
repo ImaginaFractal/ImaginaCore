@@ -62,11 +62,11 @@ namespace Imagina {
 		RGBA16F = Vector4 | Float16,
 		RGBA32F = Vector4 | Float32,
 
-		SRReal = Float64,
-		HRReal = FloatHR,
+		real_sr = Float64,
+		real_hr = FloatHR,
 
-		SRComplex = Vector2 | SRReal,
-		HRComplex = Vector2 | HRReal,
+		SRComplex = Vector2 | real_sr,
+		HRComplex = Vector2 | real_hr,
 	};
 
 	struct FieldInfo {

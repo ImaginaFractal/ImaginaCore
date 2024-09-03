@@ -17,7 +17,7 @@ namespace Imagina {
 
 		//void SetImmediateTarget(const HRLocation &location);
 
-		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
-		void Update(SRReal deltaTime);
+		void UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY);
+		void Update(real_sr deltaTime);
 	};
 }

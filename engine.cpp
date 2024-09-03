@@ -10,7 +10,7 @@ namespace Imagina {
 			: evaluator(evaluator), rasterizer(rasterizer) {}
 		//virtual std::string_view GetDescription() const override;
 		virtual void Execute() override;
-		//virtual bool GetProgress(SRReal &Numerator, SRReal &Denoninator) const override;
+		//virtual bool GetProgress(real_sr &Numerator, real_sr &Denoninator) const override;
 		virtual void Cancel() override;
 	};
 
@@ -88,7 +88,7 @@ namespace Imagina {
 		locationManager.LocationChanged(location);
 	}
 
-	void StandardEngine::SetReferenceLocation(const HPReal &x, const HPReal &y, HRReal radius) {
+	void StandardEngine::SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius) {
 		CancelTasks();
 		this->x |= x;
 		this->y |= y;

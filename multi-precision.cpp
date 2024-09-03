@@ -10,14 +10,14 @@ namespace Imagina::inline Numerics {
 	}
 
 	//void DoubleInitContent(double *x) { *x = 0.0; }
-	//void DoubleInitContentWithPrecision(double *x, MPBCUInt) { *x = 0.0; }
-	void DoubleInitContent(double *x, MPBCUInt) { *x = 0.0; }
+	//void DoubleInitContentWithPrecision(double *x, mp_uint_bc) { *x = 0.0; }
+	void DoubleInitContent(double *x, mp_uint_bc) { *x = 0.0; }
 	void DoubleInitContentCopy(double *dst, const double *src) { *dst = *src; }
 
 	void DoubleClearContent(double *) {}
 
-	MPBCUInt DoubleGetPrecision(const double *) { return 53; }
-	void DoubleSetPrecision(double *, MPBCUInt) {}
+	mp_uint_bc DoubleGetPrecision(const double *) { return 53; }
+	void DoubleSetPrecision(double *, mp_uint_bc) {}
 
 	void DoubleSet(double *dst, const double *src) { *dst = *src; }
 	void DoubleSetDouble(double *dst, double src) { *dst = src; }
@@ -35,15 +35,15 @@ namespace Imagina::inline Numerics {
 		.Name = "double",
 
 		//.InitContent = (void (*)(MPReal *))DoubleInitContent,
-		//.InitContentWithPrecision = (void (*)(MPReal *, MPBCUInt))DoubleInitContentWithPrecision,
-		.InitContent = (void (*)(MPReal *, MPBCUInt))DoubleInitContent,
+		//.InitContentWithPrecision = (void (*)(MPReal *, mp_uint_bc))DoubleInitContentWithPrecision,
+		.InitContent = (void (*)(MPReal *, mp_uint_bc))DoubleInitContent,
 		.InitContentCopy = (void (*)(MPReal *, const MPReal *))DoubleInitContentCopy,
 
 
 		.ClearContent = (void (*)(MPReal *))DoubleClearContent,
 
-		.GetPrecision = (MPBCUInt(*)(const MPReal *))DoubleGetPrecision,
-		.SetPrecision = (void (*)(MPReal *, MPBCUInt))DoubleSetPrecision,
+		.GetPrecision = (mp_uint_bc(*)(const MPReal *))DoubleGetPrecision,
+		.SetPrecision = (void (*)(MPReal *, mp_uint_bc))DoubleSetPrecision,
 
 		.Set = (void (*)(MPReal *, const MPReal *))DoubleSet,
 		.Copy = (void (*)(MPReal *, const MPReal *))DoubleSet,

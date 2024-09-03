@@ -35,10 +35,10 @@ namespace Imagina {
 		//void GetPixelData(void *data, PixelPipeline::Stage stage, const char *field); // TODO: Add invertY
 
 		void SetImmediateTarget(const HRLocation &location);
-		void SetResolution(GRInt width, GRInt height);
+		void SetResolution(int_gr width, int_gr height);
 		void InvalidatePixels();
 
-		void UpdateRelativeCoordinates(HRReal differenceX, HRReal differenceY);
+		void UpdateRelativeCoordinates(real_hr differenceX, real_hr differenceY);
 		void Update();
 
 		bool Finished(); // TODO: Consider changing it to Status()
@@ -58,9 +58,9 @@ namespace Imagina {
 	interface IGpuPixelManager : IPixelManager, IGpuTextureManager {};
 
 	interface IRasterizingInterface {
-		bool GetPixel(HRReal &x, HRReal &y);
-		void GetDdx(HRReal &x, HRReal &y);
-		void GetDdy(HRReal &x, HRReal &y);
+		bool GetPixel(real_hr &x, real_hr &y);
+		void GetDdx(real_hr &x, real_hr &y);
+		void GetDdy(real_hr &x, real_hr &y);
 		void WriteResults(void *value);
 	};
 
