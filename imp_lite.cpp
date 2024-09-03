@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <bit>
 #include <utility>
-#include <imagina/floating_point.h>
+#include <imagina/float_f64ei64.h>
 #include <imagina/math.h>
 
 namespace Imagina::MPLite {

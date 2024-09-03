@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cassert>
 #include "declarations.h"
-#include "floating_point.h"
+#include "float_f64ei64.h"
 
 namespace Imagina::inline Numerics {
 	struct MPReal;

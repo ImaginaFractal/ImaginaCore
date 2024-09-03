@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "basic_types.h"
 #include "multi-precision.h"
-#include "floating_point.h"
+#include "float_f64ei64.h"
 #include "complex.h"
 #include "vector.h"
 

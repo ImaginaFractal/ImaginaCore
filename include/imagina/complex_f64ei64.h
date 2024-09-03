@@ -1,7 +1,7 @@
 #pragma once
 
 #include <type_traits>
-#include "floating_point.h"
+#include "float_f64ei64.h"
 #include "complex.h"
 
 namespace Imagina::inline Numerics {

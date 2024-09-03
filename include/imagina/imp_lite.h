@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include "multi-precision.h"
-#include "floating_point.h"
+#include "float_f64ei64.h"
 
 namespace Imagina::MPLite {
 	class im_export Float {

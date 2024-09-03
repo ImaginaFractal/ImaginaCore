@@ -25,7 +25,7 @@ add_library (ImaginaCore SHARED
 	"include/imagina/declarations.h"
 	"include/imagina/engine.h"
 	"include/imagina/evaluator.h"
-	"include/imagina/floating_point.h"
+	"include/imagina/float_f64ei64.h"
 	"include/imagina/fractal_context.h"
 	"include/imagina/imagina.h"
 	"include/imagina/imp_lite.h"
