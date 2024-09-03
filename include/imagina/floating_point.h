@@ -2,6 +2,7 @@
 
 #include <bit>
 #include "basic_types.h"
+#include "constants.h"
 
 namespace Imagina::inline Numerics {
 	struct _FloatF64eI64 {
@@ -33,7 +34,7 @@ namespace Imagina::inline Numerics {
 		static constexpr int64_t ZeroInfExponent = 0x2800'0000'0000'0000;
 		static constexpr int64_t ZeroInfExponentThreshold = 0x1000'0000'0000'0000;
 
-		FloatF64eI64() : _FloatF64eI64{ .Mantissa = 1.0, .Exponent = ~ZeroInfExponentThreshold } {}
+		FloatF64eI64() = default;
 
 		constexpr void Normalize() {
 			uint64_t MantissaI64 = std::bit_cast<uint64_t>(Mantissa);
@@ -61,16 +62,16 @@ namespace Imagina::inline Numerics {
 			Mantissa = std::bit_cast<double>(MantissaI64);
 		}
 
-		//constexpr FloatF64eI64(float	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		constexpr FloatF64eI64(double	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(int8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(uint8_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(int16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(uint16_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(int32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(uint32_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(int64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
-		//constexpr FloatF64eI64(uint64_t	x) : _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } { Normalize(); }
+		template<typename T>
+		constexpr FloatF64eI64(T x) requires std::integral<T> || std::floating_point<T>
+			: _FloatF64eI64{ .Mantissa = double(x), .Exponent = 0 } {
+			Normalize();
+		}
+
+		template<intmax_t value>
+		constexpr FloatF64eI64(Constants::IntegerConstant<value> x) : _FloatF64eI64{ .Mantissa = double(value), .Exponent = 0 } {
+			Normalize();
+		}
 
 		constexpr FloatF64eI64(double mantissa, int64_t exponent)		: _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } { Normalize(); }
 		constexpr FloatF64eI64(double mantissa, int64_t exponent, int)	: _FloatF64eI64{ .Mantissa = mantissa, .Exponent = exponent } {}
@@ -195,31 +196,6 @@ namespace Imagina::inline Numerics {
 	constexpr FloatF64eI64 operator-(FloatF64eI64 a, const FloatF64eI64 &b) { return a -= b; }
 	constexpr FloatF64eI64 operator*(FloatF64eI64 a, const FloatF64eI64 &b) { return a *= b; }
 	constexpr FloatF64eI64 operator/(FloatF64eI64 a, const FloatF64eI64 &b) { return a /= b; }
-
-	constexpr FloatF64eI64 operator+(double a, const FloatF64eI64 &b) { return FloatF64eI64(a) + b; }
-	constexpr FloatF64eI64 operator-(double a, const FloatF64eI64 &b) { return FloatF64eI64(a) - b; }
-	constexpr FloatF64eI64 operator*(double a, const FloatF64eI64 &b) { return FloatF64eI64(a) * b; }
-	constexpr FloatF64eI64 operator/(double a, const FloatF64eI64 &b) { return FloatF64eI64(a) / b; }
-
-	constexpr FloatF64eI64 operator+(const FloatF64eI64 &a, double b) { return a + FloatF64eI64(b); }
-	constexpr FloatF64eI64 operator-(const FloatF64eI64 &a, double b) { return a - FloatF64eI64(b); }
-	constexpr FloatF64eI64 operator*(const FloatF64eI64 &a, double b) { return a * FloatF64eI64(b); }
-	constexpr FloatF64eI64 operator/(const FloatF64eI64 &a, double b) { return a / FloatF64eI64(b); }
-
-	//constexpr FloatF64eI64 operator+(const int &a, const FloatF64eI64 &b) { return (FloatF64eI64(a)) + b; }
-	//constexpr FloatF64eI64 operator-(const int &a, const FloatF64eI64 &b) { return (FloatF64eI64(a)) - b; }
-	//constexpr FloatF64eI64 operator*(const int &a, const FloatF64eI64 &b) { return (FloatF64eI64(a)) * b; }
-	//constexpr FloatF64eI64 operator/(const int &a, const FloatF64eI64 &b) { return (FloatF64eI64(a)) / b; }
-
-	//inline mpf_class &operator+=(mpf_class &a, const FloatF64eI64 &b) { return a += b.operator mpf_class(); }
-	//inline mpf_class &operator-=(mpf_class &a, const FloatF64eI64 &b) { return a -= b.operator mpf_class(); }
-	//inline mpf_class &operator*=(mpf_class &a, const FloatF64eI64 &b) { return a *= b.operator mpf_class(); }
-	//inline mpf_class &operator/=(mpf_class &a, const FloatF64eI64 &b) { return a /= b.operator mpf_class(); }
-	//
-	//inline mpf_class operator+=(const mpf_class &a, const FloatF64eI64 &b) { return a + b.operator mpf_class(); }
-	//inline mpf_class operator-=(const mpf_class &a, const FloatF64eI64 &b) { return a - b.operator mpf_class(); }
-	//inline mpf_class operator*=(const mpf_class &a, const FloatF64eI64 &b) { return a * b.operator mpf_class(); }
-	//inline mpf_class operator/=(const mpf_class &a, const FloatF64eI64 &b) { return a / b.operator mpf_class(); }
 
 	constexpr ExpInt ExponentOf(FloatF64eI64 x) { return x.Exponent; }
 }
