@@ -77,20 +77,20 @@ namespace Imagina::inline Numerics {
 	template<std::floating_point T>
 	T clamp01(T x) { return (x < T(0.0)) ? T(0.0) : (x > T(1.0)) ? T(1.0) : x; }
 
-	struct RGB8 {
+	struct rgb8 {
 		uint8_t r, g, b;
 
-		RGB8() = default;
-		RGB8(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+		rgb8() = default;
+		rgb8(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 
 		template<std::floating_point T>
-		RGB8(T r, T g, T b) :
+		rgb8(T r, T g, T b) :
 			r((uint32_t)std::round(clamp01(r) * T(255.0))),
 			g((uint32_t)std::round(clamp01(g) * T(255.0))),
 			b((uint32_t)std::round(clamp01(b) * T(255.0))) {}
 
-		template<std::floating_point T> RGB8(Vector3<T> x) : RGB8(x.r, x.g, x.b) {}
-		template<std::floating_point T> RGB8(Vector4<T> x) : RGB8(x.r, x.g, x.b) {}
+		template<std::floating_point T> rgb8(Vector3<T> x) : rgb8(x.r, x.g, x.b) {}
+		template<std::floating_point T> rgb8(Vector4<T> x) : rgb8(x.r, x.g, x.b) {}
 
 		template<std::floating_point T> operator Vector3<T>() { return Vector3<T>(r / T(255.0), g / T(255.0), b / T(255.0)); }
 		template<std::floating_point T> operator Vector4<T>() { return Vector4<T>(r / T(255.0), g / T(255.0), b / T(255.0), 1.0); }
@@ -103,23 +103,23 @@ namespace Imagina::inline Numerics {
 		}
 	};
 
-	struct RGBA8 {
+	struct rgba8 {
 		uint8_t r, g, b, a;
 
-		RGBA8() = default;
-		RGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : r(r), g(g), b(b), a(a) {}
+		rgba8() = default;
+		rgba8(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : r(r), g(g), b(b), a(a) {}
 
 		template<std::floating_point T>
-		RGBA8(T r, T g, T b, T a = 1.0) :
+		rgba8(T r, T g, T b, T a = 1.0) :
 			r((uint32_t)std::round(clamp01(r) * T(255.0))),
 			g((uint32_t)std::round(clamp01(g) * T(255.0))),
 			b((uint32_t)std::round(clamp01(b) * T(255.0))),
 			a((uint32_t)std::round(clamp01(a) * T(255.0))) {}
 
-		RGBA8(RGB8 x, uint8_t a = 0xFF) : r(x.r), g(x.g), b(x.b), a(a) {}
+		rgba8(rgb8 x, uint8_t a = 0xFF) : r(x.r), g(x.g), b(x.b), a(a) {}
 
-		template<std::floating_point T> RGBA8(Vector3<T> x) : RGBA8(x.r, x.g, x.b, 0xFF) {}
-		template<std::floating_point T> RGBA8(Vector4<T> x) : RGBA8(x.r, x.g, x.b, x.a) {}
+		template<std::floating_point T> rgba8(Vector3<T> x) : rgba8(x.r, x.g, x.b, 0xFF) {}
+		template<std::floating_point T> rgba8(Vector4<T> x) : rgba8(x.r, x.g, x.b, x.a) {}
 
 		template<std::floating_point T> operator Vector3<T>() { return Vector3<T>(r / T(255.0), g / T(255.0), b / T(255.0)); }
 		template<std::floating_point T> operator Vector4<T>() { return Vector4<T>(r / T(255.0), g / T(255.0), b / T(255.0), a / T(255.0)); }

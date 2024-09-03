@@ -18,6 +18,6 @@ namespace Imagina::inline Numerics {
 	using vector3_gr = Vector3<real_gr>;
 	using vector4_gr = Vector4<real_gr>;
 
-	using RGB = vector3_gr;
-	using RGBA = vector4_gr;
+	using rgb32f = Vector3<float>;
+	using rgba32f = Vector4<float>;
 }

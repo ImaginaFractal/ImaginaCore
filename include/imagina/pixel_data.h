@@ -50,10 +50,10 @@ namespace Imagina {
 		//RG8 = Vector2 | Monochrome8,
 		//RG16 = Vector2 | Monochrome16,
 
-		RGB8 = Vector3 | Monochrome8,
+		rgb8 = Vector3 | Monochrome8,
 		RGB16 = Vector3 | Monochrome16,
 		
-		RGBA8 = Vector4 | Monochrome8,
+		rgba8 = Vector4 | Monochrome8,
 		RGBA16 = Vector4 | Monochrome16,
 
 		RGB16F = Vector3 | Float16,
@@ -128,11 +128,11 @@ namespace Imagina {
 	template <typename T>
 	T FieldInfo::GetColor(void *base) const {
 		switch (Type) {
-			case PixelDataType::RGB8: return GetField<RGB8>(base, Offset);
-			case PixelDataType::RGB32F: return GetField<RGB>(base, Offset);
+			case PixelDataType::rgb8: return GetField<rgb8>(base, Offset);
+			case PixelDataType::RGB32F: return GetField<rgb32f>(base, Offset);
 
-			case PixelDataType::RGBA8: return GetField<RGBA8>(base, Offset);
-			case PixelDataType::RGBA32F: return GetField<RGBA>(base, Offset);
+			case PixelDataType::rgba8: return GetField<rgba8>(base, Offset);
+			case PixelDataType::RGBA32F: return GetField<rgba32f>(base, Offset);
 
 			default: return T(); // FIXME
 		}

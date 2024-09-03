@@ -213,9 +213,9 @@ namespace Imagina {
 		*(double *)output = Iterations;
 	}
 
-	PaletteLookup::PaletteLookup(const RGBA *palette, size_t paletteSize) : paletteSize(paletteSize) {
-		RGBA *temp = new RGBA[paletteSize];
-		memcpy(temp, palette, paletteSize * sizeof(RGBA));
+	PaletteLookup::PaletteLookup(const rgba32f *palette, size_t paletteSize) : paletteSize(paletteSize) {
+		rgba32f *temp = new rgba32f[paletteSize];
+		memcpy(temp, palette, paletteSize * sizeof(rgba32f));
 		this->palette = temp;
 	}
 
@@ -246,7 +246,7 @@ namespace Imagina {
 		real_sr value = inputField->GetScalar<real_sr>(input);
 
 		if (!std::isfinite(value)) {
-			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);
+			*(rgba32f *)output = rgba32f(0.0, 0.0, 0.0, 1.0);
 			return;
 		}
 
@@ -262,15 +262,15 @@ namespace Imagina {
 
 		value -= floor(value);
 
-		*(RGBA *)output = lerp(palette[index1], palette[index2], (real_gr)value);
-		((RGBA *)output)->x = std::sqrt(((RGBA *)output)->x);
-		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
-		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
+		*(rgba32f *)output = lerp(palette[index1], palette[index2], (real_gr)value);
+		((rgba32f *)output)->x = std::sqrt(((rgba32f *)output)->x);
+		((rgba32f *)output)->y = std::sqrt(((rgba32f *)output)->y);
+		((rgba32f *)output)->z = std::sqrt(((rgba32f *)output)->z);
 	}
 
-	BSplineInterpolator::BSplineInterpolator(const RGBA *palette, size_t paletteSize) : paletteSize(paletteSize) {
-		RGBA *temp = new RGBA[paletteSize + 3];
-		memcpy(temp + 1, palette, paletteSize * sizeof(RGBA));
+	BSplineInterpolator::BSplineInterpolator(const rgba32f *palette, size_t paletteSize) : paletteSize(paletteSize) {
+		rgba32f *temp = new rgba32f[paletteSize + 3];
+		memcpy(temp + 1, palette, paletteSize * sizeof(rgba32f));
 		temp[0] = temp[paletteSize];
 		temp[paletteSize + 1] = temp[1];
 		temp[paletteSize + 2] = temp[2];
@@ -304,7 +304,7 @@ namespace Imagina {
 		real_sr value = inputField->GetScalar<real_sr>(input);
 	
 		if (!std::isfinite(value)) {
-			*(RGBA *)output = RGBA(0.0, 0.0, 0.0, 1.0);
+			*(rgba32f *)output = rgba32f(0.0, 0.0, 0.0, 1.0);
 			return;
 		}
 	
@@ -319,14 +319,14 @@ namespace Imagina {
 		float t2 = t * t;
 		float t3 = t2 * t;
 	
-		*(RGBA *)output = palette[index + 0] * (       -t3 + 3.0f * t2 - 3.0f * t + 1.0f)
+		*(rgba32f *)output = palette[index + 0] * (       -t3 + 3.0f * t2 - 3.0f * t + 1.0f)
 						+ palette[index + 1] * ( 3.0f * t3 - 6.0f * t2            + 4.0f)
 						+ palette[index + 2] * (-3.0f * t3 + 3.0f * t2 + 3.0f * t + 1.0f)
 						+ palette[index + 3] * (        t3								);
-		*(RGBA *)output *= 1.0f / 6.0f;
+		*(rgba32f *)output *= 1.0f / 6.0f;
 	
-		((RGBA *)output)->x = std::sqrt(((RGBA *)output)->x);
-		((RGBA *)output)->y = std::sqrt(((RGBA *)output)->y);
-		((RGBA *)output)->z = std::sqrt(((RGBA *)output)->z);
+		((rgba32f *)output)->x = std::sqrt(((rgba32f *)output)->x);
+		((rgba32f *)output)->y = std::sqrt(((rgba32f *)output)->y);
+		((rgba32f *)output)->z = std::sqrt(((rgba32f *)output)->z);
 	}
 }

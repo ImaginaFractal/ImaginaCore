@@ -257,6 +257,6 @@ namespace Imagina {
 			finalOutput = preprocessedOutput;
 		}
 		//pixelManager->finalPixels[pixelIndex] = pixelManager->outputFieldInfo->GetScalar<float>(finalOutput);
-		pixelManager->finalPixels[pixelIndex] = (uint32_t)pixelManager->outputFieldInfo->GetColor<RGBA8>(finalOutput);
+		pixelManager->finalPixels[pixelIndex] = (uint32_t)pixelManager->outputFieldInfo->GetColor<rgba8>(finalOutput);
 	}
 }

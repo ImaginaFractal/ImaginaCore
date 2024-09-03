@@ -135,14 +135,14 @@ namespace Imagina {
 
 	class PaletteLookup {
 		const FieldInfo *inputField;
-		const RGBA *palette;
+		const rgba32f *palette;
 		size_t paletteSize;
 
 	public:
 		real_sr valueMultiplier = 0x1p-8;
 		real_sr valueOffset = 0.0;
 
-		PaletteLookup(const RGBA *palette, size_t paletteSize);
+		PaletteLookup(const rgba32f *palette, size_t paletteSize);
 
 		~PaletteLookup();
 
@@ -156,14 +156,14 @@ namespace Imagina {
 	class BSplineInterpolator {
 	protected:
 		const FieldInfo *inputField;
-		const RGBA *palette;
+		const rgba32f *palette;
 		size_t paletteSize;
 
 	public:
 		real_sr valueMultiplier = 0x1p-8;
 		real_sr valueOffset = 0.0;
 
-		BSplineInterpolator(const RGBA *palette, size_t paletteSize);
+		BSplineInterpolator(const rgba32f *palette, size_t paletteSize);
 
 		~BSplineInterpolator();
 
