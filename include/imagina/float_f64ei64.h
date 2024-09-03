@@ -5,18 +5,16 @@
 #include "constants.h"
 
 namespace Imagina::inline Numerics {
-	struct _float_f64ei64 {
-		double mantissa;
-		int64_t exponent;
-	};
-
 	constexpr ExpInt ExponentOf(double x)	{ return ExpInt((std::bit_cast<uint64_t>(x) >> 52) & 0x7FF) - 0x3FF; }
 	constexpr ExpInt ExponentOf(float x)	{ return ExpInt((std::bit_cast<uint32_t>(x) >> 23) & 0x0FF) - 0x07F; }
 
 	// Make sure double have the correct format
 	static_assert(std::bit_cast<uint64_t, double>(0x1.3456789ABCDEFp-1005) == 0x0123'4567'89AB'CDEF);
 
-	struct float_f64ei64 : _float_f64ei64 {
+	struct float_f64ei64 {
+		double mantissa;
+		int64_t exponent;
+
 		constexpr int64_t mantissa_i64() { return std::bit_cast<int64_t>(mantissa); }
 		constexpr void mantissa_i64(int64_t x) { mantissa = std::bit_cast<double>(x); }
 
@@ -64,17 +62,17 @@ namespace Imagina::inline Numerics {
 
 		template<typename T>
 		constexpr float_f64ei64(T x) requires std::integral<T> || std::floating_point<T>
-			: _float_f64ei64{ .mantissa = double(x), .exponent = 0 } {
+			: mantissa(x), exponent(0) {
 			normalize();
 		}
 
 		template<intmax_t value>
-		constexpr float_f64ei64(Constants::IntegerConstant<value> x) : _float_f64ei64{ .mantissa = double(value), .exponent = 0 } {
+		constexpr float_f64ei64(Constants::IntegerConstant<value> x) : mantissa(value), exponent(0) {
 			normalize();
 		}
 
-		constexpr float_f64ei64(double mantissa, int64_t exponent)		: _float_f64ei64{ .mantissa = mantissa, .exponent = exponent } { normalize(); }
-		constexpr float_f64ei64(double mantissa, int64_t exponent, int)	: _float_f64ei64{ .mantissa = mantissa, .exponent = exponent } {}
+		constexpr float_f64ei64(double mantissa, int64_t exponent)		: mantissa(mantissa), exponent(exponent) { normalize(); }
+		constexpr float_f64ei64(double mantissa, int64_t exponent, int)	: mantissa(mantissa), exponent(exponent) {}
 
 		constexpr explicit operator double() const {
 			int64_t mantissa_i64 = std::bit_cast<int64_t>(mantissa);
