@@ -46,9 +46,9 @@ namespace Imagina::inline Numerics {
 	struct complex_f64ei64 : _complex_f64ei64_u<0> {
 		complex_f64ei64() = default;
 
-		constexpr complex_f64ei64(FloatF64eI64 re) noexcept : _complex_f64ei64_u(re.mantissa, 0.0, re.exponent) {}
+		constexpr complex_f64ei64(float_f64ei64 re) noexcept : _complex_f64ei64_u(re.mantissa, 0.0, re.exponent) {}
 
-		constexpr complex_f64ei64(double re) noexcept : complex_f64ei64(FloatF64eI64(re)) {}
+		constexpr complex_f64ei64(double re) noexcept : complex_f64ei64(float_f64ei64(re)) {}
 		constexpr complex_f64ei64(double re, double im) noexcept : _complex_f64ei64_u(re, im, 0) { normalize(); }
 
 		constexpr complex_f64ei64(Complex<double> x) noexcept : complex_f64ei64(x.re, x.im) {}
@@ -191,11 +191,11 @@ namespace Imagina::inline Numerics {
 	template<size_t exp_deviation> constexpr complex_f64ei64 &operator*=(complex_f64ei64 &x, const _complex_f64ei64_u<exp_deviation> &y) { return x = x * y; }
 	template<size_t exp_deviation> constexpr complex_f64ei64 &operator/=(complex_f64ei64 &x, const _complex_f64ei64_u<exp_deviation> &y) { return x = x / y; }
 
-	constexpr FloatF64eI64 norm(const complex_f64ei64 &x) {
-		return FloatF64eI64(x.re * x.re + x.im * x.im, x.exponent * 2);
+	constexpr float_f64ei64 norm(const complex_f64ei64 &x) {
+		return float_f64ei64(x.re * x.re + x.im * x.im, x.exponent * 2);
 	}
 
-	constexpr FloatF64eI64 chebyshev_norm(const complex_f64ei64 &x) {
-		return FloatF64eI64(std::max(std::abs(x.re), std::abs(x.im)), x.exponent, 0);
+	constexpr float_f64ei64 chebyshev_norm(const complex_f64ei64 &x) {
+		return float_f64ei64(std::max(std::abs(x.re), std::abs(x.im)), x.exponent, 0);
 	}
 }

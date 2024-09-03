@@ -12,13 +12,13 @@ namespace Imagina {
 	using std::abs;
 	using std::max;
 
-	inline FloatF64eI64 abs(FloatF64eI64 x) {
+	inline float_f64ei64 abs(float_f64ei64 x) {
 		x.mantissa = std::abs(x.mantissa);
 		return x;
 	}
 
-	inline FloatF64eI64 sqrt(FloatF64eI64 x) {
-		FloatF64eI64 result;
+	inline float_f64ei64 sqrt(float_f64ei64 x) {
+		float_f64ei64 result;
 		result.mantissa_i64(x.mantissa_i64() + ((x.exponent & 1) << 52));
 		result.exponent = x.exponent >> 1;
 		result.mantissa = std::sqrt(result.mantissa);
@@ -26,25 +26,25 @@ namespace Imagina {
 		return result;
 	}
 
-	inline double log(const FloatF64eI64 &n) {
+	inline double log(const float_f64ei64 &n) {
 		constexpr double ln_2 = 0.693147180559945309417;
 		return std::log(n.mantissa) + n.exponent * ln_2;
 	}
 
-	inline double log2(const FloatF64eI64 &n) {
+	inline double log2(const float_f64ei64 &n) {
 		return std::log2(n.mantissa) + n.exponent;
 	}
 
-	inline double log10(const FloatF64eI64 &n) {
+	inline double log10(const float_f64ei64 &n) {
 		constexpr double log10_2 = 0.30102999566398119521373889472449;
 		return std::log10(n.mantissa) + n.exponent * log10_2;
 	}
 
-	inline FloatF64eI64 hypot(FloatF64eI64 x, FloatF64eI64 y) {
+	inline float_f64ei64 hypot(float_f64ei64 x, float_f64ei64 y) {
 		return sqrt(x * x + y * y);
 	}
 
-	inline double atan2(FloatF64eI64 y, FloatF64eI64 x) {
+	inline double atan2(float_f64ei64 y, float_f64ei64 x) {
 		double y2, x2;
 		y2 = y.mantissa;
 		x2 = x.mantissa;
@@ -86,7 +86,7 @@ namespace Imagina {
 		return std::hypot(x.re, x.im);
 	}
 
-	inline FloatF64eI64 abs(const Complex<FloatF64eI64> &x) {
+	inline float_f64ei64 abs(const Complex<float_f64ei64> &x) {
 		return hypot(x.re, x.im);
 	}
 
@@ -94,7 +94,7 @@ namespace Imagina {
 		return std::atan2(x.im, x.re);
 	}
 
-	inline FloatF64eI64 arg(const Complex<FloatF64eI64> &x) {
+	inline float_f64ei64 arg(const Complex<float_f64ei64> &x) {
 		return atan2(x.im, x.re);
 	}
 
@@ -102,7 +102,7 @@ namespace Imagina {
 		return { std::log(abs(x)), std::atan2(x.im, x.re) };
 	}
 
-	inline Complex<double> log(const Complex<FloatF64eI64> &x) {
+	inline Complex<double> log(const Complex<float_f64ei64> &x) {
 		return { log(norm(x)) * Constants::Half, atan2(x.im, x.re) };
 	}
 
@@ -146,19 +146,19 @@ namespace Imagina {
 		return abs_a >= abs_b;
 	}
 
-	inline bool abs_lt(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+	inline bool abs_lt(const Complex<float_f64ei64> &a, const Complex<float_f64ei64> &b) {
 		return norm(a) < norm(b);
 	}
 
-	inline bool abs_le(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+	inline bool abs_le(const Complex<float_f64ei64> &a, const Complex<float_f64ei64> &b) {
 		return norm(a) <= norm(b);
 	}
 
-	inline bool abs_gt(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+	inline bool abs_gt(const Complex<float_f64ei64> &a, const Complex<float_f64ei64> &b) {
 		return norm(a) > norm(b);
 	}
 
-	inline bool abs_ge(const Complex<FloatF64eI64> &a, const Complex<FloatF64eI64> &b) {
+	inline bool abs_ge(const Complex<float_f64ei64> &a, const Complex<float_f64ei64> &b) {
 		return norm(a) >= norm(b);
 	}
 

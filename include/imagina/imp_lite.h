@@ -40,11 +40,11 @@ namespace Imagina::MPLite {
 		static void Copy(Float *x, const Float *src);
 		static void SetU32(Float *x, uint32_t u32);
 		static void SetDouble(Float *x, double d);
-		static void SetFloatF64eI64(Float *x, Imagina::FloatF64eI64 f);
+		static void SetFloatF64eI64(Float *x, Imagina::float_f64ei64 f);
 		static void SetString(Float *x, const char *str, int base);
 
 		static double GetDouble(const Float *x);
-		static Imagina::FloatF64eI64 GetFloatF64eI64(const Float *x);
+		static Imagina::float_f64ei64 GetFloatF64eI64(const Float *x);
 
 		static void MulU32(Float *result, const Float *x, uint32_t y);
 		static void U32PowU32(Float *result, uint32_t x, uint32_t y);

@@ -8,7 +8,7 @@
 #include "vector.h"
 
 namespace Imagina::inline Numerics {
-	using HRReal = FloatF64eI64; // Real type for fractal with standard precision and highest range
+	using HRReal = float_f64ei64; // Real type for fractal with standard precision and highest range
 	using HPReal = MPReal; // Real type for fractal with high precision
 
 	using SRComplex = Complex<SRReal>;

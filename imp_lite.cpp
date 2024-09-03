@@ -169,7 +169,7 @@ namespace Imagina::MPLite {
 		memset(data, 0, (size - 2) * sizeof(uint32_t));
 	}
 
-	void Float::SetFloatF64eI64(Float *x, Imagina::FloatF64eI64 f) {
+	void Float::SetFloatF64eI64(Float *x, Imagina::float_f64ei64 f) {
 		if_unlikely (f.is_zero()) {
 			x->Exponent = INT32_MIN;
 			return;
@@ -331,15 +331,15 @@ namespace Imagina::MPLite {
 		return std::bit_cast<double>(result);
 	}
 
-	Imagina::FloatF64eI64 Float::GetFloatF64eI64(const Float *x) {
+	Imagina::float_f64ei64 Float::GetFloatF64eI64(const Float *x) {
 		if_unlikely(x->Exponent == INT32_MIN) {
-			return Imagina::FloatF64eI64();
+			return Imagina::float_f64ei64();
 		}
 
 		uint32_t size = x->Size;
 		const uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
 		uint64_t Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
-		return Imagina::FloatF64eI64(x->Sign ? -double(Mantissa) : double(Mantissa), x->Exponent - 64);
+		return Imagina::float_f64ei64(x->Sign ? -double(Mantissa) : double(Mantissa), x->Exponent - 64);
 	}
 
 	void Float::MulU32(Float *result, const Float *x, uint32_t y) {
@@ -588,7 +588,7 @@ namespace Imagina::MPLite {
 				uint32_t loword = xsize ? xdata[--xsize] : 0;
 				for (uint32_t j = 0; j < ysize; j++) {
 					carry += uint64_t(q) * ydata[j];
-					carry += ~loword; // ~(~x + y) == x - y
+					carry += uint64_t(~loword); // ~(~x + y) == x - y
 					loword = rem[j];
 					rem[j] = ~uint32_t(carry);
 					carry >>= 32;

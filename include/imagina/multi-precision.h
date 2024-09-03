@@ -20,11 +20,11 @@ namespace Imagina::inline Numerics {
 	typedef void		(*pMultiPrecision_Set)				(MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Copy)				(MPReal *, const MPReal *); // Set value and precision
 	typedef void		(*pMultiPrecision_SetDouble)		(MPReal *, double);
-	typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, FloatF64eI64);
+	typedef void		(*pMultiPrecision_SetFloatF64eI64)	(MPReal *, float_f64ei64);
 	typedef bool		(*pMultiPrecision_SetString)		(MPReal *, const char *, int);
 
 	typedef double		(*pMultiPrecision_GetDouble)		(const MPReal *);
-	typedef FloatF64eI64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
+	typedef float_f64ei64(*pMultiPrecision_GetFloatF64eI64)	(const MPReal *);
 
 	typedef void		(*pMultiPrecision_Add)				(MPReal *, const MPReal *, const MPReal *);
 	typedef void		(*pMultiPrecision_Sub)				(MPReal *, const MPReal *, const MPReal *);
@@ -87,8 +87,8 @@ namespace Imagina::inline Numerics {
 		MPReal(MultiPrecision *mp, MPBCUInt precision)					: MP(mp) { mp->InitContent(this, precision); }
 		MPReal(double x, MultiPrecision *mp)							: MP(mp) { mp->InitContent(this, 53);			mp->SetDouble(this, x); }
 		MPReal(double x, MultiPrecision *mp, MPBCUInt precision)		: MP(mp) { mp->InitContent(this, precision);	mp->SetDouble(this, x); }
-		MPReal(FloatF64eI64 x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetFloatF64eI64(this, x); }
-		MPReal(FloatF64eI64 x, MultiPrecision *mp, MPBCUInt precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetFloatF64eI64(this, x); }
+		MPReal(float_f64ei64 x, MultiPrecision *mp)						: MP(mp) { mp->InitContent(this, 53);			mp->SetFloatF64eI64(this, x); }
+		MPReal(float_f64ei64 x, MultiPrecision *mp, MPBCUInt precision)	: MP(mp) { mp->InitContent(this, precision);	mp->SetFloatF64eI64(this, x); }
 		//MPReal(const MPReal &x) : MP(x.MP) { MP->InitContent(this, x.GetPrecision()); MP->Set(this, x); }
 		MPReal(const MPReal &x)											: MP(x.MP) { MP->InitContentCopy(this, x); }
 		~MPReal() { if (MP) MP->ClearContent(this); }
@@ -102,10 +102,10 @@ namespace Imagina::inline Numerics {
 		MPReal &operator&=(const MPReal &x); // Copy (set precision and assign)
 		MPReal &operator|=(const MPReal &x); // Set MP and copy
 		MPReal &operator=(double x) { MP->SetDouble(this, x); return *this; }
-		MPReal &operator=(FloatF64eI64 x) { MP->SetFloatF64eI64(this, x); return *this; }
+		MPReal &operator=(float_f64ei64 x) { MP->SetFloatF64eI64(this, x); return *this; }
 
 		explicit operator double() const { return MP->GetDouble(this); }
-		explicit operator FloatF64eI64() const { return MP->GetFloatF64eI64(this); };
+		explicit operator float_f64ei64() const { return MP->GetFloatF64eI64(this); };
 
 		MPBCUInt GetPrecision() const { return MP->GetPrecision(this); }
 		void SetPrecision(MPBCUInt precision) { MP->SetPrecision(this, precision); }
@@ -118,8 +118,8 @@ namespace Imagina::inline Numerics {
 		MPReal &operator+=(double x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
 		MPReal &operator-=(double x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
 
-		MPReal &operator+=(FloatF64eI64 x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
-		MPReal &operator-=(FloatF64eI64 x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
+		MPReal &operator+=(float_f64ei64 x) { MP->Add(this, this, MPReal(x, MP)); return *this; }
+		MPReal &operator-=(float_f64ei64 x) { MP->Sub(this, this, MPReal(x, MP)); return *this; }
 
 		void CopyFrom(const MPReal &x) {
 			if_likely (MP == x.MP) {
