@@ -170,12 +170,12 @@ namespace Imagina::MPLite {
 	}
 
 	void Float::SetFloatF64eI64(Float *x, Imagina::FloatF64eI64 f) {
-		if_unlikely (f.IsZero()) {
+		if_unlikely (f.is_zero()) {
 			x->Exponent = INT32_MIN;
 			return;
 		}
-		SetDouble(x, f.Mantissa);
-		x->Exponent += f.Exponent;
+		SetDouble(x, f.mantissa);
+		x->Exponent += f.exponent;
 	}
 
 	inline bool IsWhitespace(char c) {

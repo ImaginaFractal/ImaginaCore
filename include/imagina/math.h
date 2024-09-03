@@ -13,31 +13,31 @@ namespace Imagina {
 	using std::max;
 
 	inline FloatF64eI64 abs(FloatF64eI64 x) {
-		x.Mantissa = std::abs(x.Mantissa);
+		x.mantissa = std::abs(x.mantissa);
 		return x;
 	}
 
 	inline FloatF64eI64 sqrt(FloatF64eI64 x) {
-		FloatF64eI64 Result;
-		Result.MantissaI64(x.MantissaI64() + ((x.Exponent & 1) << 52));
-		Result.Exponent = x.Exponent >> 1;
-		Result.Mantissa = std::sqrt(Result.Mantissa);
-		Result.Normalize();
-		return Result;
+		FloatF64eI64 result;
+		result.mantissa_i64(x.mantissa_i64() + ((x.exponent & 1) << 52));
+		result.exponent = x.exponent >> 1;
+		result.mantissa = std::sqrt(result.mantissa);
+		result.normalize();
+		return result;
 	}
 
 	inline double log(const FloatF64eI64 &n) {
-		constexpr double Ln_2 = 0.693147180559945309417;
-		return std::log(n.Mantissa) + n.Exponent * Ln_2;
+		constexpr double ln_2 = 0.693147180559945309417;
+		return std::log(n.mantissa) + n.exponent * ln_2;
 	}
 
 	inline double log2(const FloatF64eI64 &n) {
-		return std::log2(n.Mantissa) + n.Exponent;
+		return std::log2(n.mantissa) + n.exponent;
 	}
 
 	inline double log10(const FloatF64eI64 &n) {
-		constexpr double Log10_2 = 0.30102999566398119521373889472449;
-		return std::log10(n.Mantissa) + n.Exponent * Log10_2;
+		constexpr double log10_2 = 0.30102999566398119521373889472449;
+		return std::log10(n.mantissa) + n.exponent * log10_2;
 	}
 
 	inline FloatF64eI64 hypot(FloatF64eI64 x, FloatF64eI64 y) {
@@ -46,19 +46,19 @@ namespace Imagina {
 
 	inline double atan2(FloatF64eI64 y, FloatF64eI64 x) {
 		double y2, x2;
-		y2 = y.Mantissa;
-		x2 = x.Mantissa;
+		y2 = y.mantissa;
+		x2 = x.mantissa;
 
-		int64_t ExponentDifference = x.Exponent - y.Exponent;
-		if (x.Exponent >= y.Exponent) {
-			if (ExponentDifference <= 0x200) {
-				reinterpret_cast<int64_t &>(y2) -= ExponentDifference << 52;
+		int64_t exponent_difference = x.exponent - y.exponent;
+		if (x.exponent >= y.exponent) {
+			if (exponent_difference <= 0x200) {
+				reinterpret_cast<int64_t &>(y2) -= exponent_difference << 52;
 			} else {
 				y = 0.0;
 			}
 		} else {
-			if (ExponentDifference >= -0x200) {
-				reinterpret_cast<int64_t &>(x2) += ExponentDifference << 52;
+			if (exponent_difference >= -0x200) {
+				reinterpret_cast<int64_t &>(x2) += exponent_difference << 52;
 			} else {
 				x = 0.0;
 			}

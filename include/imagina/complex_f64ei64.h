@@ -46,7 +46,7 @@ namespace Imagina::inline Numerics {
 	struct complex_f64ei64 : _complex_f64ei64_u<0> {
 		complex_f64ei64() = default;
 
-		constexpr complex_f64ei64(FloatF64eI64 re) noexcept : _complex_f64ei64_u(re.Mantissa, 0.0, re.Exponent) {}
+		constexpr complex_f64ei64(FloatF64eI64 re) noexcept : _complex_f64ei64_u(re.mantissa, 0.0, re.exponent) {}
 
 		constexpr complex_f64ei64(double re) noexcept : complex_f64ei64(FloatF64eI64(re)) {}
 		constexpr complex_f64ei64(double re, double im) noexcept : _complex_f64ei64_u(re, im, 0) { normalize(); }
