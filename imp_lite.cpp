@@ -169,6 +169,15 @@ namespace Imagina::MPLite {
 		memset(data, 0, (size - 2) * sizeof(uint32_t));
 	}
 
+	void Float::set_double_2exp(Float *x, double d, int_exp exp) {
+		if_unlikely (d == 0.0 || exp <= INT32_MIN) {
+			x->Exponent = INT32_MIN;
+			return;
+		}
+		set_double(x, d);
+		x->Exponent += exp;
+	}
+
 	void Float::set_float_f64ei64(Float *x, Imagina::float_f64ei64 f) {
 		if_unlikely (f.is_zero()) {
 			x->Exponent = INT32_MIN;
@@ -331,15 +340,29 @@ namespace Imagina::MPLite {
 		return std::bit_cast<double>(result);
 	}
 
-	Imagina::float_f64ei64 Float::get_float_f64ei64(const Float *x) {
+	double Float::get_double_2exp(int_exp *exp, const Float *x) {
 		if_unlikely(x->Exponent == INT32_MIN) {
-			return Imagina::float_f64ei64();
+			exp = 0;
+			return 0.0;
 		}
 
 		uint32_t size = x->Size;
 		const uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
-		uint64_t Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
-		return Imagina::float_f64ei64(x->Sign ? -double(Mantissa) : double(Mantissa), x->Exponent - 64);
+		double Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
+		Mantissa *= 0x1p-64;
+		*exp = x->Exponent;
+		return x->Sign ? -Mantissa : Mantissa;
+	}
+
+	Imagina::float_f64ei64 Float::get_float_f64ei64(const Float *x) {
+		if_unlikely(x->Exponent == INT32_MIN) {
+			return 0.0;
+		}
+
+		uint32_t size = x->Size;
+		const uint32_t *data = (size > BufferSize) ? x->Pointer : x->Buffer;
+		double Mantissa = (uint64_t(data[size - 1]) << 32) | data[size - 2];
+		return Imagina::float_f64ei64(x->Sign ? -Mantissa : Mantissa, x->Exponent - 64);
 	}
 
 	void Float::MulU32(Float *result, const Float *x, uint32_t y) {
@@ -884,11 +907,13 @@ namespace Imagina {
 		.set				= (p_multi_precision_set)				MPLite::Float::set,
 		.copy				= (p_multi_precision_copy)				MPLite::Float::copy,
 		.set_double			= (p_multi_precision_set_double)		MPLite::Float::set_double,
+		.set_double_2exp	= (p_multi_precision_set_double_2exp)	MPLite::Float::set_double_2exp,
 		.set_float_f64ei64	= (p_multi_precision_set_float_f64ei64)	MPLite::Float::set_float_f64ei64,
 		.set_string			= (p_multi_precision_set_string)		MPLite::Float::set_string,
 
 		.get_double			= (p_multi_precision_get_double)		MPLite::Float::get_double,
-		.get_float_f64ei64	= (p_multi_precision_get_float_f64ei64)		MPLite::Float::get_float_f64ei64,
+		.get_double_2exp	= (p_multi_precision_get_double_2exp)	MPLite::Float::get_double_2exp,
+		.get_float_f64ei64	= (p_multi_precision_get_float_f64ei64)	MPLite::Float::get_float_f64ei64,
 
 		.add				= (p_multi_precision_add)				MPLite::Float::add,
 		.sub				= (p_multi_precision_sub)				MPLite::Float::sub,

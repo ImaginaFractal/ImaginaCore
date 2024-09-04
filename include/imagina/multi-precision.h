@@ -9,30 +9,32 @@
 namespace Imagina::inline Numerics {
 	struct imp_real;
 
-	typedef void		(*p_multi_precision_init)			(imp_real *, mp_uint_bc);
-	typedef void		(*p_multi_precision_init_copy)		(imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_init)				(imp_real *, mp_uint_bc);
+	typedef void		(*p_multi_precision_init_copy)			(imp_real *, const imp_real *);
 
-	typedef void		(*p_multi_precision_clear)			(imp_real *);
+	typedef void		(*p_multi_precision_clear)				(imp_real *);
 
-	typedef mp_uint_bc	(*p_multi_precision_get_precision)	(const imp_real *);
-	typedef void		(*p_multi_precision_set_precision)	(imp_real *, mp_uint_bc);
+	typedef mp_uint_bc	(*p_multi_precision_get_precision)		(const imp_real *);
+	typedef void		(*p_multi_precision_set_precision)		(imp_real *, mp_uint_bc);
 
-	typedef void		(*p_multi_precision_set)			(imp_real *, const imp_real *);
-	typedef void		(*p_multi_precision_copy)			(imp_real *, const imp_real *); // Set value and precision
-	typedef void		(*p_multi_precision_set_double)		(imp_real *, double);
+	typedef void		(*p_multi_precision_set)				(imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_copy)				(imp_real *, const imp_real *); // Set value and precision
+	typedef void		(*p_multi_precision_set_double)			(imp_real *, double);
+	typedef void		(*p_multi_precision_set_double_2exp)	(imp_real *, double, int_exp);
 	typedef void		(*p_multi_precision_set_float_f64ei64)	(imp_real *, float_f64ei64);
-	typedef bool		(*p_multi_precision_set_string)		(imp_real *, const char *, int);
+	typedef bool		(*p_multi_precision_set_string)			(imp_real *, const char *, int);
 
-	typedef double		(*p_multi_precision_get_double)		(const imp_real *);
+	typedef double		(*p_multi_precision_get_double)			(const imp_real *);
+	typedef double		(*p_multi_precision_get_double_2exp)	(int_exp *, const imp_real *);
 	typedef float_f64ei64(*p_multi_precision_get_float_f64ei64)	(const imp_real *);
 
-	typedef void		(*p_multi_precision_add)			(imp_real *, const imp_real *, const imp_real *);
-	typedef void		(*p_multi_precision_sub)			(imp_real *, const imp_real *, const imp_real *);
-	typedef void		(*p_multi_precision_mul)			(imp_real *, const imp_real *, const imp_real *);
-	typedef void		(*p_multi_precision_div)			(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_add)				(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_sub)				(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_mul)				(imp_real *, const imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_div)				(imp_real *, const imp_real *, const imp_real *);
 	
-	typedef size_t		(*p_multi_precision_calc_size)		(mp_uint_bc);
-	typedef void		(*p_multi_precision_placement_init)	(imp_real *, mp_uint_bc, void *); // Construct imp_real using preallocated memory.
+	typedef size_t		(*p_multi_precision_calc_size)			(mp_uint_bc);
+	typedef void		(*p_multi_precision_placement_init)		(imp_real *, mp_uint_bc, void *); // Construct imp_real using preallocated memory.
 
 	struct _multi_precision_mutable { // TODO: Reorder
 		const char *Name;
@@ -48,11 +50,13 @@ namespace Imagina::inline Numerics {
 		p_multi_precision_set				set;
 		p_multi_precision_copy				copy;
 		p_multi_precision_set_double		set_double;
+		p_multi_precision_set_double_2exp	set_double_2exp;
 		p_multi_precision_set_float_f64ei64	set_float_f64ei64;
 		p_multi_precision_set_string		set_string;
 
 		p_multi_precision_get_double		get_double;
-		p_multi_precision_get_float_f64ei64		get_float_f64ei64;
+		p_multi_precision_get_double_2exp	get_double_2exp;
+		p_multi_precision_get_float_f64ei64	get_float_f64ei64;
 
 		p_multi_precision_add				add;
 		p_multi_precision_sub				sub;

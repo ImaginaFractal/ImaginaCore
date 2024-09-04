@@ -21,9 +21,11 @@ namespace Imagina::inline Numerics {
 
 	void DoubleSet(double *dst, const double *src) { *dst = *src; }
 	void DoubleSetDouble(double *dst, double src) { *dst = src; }
+	void DoubleSetDouble2Exp(double *dst, double src, int_exp exp) { *dst = (double)float_f64ei64(src, exp); }
 	void DoubleSetFloatF64eI64(double *dst, float_f64ei64 src) { *dst = double(src); }
 
 	double DoubleGetDouble(const double *x) { return *x; }
+	double DoubleGetDouble2Exp(int_exp *exp, const double *x) { *exp = 0; return *x; }
 	float_f64ei64 DoubleGetFloatF64eI64(const double *x) { return *x; }
 
 	void DoubleAdd(double *dst, const double *x, const double *y) { *dst = *x + *y; }
@@ -48,9 +50,11 @@ namespace Imagina::inline Numerics {
 		.set = (void (*)(imp_real *, const imp_real *))DoubleSet,
 		.copy = (void (*)(imp_real *, const imp_real *))DoubleSet,
 		.set_double = (void (*)(imp_real *, double))DoubleSetDouble,
+		.set_double_2exp = (void (*)(imp_real *, double, int_exp))DoubleSetDouble2Exp,
 		.set_float_f64ei64 = (void (*)(imp_real *, float_f64ei64)) DoubleSetFloatF64eI64,
 
 		.get_double = (double (*)(const imp_real *))DoubleGetDouble,
+		.get_double_2exp = (double (*)(int_exp *, const imp_real *))DoubleGetDouble2Exp,
 		.get_float_f64ei64 = (float_f64ei64 (*)(const imp_real *))DoubleGetFloatF64eI64,
 
 		.add = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleAdd,
