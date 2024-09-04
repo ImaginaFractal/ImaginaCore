@@ -3,52 +3,52 @@
 #include "constants.h"
 
 namespace Imagina::inline Numerics {
-	template<typename Real>
+	template<typename real>
 	struct Complex {
-		Real re, im;
+		real re, im;
 
 		Complex() = default;
 		//Complex(Complex &&) = default;
 		//Complex(const Complex &) = default;
-		//Complex(Real re) noexcept : re(re), im(Constants::Zero<Real>()) {}
+		//Complex(real re) noexcept : re(re), im(Constants::Zero<real>()) {}
 
-		template<typename Real2>
-		explicit(!std::is_convertible_v<Real2, Real>)
-		constexpr Complex(Real2 re) noexcept : re(re), im(Constants::Zero) {}
+		template<typename real2>
+		explicit(!std::is_convertible_v<real2, real>)
+		constexpr Complex(real2 re) noexcept : re(re), im(0.0) {}
 
-		constexpr Complex(Real re, Real im) noexcept : re(re), im(im) {}
-		//template<typename Real2>
-		//Complex(Real2 re, Real2 im) noexcept : re(re), im(im) {}
+		constexpr Complex(real re, real im) noexcept : re(re), im(im) {}
+		//template<typename real2>
+		//Complex(real2 re, real2 im) noexcept : re(re), im(im) {}
 
-		template<typename Real2>
-		explicit(!std::is_convertible_v<Real2, Real>)
-		constexpr Complex(const Complex<Real2> &complex) : re(complex.re), im(complex.im) {}
+		template<typename real2>
+		explicit(!std::is_convertible_v<real2, real>)
+		constexpr Complex(const Complex<real2> &complex) : re(complex.re), im(complex.im) {}
 		
-		template<typename Real2>
-		explicit(!std::is_convertible_v<Real2, Real>)
-		constexpr Complex(Complex<Real2> &&complex) : re(std::move(complex.re)), im(std::move(complex.im)) {}
+		template<typename real2>
+		explicit(!std::is_convertible_v<real2, real>)
+		constexpr Complex(Complex<real2> &&complex) : re(std::move(complex.re)), im(std::move(complex.im)) {}
 
 		//Complex &operator=(Complex &&) = default;
 		//Complex &operator=(const Complex &) = default;
 
-		constexpr Complex &operator+=(const Real &a) { re += a; return *this; }
-		constexpr Complex &operator-=(const Real &a) { re -= a; return *this; }
-		constexpr Complex &operator*=(const Real &a) { re *= a; im *= a; return *this; }
-		constexpr Complex &operator/=(const Real &a) { re /= a; im /= a; return *this; }
+		constexpr Complex &operator+=(const real &a) { re += a; return *this; }
+		constexpr Complex &operator-=(const real &a) { re -= a; return *this; }
+		constexpr Complex &operator*=(const real &a) { re *= a; im *= a; return *this; }
+		constexpr Complex &operator/=(const real &a) { re /= a; im /= a; return *this; }
 
 		//Complex &operator+=(const Complex &a) { re += a.re; im += a.im; return *this; }
 		//Complex &operator-=(const Complex &a) { re -= a.re; im -= a.im; return *this; }
 		constexpr Complex &operator*=(const Complex &a) { *this = *this * a; return *this; }
 		constexpr Complex &operator/=(const Complex &a) { *this = *this / a; return *this; }
 
-		template<typename Real2>
-		constexpr Complex &operator+=(const Complex<Real2> &a) requires requires (Real a, const Real2 &b) { a += b; } {
+		template<typename real2>
+		constexpr Complex &operator+=(const Complex<real2> &a) requires requires (real a, const real2 &b) { a += b; } {
 			re += a.re;
 			im += a.im;
 			return *this;
 		}
-		template<typename Real2>
-		constexpr Complex &operator-=(const Complex<Real2> &a) requires requires (Real a, const Real2 &b) { a -= b; } {
+		template<typename real2>
+		constexpr Complex &operator-=(const Complex<real2> &a) requires requires (real a, const real2 &b) { a -= b; } {
 			re -= a.re;
 			im -= a.im;
 			return *this;
@@ -58,36 +58,36 @@ namespace Imagina::inline Numerics {
 		constexpr bool operator!=(const Complex &x) { return re != x.re || im != x.im; }
 	};
 
-	template<typename Real>
-	constexpr Real norm(const Complex<Real> &a) {
+	template<typename real>
+	constexpr real norm(const Complex<real> &a) {
 		return a.re * a.re + a.im * a.im;
 	}
 
-	template<typename Real>
-	constexpr Complex<Real> conj(const Complex<Real> &a) {
-		return Complex<Real>(a.re, -a.im);
+	template<typename real>
+	constexpr Complex<real> conj(const Complex<real> &a) {
+		return Complex<real>(a.re, -a.im);
 	}
 
-	template<typename Real> constexpr Complex<Real> operator+(Complex<Real> a, const Real &b) { return a += b; }
-	template<typename Real> constexpr Complex<Real> operator-(Complex<Real> a, const Real &b) { return a -= b; }
-	template<typename Real> constexpr Complex<Real> operator*(Complex<Real> a, const Real &b) { return a *= b; }
-	template<typename Real> constexpr Complex<Real> operator/(Complex<Real> a, const Real &b) { return a /= b; }
+	template<typename real> constexpr Complex<real> operator+(Complex<real> a, const real &b) { return a += b; }
+	template<typename real> constexpr Complex<real> operator-(Complex<real> a, const real &b) { return a -= b; }
+	template<typename real> constexpr Complex<real> operator*(Complex<real> a, const real &b) { return a *= b; }
+	template<typename real> constexpr Complex<real> operator/(Complex<real> a, const real &b) { return a /= b; }
 
-	template<typename Real> constexpr Complex<Real> operator+(const Real &a, Complex<Real> b) { return b += a; }
-	template<typename Real> constexpr Complex<Real> operator*(const Real &a, Complex<Real> b) { return b *= a; }
-	template<typename Real> constexpr Complex<Real> operator-(const Real &a, Complex<Real> b) { return Complex<Real>(a) -= b; }
-	template<typename Real> constexpr Complex<Real> operator/(const Real &a, Complex<Real> b) { return Complex<Real>(a) /= b; }
+	template<typename real> constexpr Complex<real> operator+(const real &a, Complex<real> b) { return b += a; }
+	template<typename real> constexpr Complex<real> operator*(const real &a, Complex<real> b) { return b *= a; }
+	template<typename real> constexpr Complex<real> operator-(const real &a, Complex<real> b) { return Complex<real>(a) -= b; }
+	template<typename real> constexpr Complex<real> operator/(const real &a, Complex<real> b) { return Complex<real>(a) /= b; }
 
-	template<typename Real> constexpr Complex<Real> operator+(Complex<Real> a, const Complex<Real> &b) { return a += b; }
-	template<typename Real> constexpr Complex<Real> operator-(Complex<Real> a, const Complex<Real> &b) { return a -= b; }
+	template<typename real> constexpr Complex<real> operator+(Complex<real> a, const Complex<real> &b) { return a += b; }
+	template<typename real> constexpr Complex<real> operator-(Complex<real> a, const Complex<real> &b) { return a -= b; }
 
-	template<typename Real>
-	constexpr Complex<Real> operator*(const Complex<Real> &a, const Complex<Real> &b) {
-		return Complex<Real>(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+	template<typename real>
+	constexpr Complex<real> operator*(const Complex<real> &a, const Complex<real> &b) {
+		return Complex<real>(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
 	}
 
-	template<typename Real>
-	constexpr Complex<Real> operator/(const Complex<Real> &a, const Complex<Real> &b) {
+	template<typename real>
+	constexpr Complex<real> operator/(const Complex<real> &a, const Complex<real> &b) {
 		return a * conj(b) / norm(b); // FIXME: overflow
 	}
 }
