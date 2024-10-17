@@ -74,7 +74,6 @@ namespace Imagina::inline Numerics {
 				uint64_t re_i64 = std::bit_cast<uint64_t>(re);
 				uint64_t im_i64 = std::bit_cast<uint64_t>(im);
 
-				//int64_t adjustment = int64_t((max_i64 >> 52) & max_exponent) - normalized_exponent;
 				int64_t adjustment = int64_t(max_i64 & exponent_mask) - normalized_exponent_shifted;
 				exponent += adjustment >> 52;
 

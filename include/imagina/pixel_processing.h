@@ -54,7 +54,7 @@ namespace Imagina {
 		IPixelProcessor stages[4]{};
 		const PixelDataInfo *outputs[4]{};
 
-		IPixelProcessor composite2[2]{};
+		IPixelProcessor composite2[2]{}; // TODO: mutable
 		IPixelProcessor composite3 = nullptr;
 
 		bool linked = false;

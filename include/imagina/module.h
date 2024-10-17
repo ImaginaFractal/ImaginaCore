@@ -31,7 +31,7 @@ namespace Imagina {
 		PixelProcessor	= 3,
 		PixelManager	= 16,
 		Controller		= 20,
-		MultiPrecision	= 28,
+		MultiPrecision	= 28, // TODO: Create dedicated API for multi-precision. It should be a part of im-numerics.
 		ModuleExtension	= 31,
 	};
 

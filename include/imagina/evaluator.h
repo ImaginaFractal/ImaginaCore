@@ -9,6 +9,7 @@
 #include <imagina/interface/pixel_management.h>
 
 namespace Imagina {
+	// TODO: Remove
 	class im_export SimpleEvaluator {
 		class EvaluationTask;
 
