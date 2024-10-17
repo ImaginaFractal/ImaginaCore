@@ -32,7 +32,10 @@ namespace Imagina::inline Numerics {
 	typedef void		(*p_multi_precision_sub)				(imp_real *, const imp_real *, const imp_real *);
 	typedef void		(*p_multi_precision_mul)				(imp_real *, const imp_real *, const imp_real *);
 	typedef void		(*p_multi_precision_div)				(imp_real *, const imp_real *, const imp_real *);
-	
+
+	typedef void		(*p_multi_precision_neg)				(imp_real *, const imp_real *);
+	typedef void		(*p_multi_precision_abs)				(imp_real *, const imp_real *);
+
 	typedef size_t		(*p_multi_precision_calc_size)			(mp_uint_bc);
 	typedef void		(*p_multi_precision_placement_init)		(imp_real *, mp_uint_bc, void *); // Construct imp_real using preallocated memory.
 
@@ -62,6 +65,9 @@ namespace Imagina::inline Numerics {
 		p_multi_precision_sub				sub;
 		p_multi_precision_mul				mul;
 		p_multi_precision_div				div;
+
+		p_multi_precision_neg				neg;
+		p_multi_precision_abs				abs;
 
 		p_multi_precision_calc_size			calc_size;
 		p_multi_precision_placement_init	placement_init;
@@ -170,10 +176,14 @@ namespace Imagina::inline Numerics {
 	}
 
 	// TODO: Eliminate temporary variable
+	inline imp_real operator-(imp_real x) { x.MP->neg(x, x); return x; }
+
 	inline imp_real operator+(imp_real x, const imp_real &y) { return x += y; }
 	inline imp_real operator-(imp_real x, const imp_real &y) { return x -= y; }
 	inline imp_real operator*(imp_real x, const imp_real &y) { return x *= y; }
 	inline imp_real operator/(imp_real x, const imp_real &y) { return x /= y; }
+
+	inline imp_real abs(imp_real x) { x.MP->abs(x, x); return x; }
 
 	extern im_export multi_precision MPDouble;
 }

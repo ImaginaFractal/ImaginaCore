@@ -51,8 +51,8 @@ namespace Imagina::MPLite {
 		static void MulU32(Float *result, const Float *x, uint32_t y);
 		static void U32PowU32(Float *result, uint32_t x, uint32_t y);
 
-		static void Neg(Float *result, const Float *x);
-		static void Abs(Float *result, const Float *x);
+		static void neg(Float *result, const Float *x);
+		static void abs(Float *result, const Float *x);
 		static void add(Float *result, const Float *x, const Float *y);
 		static void sub(Float *result, const Float *x, const Float *y);
 		static void mul(Float *result, const Float *x, const Float *y);

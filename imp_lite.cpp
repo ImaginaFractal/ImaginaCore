@@ -426,12 +426,12 @@ namespace Imagina::MPLite {
 		}
 	}
 
-	void Float::Neg(Float *result, const Float *x) {
+	void Float::neg(Float *result, const Float *x) {
 		if (result != x) UnsignedSet(result, x);
 		result->Sign = ~x->Sign;
 	}
 
-	void Float::Abs(Float *result, const Float *x) {
+	void Float::abs(Float *result, const Float *x) {
 		if (result != x) UnsignedSet(result, x);
 		result->Sign = 0;
 	}
@@ -919,6 +919,9 @@ namespace Imagina {
 		.sub				= (p_multi_precision_sub)				MPLite::Float::sub,
 		.mul				= (p_multi_precision_mul)				MPLite::Float::mul,
 		.div				= (p_multi_precision_div)				MPLite::Float::div,
+		
+		.neg				= (p_multi_precision_neg)				MPLite::Float::neg,
+		.abs				= (p_multi_precision_abs)				MPLite::Float::abs,
 	} };
 
 }

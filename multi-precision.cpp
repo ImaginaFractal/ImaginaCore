@@ -33,6 +33,9 @@ namespace Imagina::inline Numerics {
 	void DoubleMul(double *dst, const double *x, const double *y) { *dst = *x * *y; }
 	void DoubleDiv(double *dst, const double *x, const double *y) { *dst = *x / *y; }
 
+	void DoubleNeg(double *dst, const double *x) { *dst = -*x; }
+	void DoubleAbs(double *dst, const double *x) { *dst = std::abs(*x); }
+
 	multi_precision MPDouble{ {
 		.Name = "double",
 
@@ -61,5 +64,8 @@ namespace Imagina::inline Numerics {
 		.sub = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleSub,
 		.mul = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleMul,
 		.div = (void (*)(imp_real *, const imp_real *, const imp_real *))DoubleDiv,
+
+		.neg = (void (*)(imp_real *, const imp_real *))DoubleNeg,
+		.abs = (void (*)(imp_real *, const imp_real *))DoubleAbs,
 	} };
 }
