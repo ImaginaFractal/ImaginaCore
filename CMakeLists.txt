@@ -54,7 +54,7 @@ add_library (ImaginaCore SHARED
 	"location_manager.cpp"
 	"module.cpp"
 	"multi-precision.cpp"
-	"pixel_management.cpp"
+	
 	"pixel_processing.cpp"
 	"platform_dependent.cpp"
 )

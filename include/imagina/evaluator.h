@@ -31,7 +31,7 @@ namespace Imagina {
 
 		ILocationManager GetLocationManager();
 		bool Ready();
-		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IPixelReceiver pixelReceiver);
 		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
@@ -60,7 +60,7 @@ namespace Imagina {
 
 		ILocationManager GetLocationManager();
 		bool Ready();
-		ExecutionContext *RunEvaluation(const HRCircle &circle, IRasterizer rasterizer);
+		ExecutionContext *RunEvaluation(const HRCircle &circle, IPixelReceiver pixelReceiver);
 		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 

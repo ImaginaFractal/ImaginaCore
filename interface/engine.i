@@ -9,7 +9,7 @@
 #endif
 
 namespace Imagina {
-	interface IRasterizer;
+	interface IPixelReceiver;
 	interface IController;
 
 	/*struct StandardEvaluationParameters {
@@ -21,7 +21,7 @@ namespace Imagina {
 	interface IEngine {
 		const PixelDataInfo *GetOutputInfo();
 
-		ITask AddTask(const HRCircle &circle, IRasterizer rasterizer);
+		ITask AddTask(const HRCircle &circle, IPixelReceiver pixelReceiver);
 
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters); // TODO: Set parameter when adding task
 

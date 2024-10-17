@@ -64,7 +64,7 @@ namespace Imagina {
 		void WriteResults(void *value);
 	};
 
-	interface IRasterizer {
+	interface IPixelReceiver {
 		void Cancel();
 
 		IRasterizingInterface GetRasterizingInterface();

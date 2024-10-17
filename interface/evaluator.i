@@ -6,7 +6,6 @@
 #endif
 
 namespace Imagina {
-	interface IRasterizer;
 	interface IRasterizingInterface;
 
 	struct StandardEvaluationParameters {

@@ -92,6 +92,6 @@ namespace Imagina {
 		void WriteResults(void *value);
 	};
 
-	IMPLEMENT_INTERFACE3(BasicPixelManager, IPixelManager, IGpuTextureManager, IRasterizer);
+	IMPLEMENT_INTERFACE3(BasicPixelManager, IPixelManager, IGpuTextureManager, IPixelReceiver);
 	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
 }

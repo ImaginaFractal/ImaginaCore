@@ -4,10 +4,10 @@
 namespace Imagina {
 	class StandardEngine::EvaluationTask : public ParallelTask, public Task::Cancellable/*, public ProgressTrackable*/ {
 		IEvaluator evaluator;
-		IRasterizer rasterizer;
+		IPixelReceiver pixelReceiver;
 	public:
-		EvaluationTask(IEvaluator evaluator, IRasterizer rasterizer)
-			: evaluator(evaluator), rasterizer(rasterizer) {}
+		EvaluationTask(IEvaluator evaluator, IPixelReceiver pixelReceiver)
+			: evaluator(evaluator), pixelReceiver(pixelReceiver) {}
 		//virtual std::string_view GetDescription() const override;
 		virtual void Execute() override;
 		//virtual bool GetProgress(real_sr &Numerator, real_sr &Denoninator) const override;
@@ -15,13 +15,13 @@ namespace Imagina {
 	};
 
 	void StandardEngine::EvaluationTask::Execute() {
-		IRasterizingInterface rasterizingInterface = rasterizer.GetRasterizingInterface();
+		IRasterizingInterface rasterizingInterface = pixelReceiver.GetRasterizingInterface();
 		evaluator.Evaluate(rasterizingInterface);
-		rasterizer.FreeRasterizingInterface(rasterizingInterface);
+		pixelReceiver.FreeRasterizingInterface(rasterizingInterface);
 	}
 
 	void StandardEngine::EvaluationTask::Cancel() {
-		rasterizer.Cancel();
+		pixelReceiver.Cancel();
 	}
 
 	void StandardEngine::CancelTasks() {
@@ -54,9 +54,9 @@ namespace Imagina {
 		return evaluator.GetOutputInfo();
 	}
 
-	ITask StandardEngine::AddTask(const HRCircle &circle, IRasterizer rasterizer) {
+	ITask StandardEngine::AddTask(const HRCircle &circle, IPixelReceiver pixelReceiver) {
 		if (pixelExecutionContext) pixelExecutionContext->WaitAndRelease();
-		pixelExecutionContext = Computation::AddTask(new EvaluationTask(evaluator, rasterizer));
+		pixelExecutionContext = Computation::AddTask(new EvaluationTask(evaluator, pixelReceiver));
 		pixelExecutionContext->AddReference();
 		return pixelExecutionContext;
 	}
