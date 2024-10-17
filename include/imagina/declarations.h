@@ -25,7 +25,6 @@ namespace Imagina {
 
 	class IPixelManager;
 	class IGpuTextureManager;
-	class IRasterizingInterface;
 
 	class IEvaluator;
 	class IEngine;

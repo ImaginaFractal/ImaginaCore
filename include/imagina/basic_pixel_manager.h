@@ -9,9 +9,9 @@
 #include <imagina/interface/engine.h>
 
 namespace Imagina {
-	class BasicRasterizingInterface;
+	class BasicRasterizer;
 	class BasicPixelManager {
-		friend class BasicRasterizingInterface;
+		friend class BasicRasterizer;
 		int_gr width = 0, height = 0;
 		size_t pixelCount;
 		static_assert(sizeof(std::atomic_size_t) == sizeof(size_t));
@@ -69,16 +69,16 @@ namespace Imagina {
 		void Wait();
 		void Cancel();
 		void CancelAndWait();
-		IRasterizingInterface GetRasterizingInterface();
-		void FreeRasterizingInterface(IRasterizingInterface Interface);
+		IRasterizer GetRasterizer();
+		void FreeRasterizer(IRasterizer rasterizer);
 	};
 
-	class BasicRasterizingInterface {
+	class BasicRasterizer {
 		friend class BasicPixelManager;
 
 		BasicPixelManager *pixelManager;
 		PixelPipeline *pixelPipeline;
-		BasicRasterizingInterface(BasicPixelManager *pixelManager) : pixelManager(pixelManager), pixelPipeline(pixelManager->pixelPipeline) {}
+		BasicRasterizer(BasicPixelManager *pixelManager) : pixelManager(pixelManager), pixelPipeline(pixelManager->pixelPipeline) {}
 
 		static constexpr size_t groupSize = 16;
 
@@ -93,5 +93,5 @@ namespace Imagina {
 	};
 
 	IMPLEMENT_INTERFACE3(BasicPixelManager, IPixelManager, IGpuTextureManager, IPixelReceiver);
-	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
+	IMPLEMENT_INTERFACE(BasicRasterizer, IRasterizer);
 }

@@ -6,7 +6,7 @@
 #endif
 
 namespace Imagina {
-	interface IRasterizingInterface;
+	interface IRasterizer;
 
 	struct StandardEvaluationParameters {
 		uint_iter Iterations = 1024;
@@ -17,7 +17,7 @@ namespace Imagina {
 	interface IEvaluator {
 		const PixelDataInfo *GetOutputInfo();
 		void Prepare(const real_hp &x, const real_hp &y, real_hr radius, const StandardEvaluationParameters &parameters);
-		void Evaluate(IRasterizingInterface rasterizingInterface);
+		void Evaluate(IRasterizer rasterizer);
 	};
 
 	interface IComplexLocationSink {

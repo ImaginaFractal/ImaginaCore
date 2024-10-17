@@ -15,9 +15,9 @@ namespace Imagina {
 	};
 
 	void StandardEngine::EvaluationTask::Execute() {
-		IRasterizingInterface rasterizingInterface = pixelReceiver.GetRasterizingInterface();
-		evaluator.Evaluate(rasterizingInterface);
-		pixelReceiver.FreeRasterizingInterface(rasterizingInterface);
+		IRasterizer rasterizer = pixelReceiver.GetRasterizer();
+		evaluator.Evaluate(rasterizer);
+		pixelReceiver.FreeRasterizer(rasterizer);
 	}
 
 	void StandardEngine::EvaluationTask::Cancel() {

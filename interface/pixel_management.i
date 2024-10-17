@@ -57,7 +57,7 @@ namespace Imagina {
 		void Wait();
 	};
 
-	interface IRasterizingInterface {
+	interface IRasterizer {
 		bool GetPixel(real_hr &x, real_hr &y);
 		void GetDdx(real_hr &x, real_hr &y);
 		void GetDdy(real_hr &x, real_hr &y);
@@ -67,8 +67,8 @@ namespace Imagina {
 	interface IPixelReceiver {
 		void Cancel();
 
-		IRasterizingInterface GetRasterizingInterface();
-		void FreeRasterizingInterface(IRasterizingInterface Interface);
+		IRasterizer GetRasterizer();
+		void FreeRasterizer(IRasterizer rasterizer);
 	};
 }
 

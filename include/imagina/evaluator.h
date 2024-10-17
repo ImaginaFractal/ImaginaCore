@@ -36,15 +36,15 @@ namespace Imagina {
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
 		virtual void Prepare() = 0;
-		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
+		virtual void Evaluate(IRasterizer rasterizer) = 0;
 	};
 
 	IMPLEMENT_INTERFACE(SimpleEvaluator, IComplexLocationSink);
 
 	class im_export LowPrecisionEvaluator {
-		class LPRasterizingInterface;
+		class LPRasterizer;
 		class EvaluationTask;
-		friend struct IRasterizingInterfaceVTable;
+		friend struct IRasterizerVTable;
 
 		real_sr referenceX = 0.0, referenceY = 0.0;
 		ExecutionContext *currentExecutionContext = nullptr;
@@ -64,7 +64,7 @@ namespace Imagina {
 		void SetReferenceLocation(const real_hp &x, const real_hp &y, real_hr radius);
 		void SetEvaluationParameters(const StandardEvaluationParameters &parameters);
 
-		virtual void Evaluate(IRasterizingInterface rasterizingInterface) = 0;
+		virtual void Evaluate(IRasterizer rasterizer) = 0;
 	};
 
 	IMPLEMENT_INTERFACE(LowPrecisionEvaluator, IComplexLocationSink);
@@ -86,7 +86,7 @@ namespace Imagina {
 		const PixelDataInfo *GetOutputInfo();
 
 		virtual void Prepare() override;
-		virtual void Evaluate(IRasterizingInterface rasterizingInterface) override;
+		virtual void Evaluate(IRasterizer rasterizer) override;
 	};
 
 	// TEMPORARY
@@ -99,6 +99,6 @@ namespace Imagina {
 	public:
 		const PixelDataInfo *GetOutputInfo();
 
-		virtual void Evaluate(IRasterizingInterface rasterizingInterface) override;
+		virtual void Evaluate(IRasterizer rasterizer) override;
 	};
 }

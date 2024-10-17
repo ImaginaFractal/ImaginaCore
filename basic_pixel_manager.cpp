@@ -204,14 +204,14 @@ namespace Imagina {
 			task.Release();
 		}
 	}
-	IRasterizingInterface BasicPixelManager::GetRasterizingInterface() {
-		return *new BasicRasterizingInterface(this);
+	IRasterizer BasicPixelManager::GetRasterizer() {
+		return *new BasicRasterizer(this);
 	}
-	void BasicPixelManager::FreeRasterizingInterface(IRasterizingInterface Interface) {
-		delete (BasicRasterizingInterface *)Interface;
+	void BasicPixelManager::FreeRasterizer(IRasterizer rasterizer) {
+		delete (BasicRasterizer *)rasterizer;
 	}
 
-	bool BasicRasterizingInterface::GetPixel(real_hr &x, real_hr &y) {
+	bool BasicRasterizer::GetPixel(real_hr &x, real_hr &y) {
 		i++;
 		if (i >= end) {
 			i = pixelManager->i.fetch_add(groupSize);
@@ -236,17 +236,17 @@ namespace Imagina {
 		return true;
 	}
 
-	void BasicRasterizingInterface::GetDdx(real_hr &x, real_hr &y) {
+	void BasicRasterizer::GetDdx(real_hr &x, real_hr &y) {
 		x = pixelManager->location.Height() / pixelManager->height;
 		y = 0.0;
 	}
 
-	void BasicRasterizingInterface::GetDdy(real_hr &x, real_hr &y) {
+	void BasicRasterizer::GetDdy(real_hr &x, real_hr &y) {
 		x = 0.0;
 		y = pixelManager->location.Height() / pixelManager->height;
 	}
 
-	void BasicRasterizingInterface::WriteResults(void *value) {
+	void BasicRasterizer::WriteResults(void *value) {
 		size_t pixelIndex = pixelX + pixelY * pixelManager->width;
 		void *preprocessedOutput = &pixelManager->preprocessedPixels[pixelIndex * pixelPipeline->PreprocessedDataSize()];
 

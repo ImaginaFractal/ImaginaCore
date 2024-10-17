@@ -17,9 +17,9 @@ namespace Imagina {
 	};
 
 	void SimpleEvaluator::EvaluationTask::Execute() {
-		IRasterizingInterface rasterizingInterface = pixelReceiver.GetRasterizingInterface();
-		evaluator->Evaluate(rasterizingInterface);
-		pixelReceiver.FreeRasterizingInterface(rasterizingInterface);
+		IRasterizer rasterizer = pixelReceiver.GetRasterizer();
+		evaluator->Evaluate(rasterizer);
+		pixelReceiver.FreeRasterizer(rasterizer);
 	}
 
 	void SimpleEvaluator::EvaluationTask::Cancel() {
@@ -80,13 +80,13 @@ namespace Imagina {
 		}
 	}
 
-	class LowPrecisionEvaluator::LPRasterizingInterface {
-		IRasterizingInterface rasterizingInterface;
+	class LowPrecisionEvaluator::LPRasterizer {
+		IRasterizer rasterizer;
 		real_sr referenceX, referenceY;
 
 	public:
-		LPRasterizingInterface(IRasterizingInterface rasterizingInterface, real_sr referenceX, real_sr referenceY)
-			: rasterizingInterface(rasterizingInterface), referenceX(referenceX), referenceY(referenceY) {}
+		LPRasterizer(IRasterizer rasterizer, real_sr referenceX, real_sr referenceY)
+			: rasterizer(rasterizer), referenceX(referenceX), referenceY(referenceY) {}
 
 		bool GetPixel(real_hr &x, real_hr &y);
 		void GetDdx(real_hr &x, real_hr &y);
@@ -94,22 +94,22 @@ namespace Imagina {
 		void WriteResults(void *value);
 	};
 
-	IMPLEMENT_INTERFACE(LowPrecisionEvaluator::LPRasterizingInterface, IRasterizingInterface);
+	IMPLEMENT_INTERFACE(LowPrecisionEvaluator::LPRasterizer, IRasterizer);
 
-	bool LowPrecisionEvaluator::LPRasterizingInterface::GetPixel(real_hr &x, real_hr &y) {
-		bool result = rasterizingInterface.GetPixel(x, y);
+	bool LowPrecisionEvaluator::LPRasterizer::GetPixel(real_hr &x, real_hr &y) {
+		bool result = rasterizer.GetPixel(x, y);
 		x += referenceX;
 		y += referenceY;
 		return result;
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdx(real_hr &x, real_hr &y) {
-		rasterizingInterface.GetDdx(x, y);
+	void LowPrecisionEvaluator::LPRasterizer::GetDdx(real_hr &x, real_hr &y) {
+		rasterizer.GetDdx(x, y);
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::GetDdy(real_hr &x, real_hr &y) {
-		rasterizingInterface.GetDdy(x, y);
+	void LowPrecisionEvaluator::LPRasterizer::GetDdy(real_hr &x, real_hr &y) {
+		rasterizer.GetDdy(x, y);
 	}
-	void LowPrecisionEvaluator::LPRasterizingInterface::WriteResults(void *value) {
-		rasterizingInterface.WriteResults(value);
+	void LowPrecisionEvaluator::LPRasterizer::WriteResults(void *value) {
+		rasterizer.WriteResults(value);
 	}
 
 
@@ -126,10 +126,10 @@ namespace Imagina {
 	};
 
 	void LowPrecisionEvaluator::EvaluationTask::Execute() {
-		IRasterizingInterface rasterizingInterface = pixelReceiver.GetRasterizingInterface();
-		LPRasterizingInterface lpRasterizingInterface(rasterizingInterface, referenceX, referenceY);
-		evaluator->Evaluate(lpRasterizingInterface);
-		pixelReceiver.FreeRasterizingInterface(rasterizingInterface);
+		IRasterizer rasterizer = pixelReceiver.GetRasterizer();
+		LPRasterizer lpRasterizer(rasterizer, referenceX, referenceY);
+		evaluator->Evaluate(lpRasterizer);
+		pixelReceiver.FreeRasterizer(rasterizer);
 	}
 
 	
@@ -195,9 +195,9 @@ namespace Imagina {
 		referenceLength = i - 1;
 	}
 
-	void TestSimpleEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
+	void TestSimpleEvaluator::Evaluate(IRasterizer rasterizer) {
 		real_hr x, y;
-		while (rasterizingInterface.GetPixel(x, y)) {
+		while (rasterizer.GetPixel(x, y)) {
 			complex dc = { real(x), real(y) };
 			complex Z = real(0.0), z = real(0.0), dz = real(0.0);
 
@@ -222,7 +222,7 @@ namespace Imagina {
 			Output output;
 			output.Value = i;
 
-			rasterizingInterface.WriteResults(&output);
+			rasterizer.WriteResults(&output);
 		}
 	}
 
@@ -248,9 +248,9 @@ namespace Imagina {
 		IM_GET_OUTPUT_INFO_IMPL(Output, Iterations, FinalZ);
 	}
 
-	void TestEvaluator::Evaluate(IRasterizingInterface rasterizingInterface) {
+	void TestEvaluator::Evaluate(IRasterizer rasterizer) {
 		real_hr x, y;
-		while (rasterizingInterface.GetPixel(x, y)) {
+		while (rasterizer.GetPixel(x, y)) {
 			complex_sr c = { real_sr(x), real_sr(y) };
 			complex_sr z = 0.0;
 
@@ -265,7 +265,7 @@ namespace Imagina {
 			output.Iterations = i;
 			output.FinalZ = z;
 
-			rasterizingInterface.WriteResults(&output);
+			rasterizer.WriteResults(&output);
 		}
 	}
 }
