@@ -75,7 +75,8 @@ namespace Imagina::inline Numerics {
 		constexpr float_f64ei64(double mantissa, int64_t exponent)		: mantissa(mantissa), exponent(exponent) { normalize(); }
 		constexpr float_f64ei64(double mantissa, int64_t exponent, int)	: mantissa(mantissa), exponent(exponent) {}
 
-		constexpr explicit operator double() const {
+		template<typename T>
+		constexpr explicit operator T() const requires std::integral<T> || std::floating_point<T> {
 			int64_t mantissa_i64 = std::bit_cast<int64_t>(mantissa);
 
 			if (exponent >= max_exponent - normalized_exponent) {
