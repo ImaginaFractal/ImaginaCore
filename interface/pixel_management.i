@@ -27,7 +27,19 @@ namespace Imagina {
 		HRRectangle FractalRectangle;
 	};
 
+	interface IGpuTextureManager {
+		void ActivateGpu(IGraphics graphics);
+		void DeactivateGpu(bool cleanup = true);
+
+		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
+
+		// FIXME: vector can't be safely passed between modules compiled by different compilers
+		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
+	};
+
 	interface IPixelManager { // TODO: Add init
+		IGpuTextureManager GetGpuTextureManager();
+
 		void SetEngine(IEngine evaluator);
 		void UsePixelPipeline(PixelPipeline *pipeline);
 		void GetPixelData(void *data, PixelPipeline::Stage stage); // TODO: Add invertY
@@ -44,18 +56,6 @@ namespace Imagina {
 		bool Finished(); // TODO: Consider changing it to Status()
 		void Wait();
 	};
-
-	interface IGpuTextureManager {
-		void ActivateGpu(IGraphics graphics);
-		void DeactivateGpu(bool cleanup = true);
-
-		void SetTextureUploadPoint(PixelPipeline::Stage uploadPoint);
-
-		// FIXME: vector can't be safely passed between modules compiled by different compilers
-		std::vector<TextureMapping> GetTextureMappings(const HRRectangle &location);
-	};
-
-	interface IGpuPixelManager : IPixelManager, IGpuTextureManager {};
 
 	interface IRasterizingInterface {
 		bool GetPixel(real_hr &x, real_hr &y);

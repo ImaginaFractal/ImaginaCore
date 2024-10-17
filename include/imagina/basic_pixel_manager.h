@@ -44,6 +44,8 @@ namespace Imagina {
 	public:
 		~BasicPixelManager();
 
+		IGpuTextureManager GetGpuTextureManager();
+
 		void ActivateGpu(IGraphics graphics);
 		void DeactivateGpu(bool cleanup = true);
 
@@ -90,6 +92,6 @@ namespace Imagina {
 		void WriteResults(void *value);
 	};
 
-	IMPLEMENT_INTERFACE2(BasicPixelManager, IGpuPixelManager, IRasterizer);
+	IMPLEMENT_INTERFACE3(BasicPixelManager, IPixelManager, IGpuTextureManager, IRasterizer);
 	IMPLEMENT_INTERFACE(BasicRasterizingInterface, IRasterizingInterface);
 }

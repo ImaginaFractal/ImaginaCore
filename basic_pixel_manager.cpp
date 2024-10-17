@@ -62,6 +62,10 @@ namespace Imagina {
 		delete[] finalPixels;
 	}
 
+    IGpuTextureManager BasicPixelManager::GetGpuTextureManager() {
+        return this;
+    }
+
 	void BasicPixelManager::ActivateGpu(IGraphics graphics) { // FIXME: Called after initialization
 		this->graphics = graphics;
 
