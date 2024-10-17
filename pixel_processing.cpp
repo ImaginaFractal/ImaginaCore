@@ -168,7 +168,7 @@ namespace Imagina {
 	void TestProcessor::SetInput(const PixelDataInfo *info) {
 		const FieldInfo *sourceField = info->FindField("Value");
 
-		assert(sourceField->Type == PixelDataType::Float64);
+		assert(sourceField->Type == PixelDataType::float64);
 
 		sourceOffset = sourceField->Offset;
 	}
@@ -182,7 +182,7 @@ namespace Imagina {
 		const FieldInfo *iterationsField = info->FindField("Iterations");
 		const FieldInfo *finalZField = info->FindField("FinalZ");
 
-		assert(iterationsField->Type == PixelDataType::UInt64);
+		assert(iterationsField->Type == PixelDataType::uint64);
 		assert(finalZField->Type == PixelDataType::complex_sr);
 
 		iterationsOffset = iterationsField->Offset;
