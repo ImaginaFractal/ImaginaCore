@@ -162,6 +162,22 @@ namespace Imagina {
 		return norm(a) >= norm(b);
 	}
 
+	inline double diffabs(double X, double x) {
+		if (X >= 0) {
+			if (X + x >= 0) { return x; } else { return -(2.0 * X + x); }
+		} else {
+			if (X + x > 0) { return 2.0 * X + x; } else { return -x; }
+		}
+	}
+
+	inline float_f64ei64 diffabs(float_f64ei64 X, float_f64ei64 x) {
+		if (X >= 0) {
+			if (X + x >= 0) { return x; } else { return -(2.0 * X + x); }
+		} else {
+			if (X + x > 0) { return 2.0 * X + x; } else { return -x; }
+		}
+	}
+
 	inline double fast_round(double x);
 	inline int32_t round_i32(double x);
 	inline int64_t round_i64(double x);
